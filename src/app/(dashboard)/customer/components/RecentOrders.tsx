@@ -76,7 +76,7 @@ export function RecentOrders() {
                     <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                       <span>{new Date(order.createdAt).toLocaleDateString()}</span>
                       <span>•</span>
-                      <span>৳{order.total.toLocaleString()}</span>
+                      <span>৳{order?.total?.toLocaleString()}</span>
                     </div>
                     <Badge className={`mt-1 ${statusColors[order.status]}`}>
                       {order.status}
