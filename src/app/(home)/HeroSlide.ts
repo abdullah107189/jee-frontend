@@ -34,9 +34,29 @@ export const heroSlides: HeroSlide[] = [
 ];
 
 export const trustBadges: TrustBadgeItem[] = [
-  { id: "emi", label: "36 months EMI", icon: "emi" },
-  { id: "delivery", label: "Fastest home delivery", icon: "delivery" },
-  { id: "exchange", label: "Exchange facility", icon: "exchange" },
-  { id: "price", label: "Best price deals", icon: "price" },
-  { id: "support", label: "After-sales service", icon: "support" },
+  {
+    id: "authentic",
+    label: "100% authentic products",
+    icon: "authentic"
+  },
+  {
+    id: "warranty",
+    label: "Official product warranty",
+    icon: "warranty"
+  },
+  {
+    id: "delivery",
+    label: "Fast & reliable delivery",
+    icon: "delivery",
+  },
+  {
+    id: "support",
+    label: "Dedicated after-sales support",
+    icon: "support",
+  },
+  {
+    id: "secure",
+    label: "Secure & trusted shopping",
+    icon: "secure",
+  },
 ];

@@ -8,13 +8,12 @@ export interface HeroSlide {
   imageAlt: string;
   theme: "indigo" | "coral";
 }
-
 export type TrustBadgeIcon =
-  | "emi"
+  | "authentic"
+  | "warranty"
   | "delivery"
-  | "exchange"
-  | "price"
-  | "support";
+  | "support"
+  | "secure";
 
 export interface TrustBadgeItem {
   id: string;
