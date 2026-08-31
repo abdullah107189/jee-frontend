@@ -36,27 +36,27 @@ export const heroSlides: HeroSlide[] = [
 export const trustBadges: TrustBadgeItem[] = [
   {
     id: "authentic",
-    label: "100% authentic products",
-    icon: "authentic"
+    label: "Authentic Products",
+    icon: "authentic",
   },
   {
     id: "warranty",
-    label: "Official product warranty",
-    icon: "warranty"
+    label: "Easy Warranty",
+    icon: "warranty",
   },
   {
     id: "delivery",
-    label: "Fast & reliable delivery",
+    label: "Fast Delivery",
     icon: "delivery",
   },
   {
     id: "support",
-    label: "Dedicated after-sales support",
+    label: "After-Sales Support",
     icon: "support",
   },
   {
     id: "secure",
-    label: "Secure & trusted shopping",
+    label: "Secure Shopping",
     icon: "secure",
   },
 ];
