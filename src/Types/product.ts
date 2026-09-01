@@ -36,7 +36,7 @@ export type Product = {
   stockQuantity: number;
   lowStockThreshold: number;
 
-  images: string[] | null;
+  images: string[];
   attributes: ProductAttributes | null;
 
   isPublished: boolean;

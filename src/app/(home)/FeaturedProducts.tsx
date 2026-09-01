@@ -1,7 +1,7 @@
 "use client";
 
 import { Flame } from "lucide-react";
-import ProductCard from "@/components/shared/ProductCard";
+import ProductCard from "@/components/shared/productCard/ProductCard";
 import { useGetProductsQuery } from "@/lib/redux/features/product/productApi";
 
 export default function FeaturedProducts() {
@@ -31,7 +31,7 @@ export default function FeaturedProducts() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 md:gap-6 md:grid-cols-4 lg:grid-cols-5">
         {isLoading
           ? Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="h-96 animate-pulse rounded-3xl bg-slate-200" />

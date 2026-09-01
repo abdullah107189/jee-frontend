@@ -1,6 +1,6 @@
 "use client";
 
-import ProductCard from "@/components/shared/ProductCard";
+import ProductCard from "@/components/shared/productCard/ProductCard";
 import { useGetProductsQuery } from "@/lib/redux/features/product/productApi";
 import Link from "next/link";
  
