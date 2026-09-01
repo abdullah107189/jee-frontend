@@ -26,14 +26,14 @@ export function HeroSection() {
         </div>
 
         {/* Right / Bottom */}
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-1 lg:gap-4">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-1  ">
           {/* Warranty */}
-          <div className="min-w-0 overflow-hidden rounded-xl border border-border bg-card">
+          <div className="min-w-0 aspect-video overflow-hidden rounded-xl border border-border bg-card">
             <QuickWarrantyCheck />
           </div>
 
           {/* Second Banner */}
-          <div className="relative aspect-16/9 min-w-0 overflow-hidden rounded-xl">
+          <div className="relative aspect-video min-w-0 overflow-hidden rounded-xl">
             <Image
               src="/images/hero/ac_hero.webp"
               alt="Air conditioner offer"

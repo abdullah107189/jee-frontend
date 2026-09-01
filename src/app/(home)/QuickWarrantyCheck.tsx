@@ -22,9 +22,7 @@ export default function QuickWarrantyCheck() {
     <div className="h-full rounded-xl bg-card p-4 sm:p-5">
       {/* Header */}
       <div className="flex items-center gap-2.5 sm:gap-3">
-        <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary sm:size-10">
-          <ShieldCheck className="size-4 sm:size-5" />
-        </div>
+      
 
         <div className="min-w-0">
           <h2 className="text-sm font-semibold sm:text-base">Check Warranty</h2>
