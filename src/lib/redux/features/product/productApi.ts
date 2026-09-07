@@ -147,7 +147,7 @@ export const productApi = baseApi.injectEndpoints({
 
     /* ---------------------------- Product Details --------------------------- */
 
-    getProductBySlug: builder.query<Product, string>({
+    getProductBySlug: builder.query<any, string>({
       async queryFn(slug, _api, _extraOptions, baseQuery) {
         const response = await baseQuery(`/products/${slug}`);
 
