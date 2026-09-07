@@ -7,7 +7,7 @@ import {
   Phone, 
   CreditCard 
 } from 'lucide-react'; 
-import { MainLayoutClient } from './MainLayoutClient';
+import { Navbar } from './Navbar';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -18,15 +18,15 @@ export function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-sans text-slate-900">
       {/* Top Banner Notice - Static content, no client interaction needed */}
-      <div className="bg-slate-900 text-white text-xs font-semibold py-2 px-4 text-center flex items-center justify-center gap-2 flex-wrap">
+      {/* <div className="bg-slate-900 text-white text-xs font-semibold py-2 px-4 text-center flex items-center justify-center gap-2 flex-wrap">
         <span className="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] uppercase tracking-wider font-extrabold">
           Instant Guarantee
         </span>
         <span>Every product includes digital QR warranty tracking & 70 BDT bKash advance checkout!</span>
-      </div>
+      </div> */}
 
       {/* Header with Client interactions */}
-      <MainLayoutClient />
+      <Navbar />
 
       {/* Main Body - Children content */}
       <main className="flex-1">

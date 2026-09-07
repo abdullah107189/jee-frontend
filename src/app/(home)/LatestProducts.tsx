@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { toast } from "sonner";
-
-import { Button } from "@/components/ui/Button";
+ 
 import { useGetProductsQuery } from "@/lib/redux/features/product/productApi";
 import { addToCart } from "@/lib/redux/features/cart/cartSlice";
 import { useAppDispatch } from "@/lib/redux/hooks";
 import type { ProductItem } from "@/Types/product";
 
 import HorizontalProductCard from "@/components/shared/productCard/HorizontalProductCard";
+import { Button } from "@/components/ui/Button";
 
 export default function LatestProducts() {
   const dispatch = useAppDispatch();
