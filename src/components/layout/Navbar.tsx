@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/sheet";
 import { Badge } from "../ui/Badge";
 import { Input } from "../ui/Input";
+import Image from "next/image";
 
 export function Navbar() {
   const router = useRouter();
@@ -119,18 +120,7 @@ export function Navbar() {
           <div className="flex items-center justify-between h-16 md:h-20 gap-4">
             {/* Logo - Jee */}
             <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-              <div className="relative h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground shadow-lg shadow-primary/30 transition-transform group-hover:scale-105">
-                <span className="text-xl font-black">J</span>
-                <div className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-emerald-400 border-2 border-background animate-pulse" />
-              </div>
-              <div className="flex items-baseline">
-                <span className="text-2xl font-black tracking-tight text-foreground">
-                  Jee
-                </span>
-                <span className="text-[10px] font-semibold text-muted-foreground ml-0.5 hidden sm:inline">
-                  .store
-                </span>
-              </div>
+              <Image src="/JEE.png" alt="JEE Logo" width={100} height={200} />
             </Link>
 
             {/* Desktop Navigation - Center */}
