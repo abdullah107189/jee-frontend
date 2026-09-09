@@ -152,7 +152,6 @@ export function Navbar() {
                       <Icon className="h-4 w-4" />
                       {link.name}
                     </span>
-                   
                   </Link>
                 );
               })}
@@ -176,7 +175,7 @@ export function Navbar() {
               </form>
 
               {/* Cart Button */}
-              <Link href="/customer/cart" className="relative ">
+              <Link href="/cart" className="relative">
                 <div className="relative h-10 w-10 rounded-full bg-accent flex items-center justify-center transition-colors">
                   <ShoppingBag className="h-5 w-5" />
                   {isMounted && totalCartCount > 0 && (
@@ -194,10 +193,7 @@ export function Navbar() {
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger>
-                    <Button
-                      variant="ghost"
-                      className="cursor-pointer flex items-center gap-2 px-2 rounded-full bg-accent h-10"
-                    >
+                    <div className="cursor-pointer flex items-center gap-2 px-2 rounded-full bg-accent h-10">
                       <Avatar className="h-8 w-8 border-2 border-primary/20">
                         <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
                           {getUserInitials()}
@@ -207,7 +203,7 @@ export function Navbar() {
                         {user?.name?.split(" ")[0]}
                       </span>
                       <ChevronDown className="h-4 w-4 text-muted-foreground hidden lg:block" />
-                    </Button>
+                    </div>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuGroup>
@@ -268,20 +264,14 @@ export function Navbar() {
 
               {/* Mobile Menu Toggle - WITHOUT asChild */}
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-                <SheetTrigger>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="lg:hidden rounded-full h-10 w-10 bg-accent"
-                    aria-label="Toggle mobile menu"
-                  >
-                    <Menu className="h-5 w-5" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent
-                  side="right"
-                  className="w-[300px] sm:w-[350px] p-0"
+                <SheetTrigger
+                  type="button"
+                  className="lg:hidden rounded-full h-10 w-10 bg-accent"
+                  aria-label="Toggle mobile menu"
                 >
+                  <Menu className="h-5 w-5" />
+                </SheetTrigger>
+                <SheetContent side="right" className="w-75 sm:w-87.5 p-0">
                   <SheetHeader className="p-4 border-b border-border">
                     <SheetTitle className="flex items-center gap-2">
                       <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">

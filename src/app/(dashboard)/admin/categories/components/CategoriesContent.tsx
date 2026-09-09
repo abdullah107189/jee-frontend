@@ -66,7 +66,7 @@ export default function AdminCategoriesPage() {
               </thead>
               <tbody className="divide-y divide-slate-50">
                 {MOCK_CATEGORIES.map((category) => (
-                  <tr key={category.id} className="hover:bg-slate-50/50 transition-colors bg-white">
+                  <tr key={category.categoryId} className="hover:bg-slate-50/50 transition-colors bg-white">
                     <td className="px-4 sm:px-6 py-4">
                       <div className="font-semibold text-slate-900">{category.name}</div>
                     </td>
@@ -89,7 +89,7 @@ export default function AdminCategoriesPage() {
                         variant="ghost" 
                         size="sm" 
                         className="h-8 w-8 sm:h-10 sm:w-10 p-0 rounded-lg sm:rounded-xl text-red-400 hover:text-red-600 hover:bg-red-50"
-                        onClick={() => handleDeleteClick(category.id, category.name)}
+                        onClick={() => handleDeleteClick(category.categoryId, category.name)}
                       >
                         <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
                       </Button>

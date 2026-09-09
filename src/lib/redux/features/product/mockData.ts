@@ -484,88 +484,147 @@ export const MOCK_PRODUCTS: ProductItem[] = [
 ];
 
 export const MOCK_CATEGORIES: Category[] = [
-  { categoryId: "cat_1", name: "Fans", slug: "fans", productCount: 4 },
-  { categoryId: "cat_2", name: "AC", slug: "ac", productCount: 2 },
-  { categoryId: "cat_3", name: "Lights", slug: "lights", productCount: 2 },
   {
-    categoryId: "cat_4",
-    name: "Appliances",
-    slug: "appliances",
-    productCount: 4,
+    categoryId: "cat_fans",
+    name: "Fans",
+    slug: "fans",
+    productCount: 2,
+  },
+  {
+    categoryId: "cat_ac",
+    name: "AC",
+    slug: "ac",
+    productCount: 1,
+  },
+  {
+    categoryId: "cat_lights",
+    name: "Lights",
+    slug: "lights",
+    productCount: 1,
+  },
+  {
+    categoryId: "cat_refrigerator",
+    name: "Refrigerator",
+    slug: "refrigerator",
+    productCount: 1,
   },
 ];
 
 export const MOCK_BRANDS: Brand[] = [
-  { brandId: "brand_1", name: "Vision", slug: "vision", productCount: 10 },
-  { brandId: "brand_2", name: "Walton", slug: "walton", productCount: 2 },
+  {
+    brandId: "brand_vision",
+    name: "Vision",
+    slug: "vision",
+    productCount: 1,
+  },
+  {
+    brandId: "brand_walton",
+    name: "Walton",
+    slug: "walton",
+    productCount: 2,
+  },
+  {
+    brandId: "brand_philips",
+    name: "Philips",
+    slug: "philips",
+    productCount: 1,
+  },
+  {
+    brandId: "brand_gree",
+    name: "Gree",
+    slug: "gree",
+    productCount: 1,
+  },
 ];
+
 
 export function filterProducts(
   products: ProductItem[],
-  filters: ProductFilters,
+  filters: ProductFilters = {},
 ): ProductItem[] {
-  let result = [...products];
+  const search = filters.search?.trim().toLowerCase();
 
-  // Search
-  if (filters.search?.trim()) {
-    const q = filters.search.toLowerCase().trim();
+  return products.filter((item) => {
+    const product = item.product;
 
-    result = result.filter((item) => {
-      const product = item.product;
+    // Search
+    if (search) {
+      const searchableText = [
+        product.name,
+        product.slug,
+        product.sku,
+        item.uniqueId,
+        item.serialNumber,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
 
-      return (
-        product.name.toLowerCase().includes(q) ||
-        product.slug.toLowerCase().includes(q) ||
-        product.sku?.toLowerCase().includes(q) ||
-        item.uniqueId.toLowerCase().includes(q) ||
-        item.serialNumber?.toLowerCase().includes(q)
-      );
-    });
-  }
+      if (!searchableText.includes(search)) {
+        return false;
+      }
+    }
 
-  // Category
-  if (filters.categoryId) {
-    result = result.filter(
-      (item) => item.product.categoryId === filters.categoryId,
-    );
-  }
+    // Category
+    if (
+      filters.categoryId &&
+      product.categoryId !== filters.categoryId
+    ) {
+      return false;
+    }
 
-  // Brand
-  if (filters.brandId) {
-    result = result.filter((item) => item.product.brandId === filters.brandId);
-  }
+    // Brand
+    if (
+      filters.brandId &&
+      product.brandId !== filters.brandId
+    ) {
+      return false;
+    }
 
-  // Minimum price
-  if (filters.minPrice != null) {
-    result = result.filter((item) => item.product.price >= filters.minPrice!);
-  }
+    // Min price
+    if (
+      filters.minPrice != null &&
+      product.price < filters.minPrice
+    ) {
+      return false;
+    }
 
-  // Maximum price
-  if (filters.maxPrice != null) {
-    result = result.filter((item) => item.product.price <= filters.maxPrice!);
-  }
+    // Max price
+    if (
+      filters.maxPrice != null &&
+      product.price > filters.maxPrice
+    ) {
+      return false;
+    }
 
-  // Published
-  if (filters.isPublished != null) {
-    result = result.filter(
-      (item) => item.product.isPublished === filters.isPublished,
-    );
-  }
+    // Published
+    if (
+      filters.isPublished != null &&
+      product.isPublished !== filters.isPublished
+    ) {
+      return false;
+    }
 
-  // Active
-  if (filters.isActive != null) {
-    result = result.filter(
-      (item) => item.product.isActive === filters.isActive,
-    );
-  }
+    // Active
+    if (
+      filters.isActive != null &&
+      product.isActive !== filters.isActive
+    ) {
+      return false;
+    }
 
-  // Product item status
-  if (filters.status) {
-    result = result.filter((item) => item.status === filters.status);
-  }
+    // Item status
+    if (
+      filters.status &&
+      item.status !== filters.status
+    ) {
+      return false;
+    }
 
-  return result;
+    return true;
+  });
 }
+
 
 export function mockGetProducts(
   filters: ProductFilters = {},
@@ -573,15 +632,25 @@ export function mockGetProducts(
   const page = filters.page ?? 1;
   const limit = filters.limit ?? 12;
 
-  const filtered = filterProducts(MOCK_PRODUCTS, filters);
+  const filtered = filterProducts(
+    MOCK_PRODUCTS,
+    filters,
+  );
 
   const total = filtered.length;
-  const totalPages = Math.max(1, Math.ceil(total / limit));
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(total / limit),
+  );
 
   const start = (page - 1) * limit;
 
   return {
-    data: filtered.slice(start, start + limit),
+    data: filtered.slice(
+      start,
+      start + limit,
+    ),
     total,
     page,
     limit,

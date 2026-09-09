@@ -16,7 +16,7 @@ interface MainLayoutProps {
 // This is a Server Component - SEO friendly
 export function MainLayout({ children }: MainLayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 font-sans text-slate-900">
+    <div className="min-h-screen flex flex-col bg-background font-sans">
       {/* Top Banner Notice - Static content, no client interaction needed */}
       {/* <div className="bg-slate-900 text-white text-xs font-semibold py-2 px-4 text-center flex items-center justify-center gap-2 flex-wrap">
         <span className="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] uppercase tracking-wider font-extrabold">
