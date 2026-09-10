@@ -145,3 +145,9 @@
     @apply mt-1.5 text-xs leading-5 text-muted-foreground sm:text-sm;
   }
 }
+
+.mxw{
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 15px;
+}

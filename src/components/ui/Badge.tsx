@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 export interface BadgeProps {
   className?: string;
   children?: React.ReactNode;
-  variant?: 'default' | 'success' | 'destructive' | 'outline';
+  variant?: 'default' | 'success' | 'destructive' | 'outline' | 'warning';
 }
 
 function Badge({ className, variant = "default", ...props }: BadgeProps) {
@@ -17,6 +17,7 @@ function Badge({ className, variant = "default", ...props }: BadgeProps) {
           "bg-green-100 text-green-700": variant === "success",
           "bg-red-100 text-red-700": variant === "destructive",
           "border-2 border-slate-200 text-slate-700": variant === "outline",
+          "bg-amber-100 text-amber-800": variant === "warning",
         },
         className
       )}

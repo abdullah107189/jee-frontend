@@ -1,0 +1,58 @@
+export const brandsData = [
+  {
+    id: "brand_walton",
+    name: "Walton",
+    slug: "walton",
+    description: "Bangladeshi electronics and home appliance brand",
+    isActive: true,
+  },
+  {
+    id: "brand_singer",
+    name: "Singer",
+    slug: "singer",
+    description: "Home appliances and consumer electronics",
+    isActive: true,
+  },
+  {
+    id: "brand_general",
+    name: "General",
+    slug: "general",
+    description: "Air conditioner and cooling products",
+    isActive: true,
+  },
+  {
+    id: "brand_gree",
+    name: "Gree",
+    slug: "gree",
+    description: "Air conditioner and cooling solutions",
+    isActive: true,
+  },
+  {
+    id: "brand_vision",
+    name: "Vision",
+    slug: "vision",
+    description: "Electronics and home appliances",
+    isActive: true,
+  },
+  {
+    id: "brand_superstar",
+    name: "Super Star",
+    slug: "super-star",
+    description: "Lighting and electrical products",
+    isActive: true,
+  },
+  {
+    id: "brand_click",
+    name: "Click",
+    slug: "click",
+    description: "Electrical switches and accessories",
+    isActive: true,
+  },
+  {
+    id: "brand_havells",
+    name: "Havells",
+    slug: "havells",
+    description: "Electrical and consumer products",
+    isActive: true,
+  },
+];

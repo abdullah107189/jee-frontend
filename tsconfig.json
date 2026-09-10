@@ -36,10 +36,6 @@
   "exclude": [
     "src/App.tsx",
     "src/main.tsx",
-    "src/pages/admin/**",
-    "src/pages/customer/**",
-    "src/pages/seller/**",
-    "src/pages/Dashboards.tsx"
   ],
   "include": [
     "next-env.d.ts",

@@ -198,7 +198,10 @@ export function Sidebar({ role, onClose }: { role: 'admin' | 'seller' | 'custome
       </div>
       <div className="mt-6 px-2">
         <button
-          onClick={() => dispatch(logout())}
+          onClick={() => {
+            document.cookie = 'user_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+            dispatch(logout());
+          }}
           className="group flex w-full items-center justify-center rounded-2xl bg-slate-50 border border-slate-100 px-4 py-3.5 text-sm font-semibold text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all duration-200"
         >
           <LogOut className="mr-3 h-5 w-5 shrink-0 text-slate-400 group-hover:text-red-500 transition-colors" />

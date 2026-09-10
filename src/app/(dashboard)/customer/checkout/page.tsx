@@ -476,7 +476,7 @@ export default function CheckoutPage() {
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => router.push("/customer/cart")}
+                      onClick={() => router.push("/cart")}
                     >
                       Back to Cart
                     </Button>

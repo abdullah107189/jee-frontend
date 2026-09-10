@@ -1,0 +1,24 @@
+Homepage
+ ├── FeaturedProductCard
+ ├── DealProductCard
+ ├── ProductCard
+ └── MiniProductCard
+
+Products Page
+ └── ProductCard
+
+Search Page
+ ├── ProductCard      → Grid
+ └── HorizontalProductCard → List
+
+Wishlist
+ └── WishlistProductCard
+
+Recently Viewed
+ └── MiniProductCard
+
+Mobile Carousel
+ └── CompactProductCard
+
+Loading
+ └── ProductCardSkeleton
