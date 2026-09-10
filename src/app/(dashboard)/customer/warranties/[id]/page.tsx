@@ -3,6 +3,7 @@
 
 import { Metadata } from "next";
 import { WarrantyDetails } from "./components/WarrantyDetails";
+import Breadcrumb from "@/components/shared/Breadcrumb";
 
 type Props = {
   params: { id: string };
@@ -23,6 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function WarrantyDetailsPage({ params }: Props) {
   return (
     <div className="container mx-auto px-4 py-8">
+      <Breadcrumb name="product name"></Breadcrumb>
       <WarrantyDetails warrantyId={params.id} />
     </div>
   );

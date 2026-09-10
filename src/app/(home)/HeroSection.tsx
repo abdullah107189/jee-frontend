@@ -26,7 +26,7 @@ export function HeroSection() {
         </div>
 
         {/* Right / Bottom */}
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-1  ">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-2 lg:grid-cols-1  ">
           {/* Warranty */}
           <div className="min-w-0 aspect-video overflow-hidden rounded-xl border border-border bg-card">
             <QuickWarrantyCheck />
