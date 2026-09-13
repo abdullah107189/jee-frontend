@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import ProductItemsContent from '@/components/admin/products/items/ProductItemsContent';
+import ProductItemsContent from '@/components/modules/admin/products/items/ProductItemsContent';
 
 export const metadata: Metadata = {
   title: 'Product Items | JEE Admin',

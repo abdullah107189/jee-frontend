@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import WarrantyClaimsContent from '@/components/admin/warranties/claims/WarrantyClaimsContent';
+import WarrantyClaimsContent from '@/components/modules/admin/warranties/claims/WarrantyClaimsContent';
 import { getAdminWarrantyClaims } from '@/services/warranty.service';
 
 export const metadata: Metadata = {

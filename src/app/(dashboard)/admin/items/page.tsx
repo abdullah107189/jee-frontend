@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import AllProductItemsContent from '@/components/admin/items/AllProductItemsContent';
+import AllProductItemsContent from '@/components/modules/admin/items/AllProductItemsContent';
 import { getAdminProductItems } from '@/services/admin.service';
 
 export const metadata: Metadata = {

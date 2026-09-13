@@ -2,8 +2,8 @@
 // Server Component - SEO Friendly
 
 import { Metadata } from 'next';
-import { ProfileForm } from '@/components/customer/profile/ProfileForm';
-import { PasswordForm } from '@/components/customer/profile/PasswordForm';
+import { ProfileForm } from '@/components/modules/customer/profile/ProfileForm';
+import { PasswordForm } from '@/components/modules/customer/profile/PasswordForm';
 import { getCustomerProfile } from '@/services/customer.service';
 
 export const metadata: Metadata = {

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import ProfileContent from '@/components/seller/profile/ProfileContent';
+import ProfileContent from '@/components/modules/seller/profile/ProfileContent';
 import { getSellerProfile } from '@/services/seller.service';
 
 export const metadata: Metadata = {

@@ -1,6 +1,6 @@
 import type { Metadata } from "next"; 
 import { getBrands, getCategories, getProducts } from "@/services/product.service";
-import ProductListingClient from "@/components/products/catalog/ProductListingClient";
+import ProductListingClient from "@/components/modules/products/catalog/ProductListingClient";
 
 export const metadata: Metadata = {
   title: "Products",

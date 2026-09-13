@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { MainLayout } from "@/components/layout/MainLayout";  
-import TrustBadges from "./(home)/TrustBadges";
-import CategoriesSection from "./(home)/CategoriesSection";
-import FeaturedProducts from "./(home)/FeaturedProducts";
-import LatestProducts from "./(home)/LatestProducts";
-import { HeroSection } from "./(home)/HeroSection";
+import TrustBadges from "../components/modules/home/TrustBadges";
+import CategoriesSection from "../components/modules/home/CategoriesSection";
+import FeaturedProducts from "../components/modules/home/FeaturedProducts";
+import LatestProducts from "../components/modules/home/LatestProducts";
+import { HeroSection } from "../components/modules/home/HeroSection";
 import { getCurrentUser } from '@/services/auth.service';
 
 export const metadata: Metadata = {

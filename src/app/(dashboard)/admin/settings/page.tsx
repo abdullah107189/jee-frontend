@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import SettingsContent from '@/components/admin/settings/SettingsContent';
+import SettingsContent from '@/components/modules/admin/settings/SettingsContent';
 
 export const metadata: Metadata = {
   title: 'Settings | JEE Admin',

@@ -2,8 +2,7 @@
 // SERVER COMPONENT - SEO Friendly
 
 import { Metadata } from "next";
-import { WarrantyDetails } from "@/components/customer/warranties/details/WarrantyDetails";
-import Breadcrumb from "@/components/shared/Breadcrumb";
+import { WarrantyDetails } from "@/components/modules/customer/warranties/details/WarrantyDetails";
 import { getCustomerWarrantyDetails } from "@/services/customer.service";
 
 type Props = {
@@ -27,7 +26,6 @@ export default async function WarrantyDetailsPage({ params }: Props) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Breadcrumb name="product name"></Breadcrumb>
       <WarrantyDetails warranty={warranty} />
     </div>
   );

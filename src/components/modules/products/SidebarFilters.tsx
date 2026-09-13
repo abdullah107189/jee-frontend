@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { MOCK_CATEGORIES } from "@/lib/fixtures/product/mockData";
 import type { Brand, Category } from "@/lib/fixtures/product/types";
-import { Slider } from "../ui/slider";
+import { Slider } from "../../ui/slider";
 
 /* ================================================================
    TYPES

@@ -1,6 +1,6 @@
 
 import { Metadata } from 'next';
-import { WarrantyListClient } from '@/components/customer/warranties/WarrantyListClient';
+import { WarrantyListClient } from '@/components/modules/customer/warranties/WarrantyListClient';
 import { getCustomerWarranties } from '@/services/customer.service';
 
 export const metadata: Metadata = {

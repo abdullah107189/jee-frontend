@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { heroSlides, trustBadges } from "./HeroSlide";
+import { heroSlides, trustBadges } from "../../../dammyData/HeroSlide";
 import { HeroSlider } from "./HeroSlider";
 import QuickWarrantyCheck from "./QuickWarrantyCheck";
 import { TrustBadgeStrip } from "./TrustBadgeStrip";

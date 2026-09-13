@@ -1,8 +1,8 @@
 
 import { Metadata } from 'next';
-import { DashboardStats } from '@/components/customer/dashboard/DashboardStats';
-import { RecentOrders } from '@/components/customer/dashboard/RecentOrders';
-import { ActiveWarranties } from '@/components/customer/dashboard/ActiveWarranties';
+import { DashboardStats } from '@/components/modules/customer/dashboard/DashboardStats';
+import { RecentOrders } from '@/components/modules/customer/dashboard/RecentOrders';
+import { ActiveWarranties } from '@/components/modules/customer/dashboard/ActiveWarranties';
 import { getCustomerOrders, getCustomerStats, getCustomerWarranties } from '@/services/customer.service';
 
 export const metadata: Metadata = {

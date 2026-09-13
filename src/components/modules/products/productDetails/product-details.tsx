@@ -1,10 +1,9 @@
-import Image from "next/image";
+ 
 import { Badge } from "@/components/ui/Badge";
 import { Separator } from "@/components/ui/separator";
 import { VariantSelector } from "./variant-selector";
 import { ProductSpecifications } from "./product-specifications";
-import { ProductGallery } from "./product-gallery";
-import Breadcrumb from "@/components/shared/Breadcrumb";
+import { ProductGallery } from "./product-gallery"; 
 
 type ProductDetailsProps = {
   product: any;
@@ -39,7 +38,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
       {/* Breadcrumb */}
       <div className="mb-6 text-sm text-muted-foreground">
-        <Breadcrumb></Breadcrumb>
+        {/* <Breadcrumb></Breadcrumb> */}
       </div>
 
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">

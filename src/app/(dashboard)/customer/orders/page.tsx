@@ -2,7 +2,7 @@
 // Server Component - SEO Friendly
 
 import { Metadata } from 'next';
-import { OrdersList } from '@/components/customer/orders/OrdersList';
+import { OrdersList } from '@/components/modules/customer/orders/OrdersList';
 import { getCustomerOrders } from '@/services/customer.service';
 
 export const metadata: Metadata = {

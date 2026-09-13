@@ -45,75 +45,115 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* ============ JEE Logo Brand Colors ============ */
+  --color-brand-navy: oklch(0.35 0.15 265);
+  --color-brand-blue: oklch(0.62 0.19 250);
+  --color-brand-sky: oklch(0.78 0.13 235);
+  --color-brand-deep: oklch(0.28 0.13 268);
 }
 
+/* ============================================
+   LIGHT MODE — JEE Logo Palette
+   Primary = Deep Navy (#1E3A8A)
+   Accent  = Electric Blue (#3B82F6)
+   ============================================ */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: oklch(1 0 0);                        /* #FFFFFF */
+  --foreground: oklch(0.22 0.06 265);                /* Deep navy text */
+
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.22 0.06 265);
+
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.22 0.06 265);
+
+  /* Primary — Deep JEE Navy */
+  --primary: oklch(0.38 0.16 265);                   /* ≈ #1E3A8A */
+  --primary-foreground: oklch(0.985 0 0);            /* White */
+
+  /* Secondary — Soft Blue tint */
+  --secondary: oklch(0.96 0.02 250);
+  --secondary-foreground: oklch(0.32 0.14 265);
+
+  --muted: oklch(0.965 0.015 245);
+  --muted-foreground: oklch(0.52 0.04 260);
+
+  /* Accent — Electric JEE Blue */
+  --accent: oklch(0.94 0.04 240);
+  --accent-foreground: oklch(0.35 0.15 260);
+
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --border: oklch(0.9 0.02 250);
+  --input: oklch(0.9 0.02 250);
+  --ring: oklch(0.62 0.19 250);                      /* Electric blue ring */
+
+  /* Charts — JEE Blue gradient */
+  --chart-1: oklch(0.38 0.16 265);                   /* Deep navy */
+  --chart-2: oklch(0.52 0.18 255);                   /* Mid blue */
+  --chart-3: oklch(0.62 0.19 250);                   /* Electric blue */
+  --chart-4: oklch(0.72 0.15 240);                   /* Sky */
+  --chart-5: oklch(0.82 0.11 230);                   /* Light sky */
+
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
+
+  --sidebar: oklch(0.985 0.008 250);
+  --sidebar-foreground: oklch(0.22 0.06 265);
+  --sidebar-primary: oklch(0.38 0.16 265);           /* JEE Navy */
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-accent: oklch(0.94 0.04 240);
+  --sidebar-accent-foreground: oklch(0.32 0.14 265);
+  --sidebar-border: oklch(0.9 0.02 250);
+  --sidebar-ring: oklch(0.62 0.19 250);
 }
 
+/* ============================================
+   DARK MODE — JEE Logo Palette (Inverted)
+   Primary = Electric Blue (pops on dark)
+   ============================================ */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --background: oklch(0.16 0.03 265);                /* Very deep navy */
+  --foreground: oklch(0.97 0.01 240);
+
+  --card: oklch(0.21 0.04 265);
+  --card-foreground: oklch(0.97 0.01 240);
+
+  --popover: oklch(0.21 0.04 265);
+  --popover-foreground: oklch(0.97 0.01 240);
+
+  /* Primary — Bright Electric Blue (contrast on dark) */
+  --primary: oklch(0.68 0.18 250);
+  --primary-foreground: oklch(0.15 0.04 265);
+
+  --secondary: oklch(0.27 0.05 260);
+  --secondary-foreground: oklch(0.97 0.01 240);
+
+  --muted: oklch(0.27 0.05 260);
+  --muted-foreground: oklch(0.72 0.04 250);
+
+  --accent: oklch(0.32 0.09 255);
+  --accent-foreground: oklch(0.92 0.06 245);
+
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --ring: oklch(0.68 0.18 250);                      /* Electric blue ring */
+
+  /* Charts — JEE Blue gradient (brighter for dark) */
+  --chart-1: oklch(0.68 0.18 250);                   /* Electric blue */
+  --chart-2: oklch(0.6 0.17 255);                    /* Mid blue */
+  --chart-3: oklch(0.52 0.15 260);                   /* Navy blue */
+  --chart-4: oklch(0.78 0.13 235);                   /* Sky */
+  --chart-5: oklch(0.42 0.12 265);                   /* Deep */
+
+  --sidebar: oklch(0.21 0.04 265);
+  --sidebar-foreground: oklch(0.97 0.01 240);
+  --sidebar-primary: oklch(0.68 0.18 250);
+  --sidebar-primary-foreground: oklch(0.15 0.04 265);
+  --sidebar-accent: oklch(0.32 0.09 255);
+  --sidebar-accent-foreground: oklch(0.92 0.06 245);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-ring: oklch(0.68 0.18 250);
 }
 
 @layer base {
@@ -144,9 +184,22 @@
   .section-description {
     @apply mt-1.5 text-xs leading-5 text-muted-foreground sm:text-sm;
   }
+
+  /* ============ JEE Brand Utilities ============ */
+  .jee-gradient {
+    @apply bg-gradient-to-r from-[oklch(0.38_0.16_265)] via-[oklch(0.52_0.18_255)] to-[oklch(0.68_0.18_250)];
+  }
+
+  .jee-gradient-text {
+    @apply bg-gradient-to-r from-[oklch(0.38_0.16_265)] to-[oklch(0.62_0.19_250)] bg-clip-text text-transparent;
+  }
+
+  .jee-shadow {
+    box-shadow: 0 10px 30px -10px oklch(0.38 0.16 265 / 0.35);
+  }
 }
 
-.mxw{
+.mxw {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 15px;

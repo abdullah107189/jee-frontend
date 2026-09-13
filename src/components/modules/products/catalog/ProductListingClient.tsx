@@ -3,8 +3,7 @@
 import { useMemo, useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { toast } from "sonner";
-import { MainLayout } from "@/components/layout/MainLayout";
-import Breadcrumb from "@/components/shared/Breadcrumb";
+import { MainLayout } from "@/components/layout/MainLayout"; 
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
@@ -12,9 +11,9 @@ import HorizontalProductCard from "@/components/shared/productCard/HorizontalPro
 import { addToCart } from "@/store/slices/cartSlice";
 import { useAppDispatch } from "@/store/hooks";
 import type { ProductItem } from "@/lib/types/product.types";
-import type { Brand, Category } from "@/lib/fixtures/product/types";
-import { MAX_PRICE, ProductFilters, SidebarFilters } from "../SidebarFilters";
+import type { Brand, Category } from "@/lib/fixtures/product/types"; 
 import MainProductCard from "../MainProductCard";
+import { MAX_PRICE, ProductFilters, SidebarFilters } from "../SidebarFilters";
 
 type ViewMode = "grid" | "list";
 type SortOption = "popular" | "price-asc" | "price-desc" | "newest" | "rating";
@@ -132,7 +131,7 @@ export default function ProductListingClient({
   return (
     <MainLayout>
       <main className="mxw">
-        <Breadcrumb />
+        {/* <Breadcrumb /> */}
         <header className="mt-2">
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
             All Products

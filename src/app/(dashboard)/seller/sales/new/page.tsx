@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import NewSaleContent from '@/components/seller/sales/new/NewSaleContent';
+import NewSaleContent from '@/components/modules/seller/sales/new/NewSaleContent';
 
 export const metadata: Metadata = {
   title: 'New Offline Sale | JEE',

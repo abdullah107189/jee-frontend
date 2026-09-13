@@ -1,4 +1,4 @@
-import React from 'react';
+"use server";
 import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/services/auth.service';
 import { Sidebar } from './Sidebar'; 
