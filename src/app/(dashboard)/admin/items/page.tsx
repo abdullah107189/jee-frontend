@@ -1,16 +1,19 @@
 import type { Metadata } from 'next';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import AllProductItemsContent from './components/AllProductItemsContent';
+import AllProductItemsContent from '@/components/admin/items/AllProductItemsContent';
+import { getAdminProductItems } from '@/services/admin.service';
 
 export const metadata: Metadata = {
   title: 'All Product Items | TechStore Admin',
   description: 'Global view of all physical units across products.',
 };
 
-export default function AdminAllProductItemsPage() {
+export default async function AdminAllProductItemsPage() {
+  const items = await getAdminProductItems();
+
   return (
     <DashboardLayout allowedRole="admin">
-      <AllProductItemsContent />
+      <AllProductItemsContent items={items} />
     </DashboardLayout>
   );
 }

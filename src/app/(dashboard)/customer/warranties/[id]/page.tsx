@@ -2,8 +2,9 @@
 // SERVER COMPONENT - SEO Friendly
 
 import { Metadata } from "next";
-import { WarrantyDetails } from "./components/WarrantyDetails";
+import { WarrantyDetails } from "@/components/customer/warranties/details/WarrantyDetails";
 import Breadcrumb from "@/components/shared/Breadcrumb";
+import { getCustomerWarrantyDetails } from "@/services/customer.service";
 
 type Props = {
   params: { id: string };
@@ -22,10 +23,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 // Server Component - SEO data is pre-rendered
 export default async function WarrantyDetailsPage({ params }: Props) {
+  const warranty = await getCustomerWarrantyDetails(params.id);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <Breadcrumb name="product name"></Breadcrumb>
-      <WarrantyDetails warrantyId={params.id} />
+      <WarrantyDetails warranty={warranty} />
     </div>
   );
 }

@@ -6,20 +6,24 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { useLazyCheckWarrantyQuery } from '@/lib/redux/features/warranty/warrantyApi';
+import { checkWarrantyAction } from '@/actions/warranty.actions';
 import { QrCode, Search, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function WarrantyCheckPage() {
   const [uniqueId, setUniqueId] = useState('');
-  const [checkWarranty, { data, isFetching }] = useLazyCheckWarrantyQuery();
+  const [data, setData] = useState<any>(null);
+  const [isFetching, setIsFetching] = useState(false);
   
   const handleSearch = async () => {
     if (!uniqueId.trim()) return;
     try {
-      await checkWarranty(uniqueId).unwrap();
+      setIsFetching(true);
+      setData(await checkWarrantyAction(uniqueId));
     } catch (err) {
       toast.error('Could not find warranty information.');
+    } finally {
+      setIsFetching(false);
     }
   };
 

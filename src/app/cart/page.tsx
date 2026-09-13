@@ -20,29 +20,21 @@ import { Badge } from "@/components/ui/Badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MainLayout } from "@/components/layout/MainLayout";
 
-import {
-  useClearCartItemsMutation,
-  useGetCartItemsQuery,
-  useRemoveCartItemMutation,
-  useUpdateCartItemQtyMutation,
-} from "@/lib/redux/features/cart/cartApi";
-import type { CartItem } from "@/lib/redux/features/cart/cartSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { clearCart, removeFromCart, updateQuantity } from "@/store/slices/cartSlice";
+import type { CartItem } from "@/store/slices/cartSlice";
 
 const DELIVERY_FEE = 100;
 
 export default function CartPage() {
   const router = useRouter();
 
-  const { data, isLoading, refetch } = useGetCartItemsQuery();
-
-  const [updateItem, { isLoading: isUpdating }] =
-    useUpdateCartItemQtyMutation();
-
-  const [removeItem, { isLoading: isRemoving }] = useRemoveCartItemMutation();
-
-  const [clearCart, { isLoading: isClearing }] = useClearCartItemsMutation();
-
-  const items = (data ?? []) as CartItem[];
+  const dispatch = useAppDispatch();
+  const items = useAppSelector((state) => state.cart.items) as CartItem[];
+  const isLoading = useAppSelector((state) => !state.cart.hydrated);
+  const isUpdating = false;
+  const isRemoving = false;
+  const isClearing = false;
 
   const { subtotal, itemCount, total } = useMemo(() => {
     const subtotal = items.reduce(
@@ -63,12 +55,7 @@ export default function CartPage() {
     if (newQuantity < 1) return;
 
     try {
-      await updateItem({
-        id,
-        quantity: newQuantity,
-      }).unwrap();
-
-      refetch();
+      dispatch(updateQuantity({ id, quantity: newQuantity }));
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to update quantity");
     }
@@ -76,9 +63,7 @@ export default function CartPage() {
 
   const handleRemoveItem = async (id: string) => {
     try {
-      await removeItem(id).unwrap();
-
-      refetch();
+      dispatch(removeFromCart(id));
 
       toast.success("Item removed from cart");
     } catch {
@@ -88,9 +73,7 @@ export default function CartPage() {
 
   const handleClearCart = async () => {
     try {
-      await clearCart().unwrap();
-
-      refetch();
+      dispatch(clearCart());
 
       toast.success("Cart cleared");
     } catch {

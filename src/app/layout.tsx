@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { StoreProvider } from './StoreProvider';
+import { StoreProvider } from '@/store/provider';
 import { Toaster } from 'sonner';
 import './globals.css';
 import { Space_Grotesk, Inter } from "next/font/google";

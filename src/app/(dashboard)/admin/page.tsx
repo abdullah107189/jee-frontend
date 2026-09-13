@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import AdminDashboard from '../components/Dashboards';
+import AdminDashboard from '@/components/shared/Dashboards';
 
 export const metadata: Metadata = {
   title: 'Admin Dashboard | TechStore',

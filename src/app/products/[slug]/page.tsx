@@ -1,5 +1,5 @@
 import { ProductDetails } from "@/components/products/productDetails/product-details";
-import { productsData } from "@/dammyData/products";
+import { getProductDetailsBySlug } from "@/services/product.service";
 import { notFound } from "next/navigation";
  
 
@@ -14,12 +14,7 @@ export default async function ProductPage({
 }: ProductPageProps) {
   const { slug } = await params;
 
-  const product = productsData.find(
-    (item) =>
-      item.slug === slug &&
-      item.isPublished &&
-      item.isActive
-  );
+  const product = await getProductDetailsBySlug(slug);
 
   if (!product) {
     notFound();

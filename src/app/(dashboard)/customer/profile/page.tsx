@@ -2,15 +2,18 @@
 // Server Component - SEO Friendly
 
 import { Metadata } from 'next';
-import { ProfileForm } from './components/ProfileForm'; 
-import { PasswordForm } from './components/PasswordForm';
+import { ProfileForm } from '@/components/customer/profile/ProfileForm';
+import { PasswordForm } from '@/components/customer/profile/PasswordForm';
+import { getCustomerProfile } from '@/services/customer.service';
 
 export const metadata: Metadata = {
   title: 'My Profile | TechStore',
   description: 'Manage your account settings and preferences',
 };
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
+  const profile = await getCustomerProfile();
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">My Profile</h1>
@@ -18,7 +21,7 @@ export default function ProfilePage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Profile Form */}
         <div className="lg:col-span-2">
-          <ProfileForm />
+          <ProfileForm profile={profile} />
         </div>
 
         {/* Password Change */}

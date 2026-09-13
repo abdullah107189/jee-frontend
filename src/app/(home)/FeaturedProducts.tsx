@@ -1,17 +1,15 @@
-"use client";
-
 import { Flame } from "lucide-react";
 import ProductCard from "@/components/shared/productCard/ProductCard";
-import { useGetProductsQuery } from "@/lib/redux/features/product/productApi";
+import { getProducts } from "@/services/product.service";
 
-export default function FeaturedProducts() {
-  const { data: featuredResponse, isLoading } = useGetProductsQuery({
+export default async function FeaturedProducts() {
+  const featuredResponse = await getProducts({
     limit: 8,
     isPublished: true,
     isActive: true,
   });
 
-  const featuredProducts = featuredResponse?.data ?? [];
+  const featuredProducts = featuredResponse.data;
 
   return (
     <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -32,13 +30,9 @@ export default function FeaturedProducts() {
       </div>
 
       <div className="grid grid-cols-2 gap-2 md:gap-6 md:grid-cols-4 lg:grid-cols-5">
-        {isLoading
-          ? Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-96 animate-pulse rounded-3xl bg-slate-200" />
-            ))
-          : featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+        {featuredProducts.map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
       </div>
     </section>
   );

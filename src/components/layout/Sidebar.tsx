@@ -18,8 +18,7 @@ import {
   User,
   Plus
 } from 'lucide-react';
-import { logout } from '@/lib/redux/features/auth/authSlice';
-import { useAppDispatch } from '@/lib/redux/hooks';
+import { logoutAction } from '@/actions/auth.actions';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -109,7 +108,6 @@ const MenuItem: React.FC<{ item: any; isActive: boolean; pathname: string }> = (
 
 export function Sidebar({ role, onClose }: { role: 'admin' | 'seller' | 'customer', onClose?: () => void }) {
   const pathname = usePathname();
-  const dispatch = useAppDispatch();
 
   const menu = {
     admin: [
@@ -167,7 +165,7 @@ export function Sidebar({ role, onClose }: { role: 'admin' | 'seller' | 'custome
   const links = menu[role];
 
   return (
-    <div className="flex h-full w-[280px] sm:w-72 flex-col bg-white border-r border-slate-100 shadow-[4px_0_24px_rgb(0,0,0,0.02)] z-10 px-4 py-6">
+    <div className="flex h-full w-70 sm:w-72 flex-col bg-white border-r border-slate-100 shadow-[4px_0_24px_rgb(0,0,0,0.02)] z-10 px-4 py-6">
       <div className="mb-8 lg:mb-10 px-2 lg:px-4 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-black text-slate-800 tracking-tight flex items-center">
@@ -198,10 +196,7 @@ export function Sidebar({ role, onClose }: { role: 'admin' | 'seller' | 'custome
       </div>
       <div className="mt-6 px-2">
         <button
-          onClick={() => {
-            document.cookie = 'user_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-            dispatch(logout());
-          }}
+          onClick={async () => { await logoutAction(); window.location.href = '/login'; }}
           className="group flex w-full items-center justify-center rounded-2xl bg-slate-50 border border-slate-100 px-4 py-3.5 text-sm font-semibold text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all duration-200"
         >
           <LogOut className="mr-3 h-5 w-5 shrink-0 text-slate-400 group-hover:text-red-500 transition-colors" />

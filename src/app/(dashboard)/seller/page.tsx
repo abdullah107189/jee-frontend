@@ -1,16 +1,22 @@
 import type { Metadata } from 'next';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { SellerDashboard } from '../components/Dashboards';
+import { SellerDashboard } from '@/components/shared/Dashboards';
+import { getRecentSales, getSellerDashboardStats } from '@/services/seller.service';
 
 export const metadata: Metadata = {
   title: 'Seller Dashboard | TechStore',
   description: 'Manage offline sales, track warranties and view performance.',
 };
 
-export default function SellerDashboardPage() {
+export default async function SellerDashboardPage() {
+  const [stats, recentSales] = await Promise.all([
+    getSellerDashboardStats(),
+    getRecentSales(),
+  ]);
+
   return (
     <DashboardLayout allowedRole="seller">
-      <SellerDashboard />
+      <SellerDashboard stats={stats} recentSales={recentSales} />
     </DashboardLayout>
   );
 }

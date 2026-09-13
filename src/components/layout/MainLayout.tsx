@@ -8,13 +8,15 @@ import {
   CreditCard 
 } from 'lucide-react'; 
 import { Navbar } from './Navbar';
+import type { CurrentUser } from '@/services/auth.service';
 
 interface MainLayoutProps {
   children: React.ReactNode;
+  user?: CurrentUser | null;
 }
 
 // This is a Server Component - SEO friendly
-export function MainLayout({ children }: MainLayoutProps) {
+export function MainLayout({ children, user = null }: MainLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col bg-background font-sans">
       {/* Top Banner Notice - Static content, no client interaction needed */}
@@ -26,7 +28,7 @@ export function MainLayout({ children }: MainLayoutProps) {
       </div> */}
 
       {/* Header with Client interactions */}
-      <Navbar />
+      <Navbar user={user} />
 
       {/* Main Body - Children content */}
       <main className="flex-1">

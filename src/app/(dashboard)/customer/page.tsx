@@ -1,8 +1,9 @@
 
 import { Metadata } from 'next';
-import { DashboardStats } from './components/DashboardStats';
-import { RecentOrders } from './components/RecentOrders';
-import { ActiveWarranties } from './components/ActiveWarranties';
+import { DashboardStats } from '@/components/customer/dashboard/DashboardStats';
+import { RecentOrders } from '@/components/customer/dashboard/RecentOrders';
+import { ActiveWarranties } from '@/components/customer/dashboard/ActiveWarranties';
+import { getCustomerOrders, getCustomerStats, getCustomerWarranties } from '@/services/customer.service';
 
 export const metadata: Metadata = {
   title: 'My Dashboard | TechStore',
@@ -10,8 +11,11 @@ export const metadata: Metadata = {
 };
 
 export default async function CustomerDashboardPage() {
-  // Server-side data fetching (if needed)
-  // const initialData = await fetchCustomerData();
+  const [stats, orders, warranties] = await Promise.all([
+    getCustomerStats(),
+    getCustomerOrders(),
+    getCustomerWarranties({ status: 'ACTIVE' }),
+  ]);
   
   return (
     <div className="container mx-auto px-4 py-8">
@@ -32,12 +36,12 @@ export default async function CustomerDashboardPage() {
       </div>
 
       {/* Stats - Client Component for interactivity */}
-      <DashboardStats />
+      <DashboardStats stats={stats} />
 
       {/* Recent Orders & Warranties - Client Components */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-        <RecentOrders />
-        <ActiveWarranties />
+        <RecentOrders orders={orders.slice(0, 3)} />
+        <ActiveWarranties warranties={warranties.slice(0, 3)} />
       </div>
     </div>
   );

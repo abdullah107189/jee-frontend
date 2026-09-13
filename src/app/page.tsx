@@ -5,6 +5,7 @@ import CategoriesSection from "./(home)/CategoriesSection";
 import FeaturedProducts from "./(home)/FeaturedProducts";
 import LatestProducts from "./(home)/LatestProducts";
 import { HeroSection } from "./(home)/HeroSection";
+import { getCurrentUser } from '@/services/auth.service';
 
 export const metadata: Metadata = {
   title: {
@@ -39,9 +40,11 @@ const jsonLd = {
     "Authentic appliances with digital warranty verification system.",
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const user = await getCurrentUser();
+
   return (
-    <MainLayout>
+    <MainLayout user={user}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

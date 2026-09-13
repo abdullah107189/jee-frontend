@@ -1,16 +1,19 @@
 import type { Metadata } from 'next';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import SellersContent from './components/SellersContent';
+import SellersContent from '@/components/admin/sellers/SellersContent';
+import { getSellers } from '@/services/admin.service';
 
 export const metadata: Metadata = {
   title: 'Sellers | TechStore Admin',
   description: 'Manage seller accounts and their status.',
 };
 
-export default function AdminSellersPage() {
+export default async function AdminSellersPage() {
+  const sellers = await getSellers();
+
   return (
     <DashboardLayout allowedRole="admin">
-      <SellersContent />
+      <SellersContent sellers={sellers} />
     </DashboardLayout>
   );
 }

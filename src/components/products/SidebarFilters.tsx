@@ -6,7 +6,8 @@ import { Filter, RotateCcw } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { MOCK_CATEGORIES } from "@/lib/redux/features/product/mockData";
+import { MOCK_CATEGORIES } from "@/lib/fixtures/product/mockData";
+import type { Brand, Category } from "@/lib/fixtures/product/types";
 import { Slider } from "../ui/slider";
 
 /* ================================================================
@@ -22,6 +23,8 @@ export type ProductFilters = {
 
 type SidebarFiltersProps = {
   filters: ProductFilters;
+  categories?: Category[];
+  brands?: Brand[];
 
   onCategoryChange: (
     categoryId: string | null,
@@ -94,6 +97,8 @@ export const WARRANTY_PERIODS = [
 
 export function SidebarFilters({
   filters,
+  categories = MOCK_CATEGORIES,
+  brands,
   onCategoryChange,
   onBrandChange,
   onWarrantyChange,
@@ -156,7 +161,7 @@ export function SidebarFilters({
         noBorder
       >
         <div className="flex flex-col gap-1">
-          {MOCK_CATEGORIES.map((category) => {
+          {categories.map((category) => {
             /*
              * IMPORTANT:
              *
@@ -279,21 +284,21 @@ export function SidebarFilters({
 
       <FilterSection title="Brands">
         <div className="flex flex-col gap-3">
-          {BRANDS.map((brand) => {
+          {(brands ?? BRANDS.map((brand) => ({ brandId: brand.id, name: brand.name }))).map((brand) => {
             const checked =
-              brandIds.includes(brand.id);
+              brandIds.includes(brand.brandId);
 
             return (
               <label
-                key={brand.id}
-                htmlFor={`brand-${brand.id}`}
+                key={brand.brandId}
+                htmlFor={`brand-${brand.brandId}`}
                 className="flex cursor-pointer items-center gap-2.5 text-sm"
               >
                 <Checkbox
-                  id={`brand-${brand.id}`}
+                  id={`brand-${brand.brandId}`}
                   checked={checked}
                   onCheckedChange={() =>
-                    onBrandChange(brand.id)
+                    onBrandChange(brand.brandId)
                   }
                 />
 

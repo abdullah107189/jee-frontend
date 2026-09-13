@@ -1,6 +1,6 @@
 import React from 'react';
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { getCurrentUser } from '@/services/auth.service';
 import { Sidebar } from './Sidebar'; 
 import { DashboardLayoutClient } from './DashboardLayoutClient';
 
@@ -12,16 +12,12 @@ interface DashboardLayoutProps {
 // This is a Server Component with auth check
 export async function DashboardLayout({ children, allowedRole }: DashboardLayoutProps) {
   // Get user from session/cookie
-  const cookieStore = cookies();
-  const userSession =  (await cookieStore).get('user_session');
+  const user = await getCurrentUser();
   
   // If no session, redirect to login
-  if (!userSession) {
+  if (!user) {
     redirect('/login');
   }
-
-  // Parse user data
-  const user = JSON.parse(userSession.value);
   
   // Check if user has required role
   if (user.role !== allowedRole) {

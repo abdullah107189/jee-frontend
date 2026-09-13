@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import ProductAddContent from './components/ProductAddContent';
+import ProductAddContent from '@/components/admin/products/new/ProductAddContent';
 
 export const metadata: Metadata = {
   title: 'Add Product | TechStore Admin',

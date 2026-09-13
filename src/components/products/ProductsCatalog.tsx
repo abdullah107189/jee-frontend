@@ -21,16 +21,10 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 
 import { useDebounce } from "@/hooks/useDebounce";
-import { useAppDispatch } from "@/lib/redux/hooks";
-import { addToCart } from "@/lib/redux/features/cart/cartSlice";
-
-import {
-  useGetBrandsQuery,
-  useGetCategoriesQuery,
-  useGetProductsQuery,
-} from "@/lib/redux/features/product/productApi";
-
-import type { ProductItem } from "@/Types/product";
+import { useAppDispatch } from "@/store/hooks";
+import { addToCart } from "@/store/slices/cartSlice";
+import type { Brand, Category } from "@/lib/fixtures/product/types";
+import type { ProductItem, ProductListResponse } from "@/Types/product";
 import MainProductCard from "./MainProductCard";
 
 function formatPrice(value: number) {
@@ -44,6 +38,9 @@ interface ProductsCatalogProps {
   initialMinPrice: string;
   initialMaxPrice: string;
   initialPage: number;
+  initialProducts: ProductListResponse;
+  categories: Category[];
+  brands: Brand[];
 }
 
 export default function ProductsCatalog({
@@ -53,6 +50,9 @@ export default function ProductsCatalog({
   initialMinPrice,
   initialMaxPrice,
   initialPage,
+  initialProducts,
+  categories,
+  brands,
 }: ProductsCatalogProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -66,26 +66,11 @@ export default function ProductsCatalog({
 
   const debouncedSearch = useDebounce(searchTerm, 350);
 
-  const {
-    data: productsResponse,
-    isLoading,
-    isFetching,
-  } = useGetProductsQuery({
-    page,
-    limit: 12,
-    categoryId: selectedCategory !== "ALL" ? selectedCategory : undefined,
-    brandId: selectedBrand !== "ALL" ? selectedBrand : undefined,
-    minPrice: minPrice ? Number(minPrice) : undefined,
-    maxPrice: maxPrice ? Number(maxPrice) : undefined,
-    search: debouncedSearch.trim() || undefined,
-  });
-
-  const { data: categories = [] } = useGetCategoriesQuery();
-  const { data: brands = [] } = useGetBrandsQuery();
-
-  const products = productsResponse?.data ?? [];
-  const totalPages = productsResponse?.totalPages ?? 1;
-  const totalItems = productsResponse?.total ?? 0;
+  const products = initialProducts.data;
+  const totalPages = initialProducts.totalPages;
+  const totalItems = initialProducts.total;
+  const isLoading = false;
+  const isFetching = false;
 
   /*
    * Reset page when filters change.

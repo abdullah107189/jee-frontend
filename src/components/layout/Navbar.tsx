@@ -19,8 +19,9 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
-import { useAppSelector } from "@/lib/redux/hooks";
-import { selectCartCount } from "@/lib/redux/features/cart/selectors";
+import { selectCartCount } from "@/store/selectors";
+import { useAppSelector } from "@/store/hooks";
+import type { CurrentUser } from "@/services/auth.service";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,10 +43,9 @@ import { Badge } from "../ui/Badge";
 import { Input } from "../ui/Input";
 import Image from "next/image";
 
-export function Navbar() {
+export function Navbar({ user }: { user: CurrentUser | null }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user } = useAppSelector((state) => state.auth);
   const totalCartCount = useAppSelector(selectCartCount);
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

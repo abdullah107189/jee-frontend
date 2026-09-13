@@ -5,31 +5,26 @@ import { useForm } from 'react-hook-form';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
-import { useLoginMutation } from '@/lib/redux/features/auth/authApi';
-import { setCredentials } from '@/lib/redux/features/auth/authSlice';
-import { useAppDispatch } from '@/lib/redux/hooks';
+import { loginAction } from '@/actions/auth.actions';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const { register, handleSubmit } = useForm();
-  const [login, { isLoading }] = useLoginMutation();
-  const dispatch = useAppDispatch();
+  const [isLoading, setIsLoading] = React.useState(false);
   const router = useRouter();
 
   const onSubmit = async (data: any) => {
     try {
-      const res = await login(data).unwrap();
-      dispatch(setCredentials(res));
-      // Sync session into a cookie so server-side guards (DashboardLayout) can read it
-      document.cookie = `user_session=${encodeURIComponent(
-        JSON.stringify({ id: '1', name: res.user.name, email: res.user.email ?? '', role: res.user.role })
-      )}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+      setIsLoading(true);
+      const res = await loginAction(data);
       toast.success(`Welcome back, ${res.user.name}`);
       router.push(`/${res.user.role}`);
     } catch (err) {
       toast.error('Failed to login');
+    } finally {
+      setIsLoading(false);
     }
   };
 
