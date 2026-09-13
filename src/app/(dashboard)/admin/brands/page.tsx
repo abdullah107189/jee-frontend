@@ -4,7 +4,7 @@ import BrandsContent from '@/components/admin/brands/BrandsContent';
 import { getAdminBrands } from '@/services/admin.service';
 
 export const metadata: Metadata = {
-  title: 'Brands | TechStore Admin',
+  title: 'Brands | JEE Admin',
   description: 'Manage product brands.',
 };
 

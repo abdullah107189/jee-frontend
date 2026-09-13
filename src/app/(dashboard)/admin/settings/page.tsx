@@ -3,7 +3,7 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import SettingsContent from '@/components/admin/settings/SettingsContent';
 
 export const metadata: Metadata = {
-  title: 'Settings | TechStore Admin',
+  title: 'Settings | JEE Admin',
   description: 'Platform configuration and settings.',
 };
 

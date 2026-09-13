@@ -4,7 +4,7 @@ import SaleDetailsContent from '@/components/seller/sales/details/SaleDetailsCon
 import { getSellerTransactionDetails } from '@/services/seller.service';
 
 export const metadata: Metadata = {
-  title: 'Sale Details | TechStore',
+  title: 'Sale Details | JEE',
   description: 'View transaction details, customer information and warranty summary.',
 };
 

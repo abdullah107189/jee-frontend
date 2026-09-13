@@ -4,7 +4,7 @@ import ProfileContent from '@/components/seller/profile/ProfileContent';
 import { getSellerProfile } from '@/services/seller.service';
 
 export const metadata: Metadata = {
-  title: 'Seller Profile | TechStore',
+  title: 'Seller Profile | JEE',
   description: 'Manage merchant outlet profile details and account security.',
 };
 

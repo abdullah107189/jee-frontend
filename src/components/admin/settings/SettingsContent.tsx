@@ -11,8 +11,8 @@ export default function AdminSettingsPage() {
   const [activeTab, setActiveTab] = useState<'general' | 'payment' | 'warranty' | 'security'>('general');
 
   // Form states
-  const [storeName, setStoreName] = useState('TechStore Bangladesh');
-  const [supportEmail, setSupportEmail] = useState('support@techstore.bd');
+  const [storeName, setStoreName] = useState('JEE Bangladesh');
+  const [supportEmail, setSupportEmail] = useState('support@JEE.bd');
   const [supportPhone, setSupportPhone] = useState('+880 1700-000000');
   const [currency, setCurrency] = useState('BDT (৳)');
 

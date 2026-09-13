@@ -129,7 +129,7 @@ const customerWarranties: CustomerWarranty[] = [
   {
     id: 'WAR-002', uniqueId: 'AC-003456', productName: 'Vision AC 1.5 Ton Dual Inverter', status: 'Expiring Soon',
     startDate: '15 Sep 2023', endDate: '15 Sep 2026', daysRemaining: 30, totalDays: 1095,
-    seller: 'TechStore Online', image: 'https://images.unsplash.com/photo-1621016834575-b60b7d7f7fa2?auto=format&fit=crop&w=300&q=80',
+    seller: 'JEE Online', image: 'https://images.unsplash.com/photo-1621016834575-b60b7d7f7fa2?auto=format&fit=crop&w=300&q=80',
   },
   {
     id: 'WAR-003', uniqueId: 'BULB-99120', productName: 'Vision Ultra Bright LED Bulb 15W', status: 'Active',

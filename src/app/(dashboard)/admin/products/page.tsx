@@ -4,7 +4,7 @@ import ProductsListContent from '@/components/admin/products/ProductsListContent
 import { getAdminProducts } from '@/services/admin.service';
 
 export const metadata: Metadata = {
-  title: 'Products | TechStore Admin',
+  title: 'Products | JEE Admin',
   description: 'Manage product catalog entries.',
 };
 

@@ -4,7 +4,7 @@ import SellerWarrantiesContent from '@/components/seller/warranties/SellerWarran
 import { getSellerWarranties } from '@/services/seller.service';
 
 export const metadata: Metadata = {
-  title: 'Warranty Registry | TechStore',
+  title: 'Warranty Registry | JEE',
   description: 'Track customer digital warranties, activation dates and claim status.',
 };
 

@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { DashboardLayout } from '@/components/layout/DashboardLayout'; 
 import AuditLogsContent from '@/components/admin/audit-logs/AuditLogsContent';
 import { getAuditLogs } from '@/services/admin.service';
 
 export const metadata: Metadata = {
-  title: 'Audit Logs | TechStore Admin',
+  title: 'Audit Logs | JEE Admin',
   description: 'System audit logs and activity history.',
 };
 

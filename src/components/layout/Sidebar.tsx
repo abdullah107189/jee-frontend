@@ -172,7 +172,7 @@ export function Sidebar({ role, onClose }: { role: 'admin' | 'seller' | 'custome
             <div className="h-8 w-8 bg-blue-600 rounded-lg mr-3 shadow-lg shadow-blue-500/30 flex items-center justify-center">
               <ScanBarcode className="text-white h-5 w-5" />
             </div>
-            TechStore
+            JEE
           </h1>
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mt-2 lg:mt-3 ml-11">{role} Portal</p>
         </div>

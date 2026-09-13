@@ -3,7 +3,7 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import AdminDashboard from '@/components/shared/Dashboards';
 
 export const metadata: Metadata = {
-  title: 'Admin Dashboard | TechStore',
+  title: 'Admin Dashboard | JEE',
   description: 'Overview of your store performance and operations.',
 };
 

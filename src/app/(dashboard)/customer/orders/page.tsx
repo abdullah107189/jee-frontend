@@ -6,7 +6,7 @@ import { OrdersList } from '@/components/customer/orders/OrdersList';
 import { getCustomerOrders } from '@/services/customer.service';
 
 export const metadata: Metadata = {
-  title: 'My Orders | TechStore',
+  title: 'My Orders | JEE',
   description: 'View and track all your orders',
 };
 

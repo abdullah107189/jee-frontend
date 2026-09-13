@@ -4,7 +4,7 @@ import AllProductItemsContent from '@/components/admin/items/AllProductItemsCont
 import { getAdminProductItems } from '@/services/admin.service';
 
 export const metadata: Metadata = {
-  title: 'All Product Items | TechStore Admin',
+  title: 'All Product Items | JEE Admin',
   description: 'Global view of all physical units across products.',
 };
 

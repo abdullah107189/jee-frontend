@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // const warranty = await getWarrantyById(params.id);
 
   return {
-    title: `Warranty Details | TechStore`,
+    title: `Warranty Details | JEE`,
     description: `View warranty details, status, and submit claims for your product`,
     keywords: "warranty details, claim warranty, product warranty",
   };

@@ -46,7 +46,7 @@ export function MainLayout({ children, user = null }: MainLayoutProps) {
                 <div className="h-9 w-9 bg-blue-600 rounded-xl flex items-center justify-center text-white">
                   <ShieldCheck className="h-5 w-5" />
                 </div>
-                <span>TechStore<span className="text-blue-500">.</span></span>
+                <span>JEE<span className="text-blue-500">.</span></span>
               </div>
               <p className="text-sm text-slate-400 font-medium leading-relaxed">
                 Bangladesh&apos;s premier online & offline electronics ecosystem with verifiable digital QR warranty tracking and instant bKash advance checkout.
@@ -98,7 +98,7 @@ export function MainLayout({ children, user = null }: MainLayoutProps) {
           </div>
 
           <div className="border-t border-slate-800 mt-12 pt-8 text-center text-xs font-semibold text-slate-500">
-            &copy; {new Date().getFullYear()} TechStore. All rights reserved. E-commerce + Offline Seller + Warranty System.
+            &copy; {new Date().getFullYear()} JEE. All rights reserved. E-commerce + Offline Seller + Warranty System.
           </div>
         </div>
       </footer>

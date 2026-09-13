@@ -3,7 +3,7 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import NewSaleContent from '@/components/seller/sales/new/NewSaleContent';
 
 export const metadata: Metadata = {
-  title: 'New Offline Sale | TechStore',
+  title: 'New Offline Sale | JEE',
   description: 'Search a unique product ID and issue an instant digital warranty.',
 };
 

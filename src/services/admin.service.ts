@@ -21,7 +21,7 @@ export type AdminWarrantyClaim = Record<string, any>;
 
 export async function getUsers(): Promise<AdminUser[]> {
   return [
-    { id: 'usr_1', name: 'Super Admin', email: 'admin@techstore.bd', role: 'admin', status: 'Active', joinedDate: '2025-01-01', phone: '01700000000', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80' },
+    { id: 'usr_1', name: 'Super Admin', email: 'admin@JEE.bd', role: 'admin', status: 'Active', joinedDate: '2025-01-01', phone: '01700000000', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80' },
     { id: 'usr_2', name: 'Rafiqul Islam', email: 'vision.store@example.com', role: 'seller', status: 'Active', joinedDate: '2025-11-12', phone: '01711002233', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80' },
     { id: 'usr_3', name: 'Ariful Islam', email: 'arif@example.com', role: 'customer', status: 'Active', joinedDate: '2026-02-14', phone: '01711223344', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80' },
     { id: 'usr_4', name: 'Tanvir Hossain', email: 'tanvir@electrotech.bd', role: 'seller', status: 'Active', joinedDate: '2026-01-05', phone: '01822334455', avatar: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=200&q=80' },
@@ -48,11 +48,11 @@ export async function getPendingSellers(): Promise<AdminSeller[]> {
 
 export async function getAuditLogs(): Promise<AuditLog[]> {
   return [
-    { id: 'LOG-991', timestamp: '2026-08-10 08:30:12', user: 'Admin System', userEmail: 'admin@techstore.bd', action: 'SELLER_APPROVED', entity: 'Seller (sel_3)', details: 'Approved seller Chittagong Electronics Hub', ipAddress: '103.204.244.12' },
+    { id: 'LOG-991', timestamp: '2026-08-10 08:30:12', user: 'Admin System', userEmail: 'admin@JEE.bd', action: 'SELLER_APPROVED', entity: 'Seller (sel_3)', details: 'Approved seller Chittagong Electronics Hub', ipAddress: '103.204.244.12' },
     { id: 'LOG-990', timestamp: '2026-08-10 07:15:45', user: 'Tanvir Hossain', userEmail: 'tanvir@electrotech.bd', action: 'OFFLINE_SALE', entity: 'ProductItem (FAN-001928)', details: 'Recorded offline sale & activated 12M warranty', ipAddress: '103.112.54.89' },
     { id: 'LOG-989', timestamp: '2026-08-09 19:40:02', user: 'Ariful Islam', userEmail: 'arif@example.com', action: 'ONLINE_ORDER', entity: 'Order (#ORD-9021)', details: 'Placed online order via bKash payment', ipAddress: '119.30.38.100' },
-    { id: 'LOG-988', timestamp: '2026-08-09 14:22:18', user: 'Admin System', userEmail: 'admin@techstore.bd', action: 'PRODUCT_CREATED', entity: 'Product (prod_99)', details: 'Created product: Vision Smart LED TV 43"', ipAddress: '103.204.244.12' },
-    { id: 'LOG-987', timestamp: '2026-08-09 11:05:00', user: 'Admin System', userEmail: 'admin@techstore.bd', action: 'BULK_ITEM_ADD', entity: 'ProductItems (50 units)', details: 'Bulk imported 50 ProductItems for SKU FAN-001', ipAddress: '103.204.244.12' },
+    { id: 'LOG-988', timestamp: '2026-08-09 14:22:18', user: 'Admin System', userEmail: 'admin@JEE.bd', action: 'PRODUCT_CREATED', entity: 'Product (prod_99)', details: 'Created product: Vision Smart LED TV 43"', ipAddress: '103.204.244.12' },
+    { id: 'LOG-987', timestamp: '2026-08-09 11:05:00', user: 'Admin System', userEmail: 'admin@JEE.bd', action: 'BULK_ITEM_ADD', entity: 'ProductItems (50 units)', details: 'Bulk imported 50 ProductItems for SKU FAN-001', ipAddress: '103.204.244.12' },
     { id: 'LOG-986', timestamp: '2026-08-08 16:50:33', user: 'Alice Smith', userEmail: 'alice@example.com', action: 'WARRANTY_CLAIM', entity: 'Claim (#CLM-501)', details: 'Submitted warranty claim for AC-100293', ipAddress: '203.82.199.45' },
     { id: 'LOG-985', timestamp: '2026-08-08 09:00:10', user: 'Rafiqul Islam', userEmail: 'vision.store@example.com', action: 'USER_LOGIN', entity: 'Auth', details: 'Successful seller login session', ipAddress: '103.112.54.90' },
   ];

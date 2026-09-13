@@ -114,7 +114,7 @@ export function AdminDashboard() {
             <div className="p-4 sm:p-6 lg:p-8 border-b border-slate-100">
               <h3 className="text-lg font-bold text-slate-800">Monthly Sales (Online vs Offline)</h3>
             </div>
-            <div className="p-4 sm:p-6 lg:p-8 flex-1 min-h-[300px]">
+            <div className="p-4 sm:p-6 lg:p-8 flex-1 min-h-75">
               <ResponsiveContainer width="100%" height="100%">
                 <RechartsBarChart
                   data={MONTHLY_SALES_DATA}
@@ -140,7 +140,7 @@ export function AdminDashboard() {
             <div className="p-4 sm:p-6 lg:p-8 border-b border-slate-100">
               <h3 className="text-lg font-bold text-slate-800">Warranty Status</h3>
             </div>
-            <div className="p-4 sm:p-6 lg:p-8 flex-1 min-h-[300px] flex flex-col justify-center">
+            <div className="p-4 sm:p-6 lg:p-8 flex-1 min-h-75 flex flex-col justify-center">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -197,7 +197,7 @@ export function AdminDashboard() {
             <div className="p-4 sm:p-6 lg:p-8 border-b border-slate-100">
               <h3 className="text-lg font-bold text-slate-800">Top Selling Products</h3>
             </div>
-            <div className="p-4 sm:p-6 lg:p-8 flex-1 min-h-[250px]">
+            <div className="p-4 sm:p-6 lg:p-8 flex-1 min-h-62.5">
               <ResponsiveContainer width="100%" height="100%">
                 <RechartsBarChart
                   data={TOP_PRODUCTS_DATA}
@@ -228,7 +228,7 @@ export function SellerDashboard({ stats, recentSales }: { stats: SellerDashboard
   return (
       <div className="space-y-6 sm:space-y-8">
         {/* Header & Quick Action Big CTA */}
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-6 sm:p-8 rounded-3xl shadow-xl shadow-blue-900/20">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 bg-linear-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-6 sm:p-8 rounded-3xl shadow-xl shadow-blue-900/20">
           <div>
             <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">Seller Control Center</h1>
             <p className="text-sm sm:text-base text-blue-200 mt-1 font-medium">Record offline sales, issue digital warranties, and manage store performance.</p>

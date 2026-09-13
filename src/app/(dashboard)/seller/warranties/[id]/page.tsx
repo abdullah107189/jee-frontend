@@ -4,7 +4,7 @@ import SellerWarrantyDetailsContent from '@/components/seller/warranties/details
 import { getSellerWarrantyDetails } from '@/services/seller.service';
 
 export const metadata: Metadata = {
-  title: 'Warranty Details | TechStore',
+  title: 'Warranty Details | JEE',
   description: 'Digital guarantee record with customer and claim history information.',
 };
 

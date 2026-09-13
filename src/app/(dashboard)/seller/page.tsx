@@ -4,7 +4,7 @@ import { SellerDashboard } from '@/components/shared/Dashboards';
 import { getRecentSales, getSellerDashboardStats } from '@/services/seller.service';
 
 export const metadata: Metadata = {
-  title: 'Seller Dashboard | TechStore',
+  title: 'Seller Dashboard | JEE',
   description: 'Manage offline sales, track warranties and view performance.',
 };
 

@@ -4,7 +4,7 @@ import AdminWarrantiesContent from '@/components/admin/warranties/AdminWarrantie
 import { getAdminWarranties } from '@/services/warranty.service';
 
 export const metadata: Metadata = {
-  title: 'Warranties | TechStore Admin',
+  title: 'Warranties | JEE Admin',
   description: 'View all customer warranties across the platform.',
 };
 

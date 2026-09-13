@@ -4,7 +4,7 @@ import OrdersContent from '@/components/admin/orders/OrdersContent';
 import { getAdminOrderDetails, getAdminOrders } from '@/services/order.service';
 
 export const metadata: Metadata = {
-  title: 'Orders | TechStore Admin',
+  title: 'Orders | JEE Admin',
   description: 'Manage all customer orders.',
 };
 

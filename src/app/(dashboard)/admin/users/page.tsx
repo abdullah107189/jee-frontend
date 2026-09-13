@@ -4,7 +4,7 @@ import UsersContent from '@/components/admin/users/UsersContent';
 import { getUsers } from '@/services/admin.service';
 
 export const metadata: Metadata = {
-  title: 'Users | TechStore Admin',
+  title: 'Users | JEE Admin',
   description: 'Manage platform users and their roles.',
 };
 

@@ -4,7 +4,7 @@ import CategoriesContent from '@/components/admin/categories/CategoriesContent';
 import { getAdminCategories } from '@/services/admin.service';
 
 export const metadata: Metadata = {
-  title: 'Categories | TechStore Admin',
+  title: 'Categories | JEE Admin',
   description: 'Manage product categories.',
 };
 

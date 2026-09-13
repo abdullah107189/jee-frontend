@@ -4,7 +4,7 @@ import SellersContent from '@/components/admin/sellers/SellersContent';
 import { getSellers } from '@/services/admin.service';
 
 export const metadata: Metadata = {
-  title: 'Sellers | TechStore Admin',
+  title: 'Sellers | JEE Admin',
   description: 'Manage seller accounts and their status.',
 };
 

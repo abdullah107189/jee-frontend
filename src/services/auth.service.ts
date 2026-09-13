@@ -1,9 +1,9 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { cookies } from 'next/headers';
 
-export const SESSION_COOKIE_NAME = 'techstore_session';
+export const SESSION_COOKIE_NAME = 'JEE_session';
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7;
-const SESSION_SECRET = process.env.AUTH_SESSION_SECRET || 'development-only-techstore-session-secret';
+const SESSION_SECRET = process.env.AUTH_SESSION_SECRET || 'development-only-JEE-session-secret';
 
 export type AuthRole = 'admin' | 'seller' | 'customer';
 

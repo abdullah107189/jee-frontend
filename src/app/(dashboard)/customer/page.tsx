@@ -6,7 +6,7 @@ import { ActiveWarranties } from '@/components/customer/dashboard/ActiveWarranti
 import { getCustomerOrders, getCustomerStats, getCustomerWarranties } from '@/services/customer.service';
 
 export const metadata: Metadata = {
-  title: 'My Dashboard | TechStore',
+  title: 'My Dashboard | JEE',
   description: 'View your orders, warranties and account activity',
 };
 

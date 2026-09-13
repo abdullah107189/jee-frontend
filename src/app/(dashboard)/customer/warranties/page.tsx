@@ -4,9 +4,9 @@ import { WarrantyListClient } from '@/components/customer/warranties/WarrantyLis
 import { getCustomerWarranties } from '@/services/customer.service';
 
 export const metadata: Metadata = {
-  title: 'My Warranties | TechStore',
+  title: 'My Warranties | JEE',
   description: 'View all your product warranties, check status, and manage claims',
-  keywords: 'warranty, product warranty, claim warranty, techstore',
+  keywords: 'warranty, product warranty, claim warranty, JEE',
 };
 
 // This is a Server Component - SEO data is pre-rendered

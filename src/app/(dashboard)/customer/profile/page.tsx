@@ -7,7 +7,7 @@ import { PasswordForm } from '@/components/customer/profile/PasswordForm';
 import { getCustomerProfile } from '@/services/customer.service';
 
 export const metadata: Metadata = {
-  title: 'My Profile | TechStore',
+  title: 'My Profile | JEE',
   description: 'Manage your account settings and preferences',
 };
 

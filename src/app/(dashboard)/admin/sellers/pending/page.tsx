@@ -4,7 +4,7 @@ import PendingSellersContent from '@/components/admin/sellers/pending/PendingSel
 import { getPendingSellers } from '@/services/admin.service';
 
 export const metadata: Metadata = {
-  title: 'Pending Sellers | TechStore Admin',
+  title: 'Pending Sellers | JEE Admin',
   description: 'Review and approve pending seller applications.',
 };
 

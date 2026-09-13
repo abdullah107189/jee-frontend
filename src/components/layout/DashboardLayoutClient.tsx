@@ -69,7 +69,7 @@ export function DashboardLayoutClient({
             className="font-black text-xl text-slate-800 tracking-tight flex items-center"
           >
             <span className="h-3 w-3 rounded-full bg-blue-600 mr-2"></span>
-            TechStore
+            JEE
           </Link>
           <button
             onClick={() => setSidebarOpen(true)}

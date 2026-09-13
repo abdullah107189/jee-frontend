@@ -4,7 +4,7 @@ import AnalyticsContent from '@/components/admin/analytics/AnalyticsContent';
 import { getAnalytics } from '@/services/admin.service';
 
 export const metadata: Metadata = {
-  title: 'Analytics | TechStore Admin',
+  title: 'Analytics | JEE Admin',
   description: 'Charts and insights about store performance.',
 };
 
