@@ -5,7 +5,7 @@ import Image from "next/image";
 import { ShoppingCart } from "lucide-react";
 
 import { Button } from "@/components/ui/Button";
-import type { ProductItem } from "@/Types/product";
+import type { ProductItem } from "@/lib/types/product.types";
 
 interface ProductCardProps {
   product: ProductItem;

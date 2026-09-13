@@ -1,4 +1,4 @@
-import { HeroSlide, TrustBadgeItem } from "@/Types/hero.types";
+import { HeroSlide, TrustBadgeItem } from "@/lib/types/hero.types";
 
 export const heroSlides: HeroSlide[] = [
   {

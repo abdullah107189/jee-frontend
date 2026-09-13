@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { addToCart } from "@/store/slices/cartSlice";
 import { useAppDispatch } from "@/store/hooks";
-import type { ProductItem } from "@/Types/product";
+import type { ProductItem } from "@/lib/types/product.types";
 import HorizontalProductCard from "@/components/shared/productCard/HorizontalProductCard";
 import { Button } from "@/components/ui/Button";
 

@@ -4,7 +4,7 @@ import type {
   ProductFilters,
   ProductItem,
   ProductListResponse,
-} from '@/Types/product';
+} from '@/lib/types/product.types';
 import {
   MOCK_BRANDS,
   MOCK_CATEGORIES,

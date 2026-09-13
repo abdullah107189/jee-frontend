@@ -1,4 +1,4 @@
-import type { ProductItem } from "@/Types/product";
+import type { ProductItem } from "@/lib/types/product.types";
 import { ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

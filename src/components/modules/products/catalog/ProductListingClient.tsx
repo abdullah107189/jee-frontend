@@ -13,7 +13,7 @@ import MainProductCard from "@/components/products/MainProductCard";
 import HorizontalProductCard from "@/components/shared/productCard/HorizontalProductCard";
 import { addToCart } from "@/store/slices/cartSlice";
 import { useAppDispatch } from "@/store/hooks";
-import type { ProductItem } from "@/Types/product";
+import type { ProductItem } from "@/lib/types/product.types";
 import type { Brand, Category } from "@/lib/fixtures/product/types";
 
 type ViewMode = "grid" | "list";

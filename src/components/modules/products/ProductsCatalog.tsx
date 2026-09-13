@@ -24,7 +24,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { useAppDispatch } from "@/store/hooks";
 import { addToCart } from "@/store/slices/cartSlice";
 import type { Brand, Category } from "@/lib/fixtures/product/types";
-import type { ProductItem, ProductListResponse } from "@/Types/product";
+import type { ProductItem, ProductListResponse } from "@/lib/types/product.types";
 import MainProductCard from "./MainProductCard";
 
 function formatPrice(value: number) {

@@ -8,7 +8,7 @@ import Autoplay from "embla-carousel-autoplay";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { HeroSlide } from "@/Types/hero.types";
+import { HeroSlide } from "@/lib/types/hero.types";
 
 interface HeroSliderProps {
   slides: HeroSlide[];

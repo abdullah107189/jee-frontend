@@ -1,4 +1,4 @@
-import { TrustBadgeItem, TrustBadgeIcon } from "@/Types/hero.types";
+import { TrustBadgeItem, TrustBadgeIcon } from "@/lib/types/hero.types";
 import {
   BadgeCheck,
   ShieldCheck,

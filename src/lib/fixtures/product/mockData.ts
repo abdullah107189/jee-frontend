@@ -3,7 +3,7 @@ import {
   ProductFilters,
   ProductItem,
   ProductListResponse,
-} from "@/Types/product";
+} from "@/lib/types/product.types";
 import { Brand, Category } from "./types";
 
 // {
