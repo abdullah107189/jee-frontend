@@ -18,8 +18,7 @@ export async function DashboardLayout({
     role: "admin",
   };
 
-  // await getCurrentUser(); // Mocked user for demonstration
-
+  await getCurrentUser();
   // Server-side auth gate
   if (!user) redirect("/login");
   if (user.role !== allowedRole) redirect(`/${user.role}`);

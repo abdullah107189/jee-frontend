@@ -1,16 +1,12 @@
-import type { Metadata } from 'next';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import SettingsContent from '@/components/modules/admin/settings/SettingsContent';
+import type { Metadata } from "next";
+import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import SettingsContent from "@/components/modules/admin/settings/SettingsContent";
 
 export const metadata: Metadata = {
-  title: 'Settings | JEE Admin',
-  description: 'Platform configuration and settings.',
+  title: "Settings | JEE Admin",
+  description: "Platform configuration and settings.",
 };
 
 export default function AdminSettingsPage() {
-  return (
-    <DashboardLayout allowedRole="admin">
-      <SettingsContent />
-    </DashboardLayout>
-  );
+  return <SettingsContent />;
 }

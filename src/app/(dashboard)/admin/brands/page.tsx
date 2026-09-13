@@ -11,9 +11,7 @@ export const metadata: Metadata = {
 export default async function AdminBrandsPage() {
   const brands = await getAdminBrands();
 
-  return (
-    <DashboardLayout allowedRole="admin">
-      <BrandsContent brands={brands} />
-    </DashboardLayout>
+  return ( 
+      <BrandsContent brands={brands} /> 
   );
 }

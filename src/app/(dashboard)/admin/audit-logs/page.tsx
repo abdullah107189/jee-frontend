@@ -1,19 +1,15 @@
-import type { Metadata } from 'next';
-import { DashboardLayout } from '@/components/layout/DashboardLayout'; 
-import AuditLogsContent from '@/components/modules/admin/audit-logs/AuditLogsContent';
-import { getAuditLogs } from '@/services/admin.service';
+import type { Metadata } from "next";
+import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import AuditLogsContent from "@/components/modules/admin/audit-logs/AuditLogsContent";
+import { getAuditLogs } from "@/services/admin.service";
 
 export const metadata: Metadata = {
-  title: 'Audit Logs | JEE Admin',
-  description: 'System audit logs and activity history.',
+  title: "Audit Logs | JEE Admin",
+  description: "System audit logs and activity history.",
 };
 
 export default async function AdminAuditLogsPage() {
   const logs = await getAuditLogs();
 
-  return (
-    <DashboardLayout allowedRole="admin">
-      <AuditLogsContent logs={logs} />
-    </DashboardLayout>
-  );
+  return <AuditLogsContent logs={logs} />;
 }
