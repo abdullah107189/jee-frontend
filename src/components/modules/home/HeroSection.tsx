@@ -1,8 +1,8 @@
 import Image from "next/image";
-import { heroSlides, trustBadges } from "../../../dammyData/HeroSlide";
 import { HeroSlider } from "./HeroSlider";
 import QuickWarrantyCheck from "./QuickWarrantyCheck";
 import { TrustBadgeStrip } from "./TrustBadgeStrip";
+import { heroSlides, trustBadges } from "@/dammyData/HeroSlide";
 
 export function HeroSection() {
   return (

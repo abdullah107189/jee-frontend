@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import SellerWarrantyDetailsContent from '@/components/modules/seller/warranties/details/SellerWarrantyDetailsContent';
+import SellerWarrantyDetailsContent from '@/components/modules/seller/details/SellerWarrantyDetailsContentt
 import { getSellerWarrantyDetails } from '@/services/seller.service';
 
 export const metadata: Metadata = {

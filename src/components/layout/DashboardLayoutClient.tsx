@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
   Menu,
+  X,
   LayoutDashboard,
   PlusCircle,
   Package,
@@ -13,146 +14,175 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Sidebar } from "./Sidebar";
+import { Button } from "@/components/ui/Button";
+import { CurrentUser } from "@/services/auth.service";
 
 interface DashboardLayoutClientProps {
   children: React.ReactNode;
-  allowedRole: "admin" | "seller" | "customer";
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    role: string;
-  };
+  user: CurrentUser;
 }
 
 export function DashboardLayoutClient({
   children,
-  allowedRole,
   user,
 }: DashboardLayoutClientProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
 
   const isActiveLink = (path: string) => {
-    if (path === "/seller") return pathname === path;
+    if (path === "/seller" || path === "/admin" || path === "/customer") {
+      return pathname === path;
+    }
     return pathname?.startsWith(path);
   };
 
   return (
     <>
-      {/* Mobile Sidebar Overlay */}
+      {/* ---------- Mobile Overlay ---------- */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-slate-900/50 z-20 lg:hidden backdrop-blur-sm transition-opacity"
+          className="fixed inset-0 z-30 bg-foreground/50 backdrop-blur-sm transition-opacity lg:hidden"
           onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
         />
       )}
 
-      {/* Sidebar */}
-      <div
+      {/* ---------- Sidebar (Desktop static / Mobile slide-in) ---------- */}
+      <aside
+        aria-label="Dashboard navigation"
         className={cn(
-          "fixed inset-y-0 left-0 z-30 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:flex",
+          "fixed inset-y-0 left-0 z-40 w-64 transform border-r border-border bg-background transition-transform duration-300 ease-in-out",
+          "lg:static lg:z-auto lg:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <Sidebar
-          role={user?.role as 'admin' | 'seller' | 'customer'}
-          onClose={() => setSidebarOpen(false)}
-        />
-      </div>
+        {/* Mobile close button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setSidebarOpen(false)}
+          className="absolute right-2 top-2 lg:hidden"
+          aria-label="Close sidebar"
+        >
+          <X className="h-5 w-5" />
+        </Button>
 
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden pb-16 lg:pb-0">
+        <Sidebar role={user.role} onClose={() => setSidebarOpen(false)} />
+      </aside>
+
+      {/* ---------- Main Content Area ---------- */}
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         {/* Mobile Header */}
-        <div className="lg:hidden flex items-center justify-between p-4 bg-white border-b border-slate-100 shadow-sm z-10">
+        <header className="flex items-center justify-between border-b border-border bg-background px-4 py-3 shadow-sm lg:hidden">
           <Link
             href="/"
-            className="font-black text-xl text-slate-800 tracking-tight flex items-center"
+            className="flex items-center text-lg font-black tracking-tight text-foreground"
+            aria-label="JEE Home"
           >
-            <span className="h-3 w-3 rounded-full bg-blue-600 mr-2"></span>
+            <span className="mr-2 h-3 w-3 rounded-full bg-primary" />
             JEE
           </Link>
-          <button
+
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => setSidebarOpen(true)}
-            className="p-2 -mr-2 text-slate-600 hover:text-slate-900 focus:outline-none"
             aria-label="Open sidebar menu"
           >
             <Menu className="h-6 w-6" />
-          </button>
-        </div>
+          </Button>
+        </header>
 
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 relative">
-          <div className="mx-auto max-w-6xl w-full">{children}</div>
+        {/* Page Content — SSR'd server children render here */}
+        <main
+          className={cn(
+            "relative flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8",
+            // Extra bottom padding for seller mobile nav
+            user.role === "seller" && "pb-24 lg:pb-8",
+          )}
+        >
+          <div className="mx-auto w-full max-w-6xl">{children}</div>
         </main>
       </div>
 
-      {/* Mobile Bottom Navigation Bar for Sellers */}
+      {/* ---------- Mobile Bottom Nav (seller only) ---------- */}
       {user.role === "seller" && (
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-40 px-2 py-1.5 flex justify-around items-center shadow-lg">
-          <Link
+        <nav
+          aria-label="Seller quick navigation"
+          className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-around border-t border-border bg-background/95 px-2 py-1.5 backdrop-blur-md shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.08)] lg:hidden"
+        >
+          <BottomNavLink
             href="/seller"
-            className={cn(
-              "flex flex-col items-center p-1.5 text-[11px] font-bold transition-colors",
-              isActiveLink("/seller")
-                ? "text-blue-600"
-                : "text-slate-500 hover:text-slate-900",
-            )}
-          >
-            <LayoutDashboard className="h-5 w-5 mb-0.5" />
-            <span>Home</span>
-          </Link>
+            icon={LayoutDashboard}
+            label="Home"
+            isActive={isActiveLink("/seller")}
+          />
 
+          {/* Floating center button */}
           <Link
             href="/seller/sales/new"
-            className="flex flex-col items-center -mt-5"
+            className="-mt-6 flex flex-col items-center"
+            aria-label="Create new sale"
           >
-            <div className="h-12 w-12 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/40 border-2 border-white">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-background bg-primary text-primary-foreground shadow-lg shadow-primary/40 transition-transform active:scale-95">
               <PlusCircle className="h-6 w-6" />
             </div>
-            <span className="text-[10px] font-extrabold text-blue-700 mt-0.5">
+            <span className="mt-0.5 text-[10px] font-extrabold text-primary">
               New Sale
             </span>
           </Link>
 
-          <Link
+          <BottomNavLink
             href="/seller/sales"
-            className={cn(
-              "flex flex-col items-center p-1.5 text-[11px] font-bold transition-colors",
-              isActiveLink("/seller/sales")
-                ? "text-blue-600"
-                : "text-slate-500 hover:text-slate-900",
-            )}
-          >
-            <Package className="h-5 w-5 mb-0.5" />
-            <span>Sales</span>
-          </Link>
-
-          <Link
+            icon={Package}
+            label="Sales"
+            isActive={isActiveLink("/seller/sales")}
+          />
+          <BottomNavLink
             href="/seller/warranties"
-            className={cn(
-              "flex flex-col items-center p-1.5 text-[11px] font-bold transition-colors",
-              isActiveLink("/seller/warranties")
-                ? "text-blue-600"
-                : "text-slate-500 hover:text-slate-900",
-            )}
-          >
-            <ShieldCheck className="h-5 w-5 mb-0.5" />
-            <span>Warranty</span>
-          </Link>
-
-          <Link
+            icon={ShieldCheck}
+            label="Warranty"
+            isActive={isActiveLink("/seller/warranties")}
+          />
+          <BottomNavLink
             href="/seller/profile"
-            className={cn(
-              "flex flex-col items-center p-1.5 text-[11px] font-bold transition-colors",
-              isActiveLink("/seller/profile")
-                ? "text-blue-600"
-                : "text-slate-500 hover:text-slate-900",
-            )}
-          >
-            <User className="h-5 w-5 mb-0.5" />
-            <span>Profile</span>
-          </Link>
-        </div>
+            icon={User}
+            label="Profile"
+            isActive={isActiveLink("/seller/profile")}
+          />
+        </nav>
       )}
     </>
+  );
+}
+
+/* ---------------- Bottom Nav Helper ---------------- */
+interface BottomNavLinkProps {
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  isActive: boolean;
+}
+
+function BottomNavLink({
+  href,
+  icon: Icon,
+  label,
+  isActive,
+}: BottomNavLinkProps) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "flex flex-1 flex-col items-center rounded-lg p-1.5 text-[11px] font-bold transition-colors",
+        isActive
+          ? "text-primary"
+          : "text-muted-foreground hover:bg-accent hover:text-foreground",
+      )}
+      aria-current={isActive ? "page" : undefined}
+    >
+      <Icon className="mb-0.5 h-5 w-5" />
+      <span>{label}</span>
+    </Link>
   );
 }

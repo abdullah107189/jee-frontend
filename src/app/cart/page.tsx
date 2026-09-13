@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function CartPage() {
   return (
-    <main className="relative min-h-screen bg-background">
+    <div className="relative min-h-screen bg-background">
       {/* Subtle brand gradient backdrop */}
       <div
         aria-hidden="true"
@@ -23,6 +23,6 @@ export default function CartPage() {
       <div className="relative container-page py-6 sm:py-8 lg:py-10">
         <CartView />
       </div>
-    </main>
+    </div>
   );
 }

@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { toast } from "sonner";
-import { MainLayout } from "@/components/layout/MainLayout"; 
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
@@ -11,9 +10,10 @@ import HorizontalProductCard from "@/components/shared/productCard/HorizontalPro
 import { addToCart } from "@/store/slices/cartSlice";
 import { useAppDispatch } from "@/store/hooks";
 import type { ProductItem } from "@/lib/types/product.types";
-import type { Brand, Category } from "@/lib/fixtures/product/types"; 
+import type { Brand, Category } from "@/lib/fixtures/product/types";
 import MainProductCard from "../MainProductCard";
 import { MAX_PRICE, ProductFilters, SidebarFilters } from "../SidebarFilters";
+import { PublicLayout } from "@/components/layout/PublicLayout";
 
 type ViewMode = "grid" | "list";
 type SortOption = "popular" | "price-asc" | "price-desc" | "newest" | "rating";
@@ -129,147 +129,143 @@ export default function ProductListingClient({
   };
 
   return (
-    <MainLayout>
-      <main className="mxw">
-        {/* <Breadcrumb /> */}
-        <header className="mt-2">
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
-            All Products
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Browse our premium collection of fans, electronics, and home
-            appliances with guaranteed warranty.
-          </p>
-        </header>
+    <main className="mxw">
+      {/* <Breadcrumb /> */}
+      <header className="mt-2">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
+          All Products
+        </h1>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+          Browse our premium collection of fans, electronics, and home
+          appliances with guaranteed warranty.
+        </p>
+      </header>
 
-        <div className="mt-5 flex flex-col gap-5 sm:mt-6 lg:flex-row lg:gap-8">
-          <aside className={`${showFilters ? "block" : "hidden"} lg:block`}>
-            <SidebarFilters
-              filters={filters}
-              categories={categories}
-              brands={brands}
-              onCategoryChange={(categoryId) =>
-                setFilters((current) => ({ ...current, categoryId }))
-              }
-              onBrandChange={(brandId) =>
-                setFilters((current) => ({
-                  ...current,
-                  brandIds: current.brandIds.includes(brandId)
-                    ? current.brandIds.filter((id) => id !== brandId)
-                    : [...current.brandIds, brandId],
-                }))
-              }
-              onWarrantyChange={(warranty) =>
-                setFilters((current) => ({
-                  ...current,
-                  warrantyPeriods: current.warrantyPeriods.includes(warranty)
-                    ? current.warrantyPeriods.filter(
-                        (item) => item !== warranty,
-                      )
-                    : [...current.warrantyPeriods, warranty],
-                }))
-              }
-              onPriceChange={(priceRange) =>
-                setFilters((current) => ({ ...current, priceRange }))
-              }
-              onClearFilters={clearFilters}
-            />
-          </aside>
+      <div className="mt-5 flex flex-col gap-5 sm:mt-6 lg:flex-row lg:gap-8">
+        <aside className={`${showFilters ? "block" : "hidden"} lg:block`}>
+          <SidebarFilters
+            filters={filters}
+            categories={categories}
+            brands={brands}
+            onCategoryChange={(categoryId) =>
+              setFilters((current) => ({ ...current, categoryId }))
+            }
+            onBrandChange={(brandId) =>
+              setFilters((current) => ({
+                ...current,
+                brandIds: current.brandIds.includes(brandId)
+                  ? current.brandIds.filter((id) => id !== brandId)
+                  : [...current.brandIds, brandId],
+              }))
+            }
+            onWarrantyChange={(warranty) =>
+              setFilters((current) => ({
+                ...current,
+                warrantyPeriods: current.warrantyPeriods.includes(warranty)
+                  ? current.warrantyPeriods.filter((item) => item !== warranty)
+                  : [...current.warrantyPeriods, warranty],
+              }))
+            }
+            onPriceChange={(priceRange) =>
+              setFilters((current) => ({ ...current, priceRange }))
+            }
+            onClearFilters={clearFilters}
+          />
+        </aside>
 
-          <section className="min-w-0 flex-1">
-            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="relative flex-1">
-                <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Search in products..."
-                  className="pl-10 pr-10"
-                />
-                {search && (
-                  <button
-                    type="button"
-                    onClick={() => setSearch("")}
-                    aria-label="Clear search"
-                    className="absolute right-3 top-1/2 -translate-y-1/2"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
+        <section className="min-w-0 flex-1">
+          <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="relative flex-1">
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search in products..."
+                className="pl-10 pr-10"
+              />
+              {search && (
+                <button
                   type="button"
-                  variant="outline"
-                  className="gap-2"
-                  onClick={() => setShowFilters((open) => !open)}
+                  onClick={() => setSearch("")}
+                  aria-label="Clear search"
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
                 >
-                  <SlidersHorizontal className="h-4 w-4" /> Filters{" "}
-                  {activeFilterCount > 0 && <Badge>{activeFilterCount}</Badge>}
-                </Button>
-                <select
-                  value={sortBy}
-                  onChange={(event) =>
-                    setSortBy(event.target.value as SortOption)
-                  }
-                  className="h-10 rounded-xl border border-border bg-background px-3 text-sm"
-                >
-                  <option value="popular">Popular</option>
-                  <option value="price-asc">Price: Low to High</option>
-                  <option value="price-desc">Price: High to Low</option>
-                  <option value="newest">Newest First</option>
-                  <option value="rating">Top Rated</option>
-                </select>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() =>
-                    setViewMode((mode) => (mode === "grid" ? "list" : "grid"))
-                  }
-                >
-                  {viewMode === "grid" ? "List" : "Grid"}
-                </Button>
-              </div>
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="gap-2"
+                onClick={() => setShowFilters((open) => !open)}
+              >
+                <SlidersHorizontal className="h-4 w-4" /> Filters{" "}
+                {activeFilterCount > 0 && <Badge>{activeFilterCount}</Badge>}
+              </Button>
+              <select
+                value={sortBy}
+                onChange={(event) =>
+                  setSortBy(event.target.value as SortOption)
+                }
+                className="h-10 rounded-xl border border-border bg-background px-3 text-sm"
+              >
+                <option value="popular">Popular</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+                <option value="newest">Newest First</option>
+                <option value="rating">Top Rated</option>
+              </select>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() =>
+                  setViewMode((mode) => (mode === "grid" ? "list" : "grid"))
+                }
+              >
+                {viewMode === "grid" ? "List" : "Grid"}
+              </Button>
+            </div>
+          </div>
 
-            <p className="mb-4 text-sm text-muted-foreground">
-              Showing{" "}
-              <span className="font-semibold text-foreground">
-                {visibleProducts.length}
-              </span>{" "}
-              products
-            </p>
-            {visibleProducts.length === 0 ? (
-              <div className="rounded-2xl border border-dashed p-12 text-center">
-                <h2 className="text-lg font-bold">No products found</h2>
-                <Button onClick={clearFilters} className="mt-4">
-                  Clear Filters
-                </Button>
-              </div>
-            ) : viewMode === "grid" ? (
-              <div className="grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-4">
-                {visibleProducts.map((product) => (
-                  <MainProductCard
-                    key={product.id}
-                    product={product}
-                    onAddToCart={() => handleAddToCart(product)}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col gap-3">
-                {visibleProducts.map((product) => (
-                  <HorizontalProductCard
-                    key={product.id}
-                    product={product}
-                    onAddToCart={() => handleAddToCart(product)}
-                  />
-                ))}
-              </div>
-            )}
-          </section>
-        </div>
-      </main>
-    </MainLayout>
+          <p className="mb-4 text-sm text-muted-foreground">
+            Showing{" "}
+            <span className="font-semibold text-foreground">
+              {visibleProducts.length}
+            </span>{" "}
+            products
+          </p>
+          {visibleProducts.length === 0 ? (
+            <div className="rounded-2xl border border-dashed p-12 text-center">
+              <h2 className="text-lg font-bold">No products found</h2>
+              <Button onClick={clearFilters} className="mt-4">
+                Clear Filters
+              </Button>
+            </div>
+          ) : viewMode === "grid" ? (
+            <div className="grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-4">
+              {visibleProducts.map((product) => (
+                <MainProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={() => handleAddToCart(product)}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {visibleProducts.map((product) => (
+                <HorizontalProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={() => handleAddToCart(product)}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
+    </main>
   );
 }
