@@ -17,7 +17,7 @@ export default function CartPage() {
       {/* Subtle brand gradient backdrop */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-primary/5 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-linear-to-b from-primary/5 to-transparent"
       />
 
       <div className="relative container-page py-6 sm:py-8 lg:py-10">

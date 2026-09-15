@@ -9,20 +9,26 @@ import type { ProductItem } from "@/lib/types/product.types";
 import HorizontalProductCard from "@/components/shared/productCard/HorizontalProductCard";
 import { Button } from "@/components/ui/Button";
 
-export default function LatestProductsClient({ products }: { products: ProductItem[] }) {
+export default function LatestProductsClient({
+  products,
+}: {
+  products: ProductItem[];
+}) {
   const dispatch = useAppDispatch();
 
   const handleAddToCart = (item: ProductItem) => {
     const product = item.product;
 
-    dispatch(addToCart({
-      id: product.id,
-      slug: product.slug,
-      name: product.name,
-      price: product.price,
-      image: product.images?.[0],
-      warrantyMonths: product.warrantyMonths,
-    }));
+    dispatch(
+      addToCart({
+        id: product.id,
+        slug: product.slug,
+        name: product.name,
+        price: product.price,
+        image: product.images?.[0],
+        warrantyMonths: product.warrantyMonths,
+      }),
+    );
 
     toast.success(`${product.name} added to cart!`);
   };
@@ -41,7 +47,10 @@ export default function LatestProductsClient({ products }: { products: ProductIt
           </div>
 
           <Link href="/products">
-            <Button variant="ghost" className="h-8 gap-1 px-2 text-xs font-bold text-primary sm:h-9 sm:px-3 sm:text-sm">
+            <Button
+              variant="ghost"
+              className="h-8 gap-1 px-2 text-xs font-bold text-primary sm:h-9 sm:px-3 sm:text-sm"
+            >
               View All
               <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </Button>
@@ -49,8 +58,12 @@ export default function LatestProductsClient({ products }: { products: ProductIt
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
-          {products.map((product) => (
-            <HorizontalProductCard key={product.id} product={product} onAddToCart={handleAddToCart} />
+          {products?.map((product) => (
+            <HorizontalProductCard
+              key={product.id}
+              product={product}
+              onAddToCart={handleAddToCart}
+            />
           ))}
         </div>
       </div>

@@ -1,14 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ShoppingCart } from "lucide-react";
 
 import { Button } from "@/components/ui/Button";
-import type { ProductItem } from "@/lib/types/product.types";
+import { ProductCardData } from "@/lib/types/product.types";
 
 interface ProductCardProps {
-  product: ProductItem;
+  product: ProductCardData;
   onAddToCart: () => void;
 }
 
@@ -20,20 +21,34 @@ export default function MainProductCard({
   product,
   onAddToCart,
 }: ProductCardProps) {
-  const data = product.product;
+  const image = product?.image;
 
-  const image = data.images?.[0] ?? "/images/product-placeholder.png";
+  /*
+   * Image fallback logic:
+   *
+   * 1. No image URL        → placeholder
+   * 2. example.com URL     → placeholder
+   * 3. Valid image URL     → use actual image
+   * 4. Image loading fails → placeholder
+   */
+  const [imageSrc, setImageSrc] = useState(
+    image && !image.includes("example.com")
+      ? image
+      : "/product-placeholder.jpg",
+  );
 
   const hasDiscount =
-    data.comparePrice != null && data.comparePrice > data.price;
+    product?.comparePrice != null && product?.comparePrice > product?.price;
 
-  const discountAmount = hasDiscount ? data.comparePrice! - data.price : 0;
-
-  const discountPercentage = hasDiscount
-    ? Math.round((discountAmount / data.comparePrice!) * 100)
+  const discountAmount = hasDiscount
+    ? product?.comparePrice! - product?.price
     : 0;
 
-  const isInStock = data.stockQuantity > 0;
+  const discountPercentage = hasDiscount
+    ? Math.round((discountAmount / product?.comparePrice!) * 100)
+    : 0;
+
+  const isInStock = product?.stockQuantity > 0;
 
   return (
     <article
@@ -51,14 +66,14 @@ export default function MainProductCard({
     >
       {/* Product Image */}
       <Link
-        href={`/products/${data.slug}`}
-        aria-label={`View ${data.name}`}
+        href={`/products/${product?.slug}`}
+        aria-label={`View ${product?.name}`}
         className="block"
       >
         <div className="relative aspect-square overflow-hidden bg-muted">
           <Image
-            src={image}
-            alt={data.name}
+            src={imageSrc}
+            alt={product?.name || "Product image"}
             fill
             sizes="
               (max-width: 639px) 50vw,
@@ -70,10 +85,14 @@ export default function MainProductCard({
               transition-transform duration-500
               sm:group-hover:scale-105
             "
+            onError={() => {
+              setImageSrc("/product-placeholder.jpg");
+            }}
           />
 
           {/* Discount */}
-          {/* {hasDiscount && isInStock && (
+          {/* 
+          {hasDiscount && isInStock && (
             <span
               className="
                 absolute left-2.5 top-2.5
@@ -87,7 +106,8 @@ export default function MainProductCard({
             >
               -{discountPercentage}%
             </span>
-          )} */}
+          )}
+          */}
 
           {/* Out of Stock */}
           {!isInStock && (
@@ -116,7 +136,7 @@ export default function MainProductCard({
       {/* Content */}
       <div className="p-3 sm:p-4">
         {/* Product Name */}
-        <Link href={`/products/${data.slug}`}>
+        <Link href={`/products/${product?.slug}`}>
           <h2
             className="
               line-clamp-2
@@ -127,16 +147,16 @@ export default function MainProductCard({
               hover:text-primary
             "
           >
-            {data.name}
+            {product?.name}
           </h2>
         </Link>
 
         {/* Warranty */}
-        {data.warrantyMonths > 0 && (
+        {product?.warrantyMonths > 0 && (
           <p className="mt-1.5 text-[10px] font-medium text-muted-foreground">
-            {data.warrantyMonths >= 12
-              ? `${Math.floor(data.warrantyMonths / 12)} Year Warranty`
-              : `${data.warrantyMonths} Month Warranty`}
+            {product?.warrantyMonths >= 12
+              ? `${Math.floor(product?.warrantyMonths / 12)} Year Warranty`
+              : `${product?.warrantyMonths} Month Warranty`}
           </p>
         )}
 
@@ -144,12 +164,12 @@ export default function MainProductCard({
         <div className="mt-2.5">
           <div className="flex flex-wrap items-baseline gap-1.5">
             <span className="text-base font-black tracking-tight text-foreground sm:text-lg">
-              {formatPrice(data.price)}
+              {formatPrice(product?.price)}
             </span>
 
             {hasDiscount && (
               <del className="text-[10px] text-muted-foreground sm:text-xs">
-                {formatPrice(data.comparePrice!)}
+                {formatPrice(product?.comparePrice!)}
               </del>
             )}
           </div>
@@ -163,16 +183,18 @@ export default function MainProductCard({
 
         {/* Actions */}
         <div className="mt-3 grid grid-cols-[1fr_auto] gap-2">
+          {/* Buy Now */}
           <Link
-            href={`/products/${data.slug}`}
+            href={`/products/${product?.slug}`}
             className="group/buy block min-w-0"
-            aria-label={`Buy ${data.name} now`}
+            aria-label={`Buy ${product?.name} now`}
           >
             <Button
               size="sm"
               disabled={!isInStock}
               className="
-                relative h-9 w-full overflow-hidden cursor-pointer
+                relative h-9 w-full overflow-hidden
+                cursor-pointer
                 rounded-xl
                 text-xs font-bold
               "
@@ -188,7 +210,7 @@ export default function MainProductCard({
             variant="outline"
             disabled={!isInStock}
             onClick={onAddToCart}
-            aria-label={`Add ${data.name} to cart`}
+            aria-label={`Add ${product?.name} to cart`}
             title="Add to cart"
             className="
               h-9 w-9

@@ -9,8 +9,6 @@ export const metadata: Metadata = {
 
 export default function NewSalePage() {
   return (
-    <DashboardLayout allowedRole="seller">
       <NewSaleContent />
-    </DashboardLayout>
   );
 }

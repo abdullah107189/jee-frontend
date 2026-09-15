@@ -12,8 +12,6 @@ export default async function SalesHistoryPage() {
   const sales = await getSellerTransactions();
 
   return (
-    <DashboardLayout allowedRole="seller">
       <SalesHistoryContent sales={sales} />
-    </DashboardLayout>
   );
 }

@@ -1,5 +1,5 @@
-import { ProductDetails } from "@/components/modules/products/productDetails/product-details";
-import { getProductDetailsBySlug } from "@/services/product.service";
+import { ProductDetails } from "@/components/modules/products/productDetails/product-details"; 
+import { productService } from "@/services/product.service";
 import { notFound } from "next/navigation";
  
 
@@ -14,7 +14,8 @@ export default async function ProductPage({
 }: ProductPageProps) {
   const { slug } = await params;
 
-  const product = await getProductDetailsBySlug(slug);
+  // const product = await productService.getProductDetailsBySlug(slug);
+  const product = {};
 
   if (!product) {
     notFound();

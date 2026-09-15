@@ -12,8 +12,6 @@ export default async function SellerWarrantiesPage() {
   const warranties = await getSellerWarranties();
 
   return (
-    <DashboardLayout allowedRole="seller">
       <SellerWarrantiesContent warranties={warranties} />
-    </DashboardLayout>
   );
 }

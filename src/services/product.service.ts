@@ -1,138 +1,147 @@
-import { productsData } from '@/dammyData/products';
-import type {
-  Product,
-  ProductFilters,
-  ProductItem,
-  ProductListResponse,
-} from '@/lib/types/product.types';
-import {
-  MOCK_BRANDS,
-  MOCK_CATEGORIES,
-  mockGetProductBySlug,
-  mockGetProducts,
-  mockSearchProducts,
-} from '@/lib/fixtures/product/mockData';
-import type { Brand, Category } from '@/lib/fixtures/product/types';
+import { cookies } from "next/headers";
+import type { ProductItem } from "@/lib/types/product.types";
+import type { Brand, Category } from "@/lib/fixtures/product/types";
 
-function buildProductParams(filters: ProductFilters = {}) {
-  const params = new URLSearchParams({
-    page: String(filters.page ?? 1),
-    limit: String(filters.limit ?? 12),
-  });
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-  if (filters.search?.trim()) params.set('search', filters.search.trim());
-  if (filters.categoryId) params.set('categoryId', filters.categoryId);
-  if (filters.brandId) params.set('brandId', filters.brandId);
-  if (filters.minPrice != null) params.set('minPrice', String(filters.minPrice));
-  if (filters.maxPrice != null) params.set('maxPrice', String(filters.maxPrice));
-  if (filters.isPublished != null) params.set('isPublished', String(filters.isPublished));
-  if (filters.isActive != null) params.set('isActive', String(filters.isActive));
-  if (filters.status) params.set('status', filters.status);
-
-  return params;
+/* -------------------------------------------------------------------------- */
+/* Types                                                                      */
+/* -------------------------------------------------------------------------- */
+export interface ProductParams {
+  search?: string;
+  categoryId?: string;
+  brandIds?: string;
+  minPrice?: string;
+  maxPrice?: string;
+  sort?: string;
+  page?: string;
+  limit?: string;
+  isPublished?: string;
+  isActive?: string;
 }
 
-function normalizeList<T>(response: unknown): T[] {
-  if (Array.isArray(response)) return response as T[];
-  if (!response || typeof response !== 'object') return [];
-
-  const data = response as Record<string, unknown>;
-  return (data.data ?? data.items ?? []) as T[];
+export interface ServiceOptions {
+  cache?: RequestCache;
+  revalidate?: number;
 }
 
-function normalizeProductList(response: unknown): ProductListResponse {
-  if (Array.isArray(response)) {
-    return {
-      data: response as ProductItem[],
-      total: response.length,
-      page: 1,
-      limit: response.length,
-      totalPages: 1,
-    };
-  }
-
-  if (!response || typeof response !== 'object') {
-    return { data: [], total: 0, page: 1, limit: 12, totalPages: 1 };
-  }
-
-  const result = response as Record<string, unknown>;
-  const meta =
-    typeof result.meta === 'object' && result.meta !== null
-      ? (result.meta as Record<string, unknown>)
-      : {};
-
-  return {
-    data: (result.data ?? result.products ?? []) as ProductItem[],
-    total: Number(result.total ?? meta.total ?? 0),
-    page: Number(result.page ?? meta.page ?? 1),
-    limit: Number(result.limit ?? meta.limit ?? 12),
-    totalPages: Number(result.totalPages ?? meta.totalPages ?? 1),
-  };
+export interface GetProductsOptions {
+  search?: string;
+  categoryId?: string;
+  brandIds?: string[];
+  minPrice?: number;
+  maxPrice?: number;
+  sort?: "popular" | "price-asc" | "price-desc" | "newest";
+  page?: number;
+  limit?: number;
+  isPublished?: boolean;
+  isActive?: boolean;
+  options?: ServiceOptions;
 }
 
-async function fetchProductApi(path: string, params?: URLSearchParams) {
-  const apiBaseUrl = process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL;
+/* -------------------------------------------------------------------------- */
+/* Helpers                                                                    */
+/* -------------------------------------------------------------------------- */
+function buildQuery(options: GetProductsOptions): URLSearchParams {
+  const query = new URLSearchParams();
 
-  if (!apiBaseUrl) return null;
+  query.set("page", String(options.page ?? 1));
+  query.set("limit", String(options.limit ?? 24));
 
+  if (options.search) query.set("search", options.search);
+  if (options.categoryId) query.set("categoryId", options.categoryId);
+  if (options.brandIds?.length)
+    query.set("brandIds", options.brandIds.join(","));
+  if (options.minPrice !== undefined)
+    query.set("minPrice", String(options.minPrice));
+  if (options.maxPrice !== undefined)
+    query.set("maxPrice", String(options.maxPrice));
+  if (options.sort) query.set("sort", options.sort);
+  if (options.isPublished !== undefined)
+    query.set("isPublished", String(options.isPublished));
+  if (options.isActive !== undefined)
+    query.set("isActive", String(options.isActive));
+
+  return query;
+}
+
+function buildConfig(options?: ServiceOptions): RequestInit {
+  const config: RequestInit = {};
+
+  if (options?.cache) config.cache = options.cache;
+  if (options?.revalidate) config.next = { revalidate: options.revalidate };
+
+  return config;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Service                                                                    */
+/* -------------------------------------------------------------------------- */
+const getProducts = async (options: GetProductsOptions = {}) => {
   try {
-    const url = new URL(path, apiBaseUrl);
-    if (params) url.search = params.toString();
+    const url = new URL(`${API_URL}/products`);
+    const query = buildQuery(options);
+    url.search = query.toString();
 
-    const response = await fetch(url, { cache: 'no-store' });
-    if (!response.ok) return null;
+    console.log("[getProducts] Fetching:", url.toString()); // ← ADD
 
-    return response.json() as Promise<unknown>;
-  } catch {
-    return null;
+    const config = buildConfig(options.options);
+    config.next = { ...config.next, tags: ["products"] };
+
+    const res = await fetch(url.toString(), config);
+
+    console.log("[getProducts] Status:", res.status); // ← ADD
+    console.log("[getProducts] Content-Type:", res.headers.get("content-type")); // ← ADD
+
+    const result = await res.json();
+    return result;
+  } catch (error) {
+    console.error("[getProducts] Error:", error); // ← ADD
+    return { success: false, data: null, error: error };
   }
-}
+};
+const getCategories = async (options?: ServiceOptions) => {
+  try {
+    const url = new URL(`${API_URL}/categories`);
+    const config = buildConfig(options);
+    config.next = { ...config.next, tags: ["categories"] };
 
-export async function getProducts(
-  filters: ProductFilters = {},
-): Promise<ProductListResponse> {
-  const response = await fetchProductApi('/products', buildProductParams(filters));
-  return response == null ? mockGetProducts(filters) : normalizeProductList(response);
-}
-
-export async function getProductBySlug(slug: string): Promise<ProductItem | null> {
-  const response = await fetchProductApi(`/products/${encodeURIComponent(slug)}`);
-
-  if (response && typeof response === 'object') {
-    const data = response as Record<string, unknown>;
-    return (data.data ?? data) as ProductItem;
+    const res = await fetch(url.toString(), config);
+    const result = await res.json();
+    return result;
+  } catch (error) {
+    return { success: false, data: null, error: error };
   }
+};
 
-  return mockGetProductBySlug(slug);
-}
+const getBrands = async (options?: ServiceOptions) => {
+  try {
+    const url = new URL(`${API_URL}/brands`);
+    const config = buildConfig(options);
+    config.next = { ...config.next, tags: ["brands"] };
 
-export async function searchProducts(query: string, limit = 12): Promise<ProductItem[]> {
-  const response = await fetchProductApi(
-    '/products/search',
-    new URLSearchParams({ q: query, limit: String(limit) }),
-  );
+    const res = await fetch(url.toString(), config);
+    const result = await res.json();
+    return result;
+  } catch (error) {
+    return { success: false, data: null, error: error };
+  }
+};
 
-  return response == null ? mockSearchProducts(query, limit) : normalizeList<ProductItem>(response);
-}
+const getProductBySlug = async (slug: string) => {
+  try {
+    const url = new URL(`${API_URL}/products/slug/${slug}`);
+    const res = await fetch(url.toString());
+    const result = await res.json();
+    return result;
+  } catch (error) {
+    return { success: false, data: null, error: error };
+  }
+};
 
-export async function getCategories(): Promise<Category[]> {
-  const response = await fetchProductApi('/categories');
-  return response == null ? MOCK_CATEGORIES : normalizeList<Category>(response);
-}
-
-export async function getBrands(): Promise<Brand[]> {
-  const response = await fetchProductApi('/brands');
-  return response == null ? MOCK_BRANDS : normalizeList<Brand>(response);
-}
-
-type LegacyProduct = (typeof productsData)[number];
-
-export async function getProductDetailsBySlug(slug: string): Promise<LegacyProduct | null> {
-  const product = productsData.find(
-    (item) => item.slug === slug && item.isPublished && item.isActive,
-  );
-
-  return product ?? null;
-}
-
-export type { Brand, Category, Product, ProductFilters, ProductItem, ProductListResponse };
+export const productServices = {
+  getProducts,
+  getCategories,
+  getBrands,
+  getProductBySlug,
+};

@@ -12,8 +12,6 @@ export default async function SellerProfilePage() {
   const profile = await getSellerProfile();
 
   return (
-    <DashboardLayout allowedRole="seller">
       <ProfileContent profile={profile} />
-    </DashboardLayout>
   );
 }

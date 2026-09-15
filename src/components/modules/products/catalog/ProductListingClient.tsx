@@ -1,117 +1,134 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { useCallback, useState, useTransition } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { Search, SlidersHorizontal, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+
+import HorizontalProductCard from "@/components/shared/productCard/HorizontalProductCard";
+import MainProductCard from "../MainProductCard";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Badge } from "@/components/ui/Badge";
-import HorizontalProductCard from "@/components/shared/productCard/HorizontalProductCard";
-import { addToCart } from "@/store/slices/cartSlice";
+import { SidebarFilters } from "../SidebarFilters";
+
 import { useAppDispatch } from "@/store/hooks";
-import type { ProductItem } from "@/lib/types/product.types";
+import { addToCart } from "@/store/slices/cartSlice";
 import type { Brand, Category } from "@/lib/fixtures/product/types";
-import MainProductCard from "../MainProductCard";
-import { MAX_PRICE, ProductFilters, SidebarFilters } from "../SidebarFilters";
-import { PublicLayout } from "@/components/layout/PublicLayout";
+import { ProductCardData } from "@/lib/types/product.types";
 
+/* --------------------------- Types --------------------------- */
 type ViewMode = "grid" | "list";
-type SortOption = "popular" | "price-asc" | "price-desc" | "newest" | "rating";
+type SortOption = "popular" | "price-asc" | "price-desc" | "newest";
 
-const DEFAULT_FILTERS: ProductFilters = {
-  categoryId: null,
-  brandIds: [],
-  warrantyPeriods: [],
-  priceRange: [0, MAX_PRICE],
-};
+interface InitialFilters {
+  search: string;
+  categoryId: string | null;
+  brandIds: string[];
+  priceRange: [number, number];
+  sort: SortOption;
+}
 
+interface Props {
+  products: ProductCardData[];
+  categories: Category[];
+  brands: Brand[];
+  total: number;
+  initialFilters: InitialFilters;
+}
+
+const MAX_PRICE = 1_000_000;
+
+/* ------------------------- Component ------------------------- */
 export default function ProductListingClient({
   products,
   categories,
   brands,
-}: {
-  products: ProductItem[];
-  categories: Category[];
-  brands: Brand[];
-}) {
+  total,
+  initialFilters,
+}: Props) {
   const dispatch = useAppDispatch();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
+
+  /* -------------------- Local UI state -------------------- */
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [showFilters, setShowFilters] = useState(false);
-  const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState<SortOption>("popular");
-  const [filters, setFilters] = useState<ProductFilters>(DEFAULT_FILTERS);
+  const [searchInput, setSearchInput] = useState(initialFilters.search);
 
-  const visibleProducts = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    const result = products.filter((item) => {
-      const product = item.product;
-      const searchableText = [
-        product.name,
-        product.description,
-        product.sku,
-        product.brandId,
-        product.categoryId,
-        product.attributes?.color,
-        product.attributes?.motorType,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
+  /* ---------------- URL Update Helper ---------------- */
+  const updateURL = useCallback(
+    (updates: Record<string, string | null>) => {
+      const params = new URLSearchParams(searchParams.toString());
 
-      if (query && !searchableText.includes(query)) return false;
-      if (filters.categoryId && product.categoryId !== filters.categoryId)
-        return false;
-      if (
-        filters.brandIds.length &&
-        !filters.brandIds.includes(product.brandId || "")
-      )
-        return false;
-      if (
-        product.price < filters.priceRange[0] ||
-        product.price > filters.priceRange[1]
-      )
-        return false;
+      Object.entries(updates).forEach(([key, value]) => {
+        if (value === null || value === "") {
+          params.delete(key);
+        } else {
+          params.set(key, value);
+        }
+      });
 
-      if (
-        filters.warrantyPeriods.length &&
-        !filters.warrantyPeriods.some((period) => {
-          const months = product.warrantyMonths;
-          if (period === "1 Year") return months >= 12 && months < 24;
-          if (period === "2 Years") return months >= 24 && months < 60;
-          if (period === "5 Years") return months >= 60 && months < 120;
-          return months >= 120;
-        })
-      )
-        return false;
+      startTransition(() => {
+        router.replace(`${pathname}?${params.toString()}`, {
+          scroll: false,
+        });
+      });
+    },
+    [router, pathname, searchParams],
+  );
 
-      return true;
+  /* -------------------- Filter Handlers -------------------- */
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateURL({ q: searchInput.trim() || null, page: "1" });
+  };
+
+  const handleCategoryChange = (categoryId: string | null) => {
+    updateURL({ category: categoryId, page: "1" });
+    setShowFilters(false);
+  };
+
+  const handleBrandChange = (brandId: string) => {
+    const current = initialFilters.brandIds;
+    const next = current.includes(brandId)
+      ? current.filter((id) => id !== brandId)
+      : [...current, brandId];
+    updateURL({ brands: next.length ? next.join(",") : null, page: "1" });
+  };
+
+  const handleWarrantyChange = (_period: string) => {
+    // Extend later: warranty as CSV in URL
+  };
+
+  const handlePriceChange = (range: [number, number]) => {
+    updateURL({
+      minPrice: range[0] > 0 ? String(range[0]) : null,
+      maxPrice: range[1] < MAX_PRICE ? String(range[1]) : null,
+      page: "1",
     });
+  };
 
-    if (sortBy === "price-asc")
-      result.sort((a, b) => a.product.price - b.product.price);
-    if (sortBy === "price-desc")
-      result.sort((a, b) => b.product.price - a.product.price);
-    if (sortBy === "newest") {
-      result.sort(
-        (a, b) =>
-          new Date(b.product.createdAt).getTime() -
-          new Date(a.product.createdAt).getTime(),
-      );
+  const handleSortChange = (value: SortOption) => {
+    updateURL({ sort: value, page: "1" });
+  };
+
+  const clearFilters = () => {
+    setSearchInput("");
+    startTransition(() => {
+      router.replace(pathname, { scroll: false });
+    });
+  };
+
+  /* -------------------- Add to Cart -------------------- */
+
+  const handleAddToCart = (product: ProductCardData) => {
+    if (!product) {
+      toast.error("Product not found");
+      return;
     }
 
-    return result;
-  }, [filters, products, search, sortBy]);
-
-  const activeFilterCount =
-    (filters.categoryId ? 1 : 0) +
-    filters.brandIds.length +
-    filters.warrantyPeriods.length +
-    (filters.priceRange[0] > 0 ? 1 : 0) +
-    (filters.priceRange[1] < MAX_PRICE ? 1 : 0);
-
-  const clearFilters = () => setFilters(DEFAULT_FILTERS);
-  const handleAddToCart = (item: ProductItem) => {
-    const product = item.product;
     dispatch(
       addToCart({
         id: product.id,
@@ -119,18 +136,27 @@ export default function ProductListingClient({
         name: product.name,
         price: product.price,
         originalPrice: product.comparePrice ?? undefined,
-        image: product.images?.[0],
+        image: product?.image ?? "/images/product-placeholder.png",
         warrantyMonths: product.warrantyMonths,
-        brand: product.brandId ?? undefined,
-        category: product.categoryId ?? undefined,
+        brand: product.brandName ?? undefined,
+        category: product.categoryName ?? undefined,
       }),
     );
+
     toast.success(`${product.name} added to cart`);
   };
 
+  /* -------------------- Filter Count -------------------- */
+  const activeFilterCount =
+    (initialFilters.categoryId ? 1 : 0) +
+    initialFilters.brandIds.length +
+    (initialFilters.priceRange[0] > 0 ? 1 : 0) +
+    (initialFilters.priceRange[1] < MAX_PRICE ? 1 : 0);
+
+  /* ------------------------- Render ------------------------- */
   return (
     <main className="mxw">
-      {/* <Breadcrumb /> */}
+      {/* ==================== Header ==================== */}
       <header className="mt-2">
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
           All Products
@@ -142,128 +168,197 @@ export default function ProductListingClient({
       </header>
 
       <div className="mt-5 flex flex-col gap-5 sm:mt-6 lg:flex-row lg:gap-8">
-        <aside className={`${showFilters ? "block" : "hidden"} lg:block`}>
+        {/* ==================== Desktop Sidebar ==================== */}
+        <aside className="hidden lg:block lg:w-64 lg:shrink-0">
           <SidebarFilters
-            filters={filters}
+            filters={{
+              categoryId: initialFilters.categoryId,
+              brandIds: initialFilters.brandIds,
+              warrantyPeriods: [],
+              priceRange: initialFilters.priceRange,
+            }}
             categories={categories}
             brands={brands}
-            onCategoryChange={(categoryId) =>
-              setFilters((current) => ({ ...current, categoryId }))
-            }
-            onBrandChange={(brandId) =>
-              setFilters((current) => ({
-                ...current,
-                brandIds: current.brandIds.includes(brandId)
-                  ? current.brandIds.filter((id) => id !== brandId)
-                  : [...current.brandIds, brandId],
-              }))
-            }
-            onWarrantyChange={(warranty) =>
-              setFilters((current) => ({
-                ...current,
-                warrantyPeriods: current.warrantyPeriods.includes(warranty)
-                  ? current.warrantyPeriods.filter((item) => item !== warranty)
-                  : [...current.warrantyPeriods, warranty],
-              }))
-            }
-            onPriceChange={(priceRange) =>
-              setFilters((current) => ({ ...current, priceRange }))
-            }
+            onCategoryChange={handleCategoryChange}
+            onBrandChange={handleBrandChange}
+            onWarrantyChange={handleWarrantyChange}
+            onPriceChange={handlePriceChange}
             onClearFilters={clearFilters}
           />
         </aside>
 
+        {/* ==================== Mobile Filters Drawer ==================== */}
+        {showFilters && (
+          <div className="fixed inset-0 z-50 lg:hidden">
+            <div
+              className="absolute inset-0 bg-foreground/50 backdrop-blur-sm"
+              onClick={() => setShowFilters(false)}
+              aria-hidden="true"
+            />
+
+            <div className="absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-3xl border-t border-border bg-background p-4 shadow-2xl">
+              <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-muted" />
+
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-lg font-bold">Filters</h2>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowFilters(false)}
+                  aria-label="Close filters"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+
+              <SidebarFilters
+                filters={{
+                  categoryId: initialFilters.categoryId,
+                  brandIds: initialFilters.brandIds,
+                  warrantyPeriods: [],
+                  priceRange: initialFilters.priceRange,
+                }}
+                categories={categories}
+                brands={brands}
+                onCategoryChange={handleCategoryChange}
+                onBrandChange={handleBrandChange}
+                onWarrantyChange={handleWarrantyChange}
+                onPriceChange={handlePriceChange}
+                onClearFilters={clearFilters}
+              />
+
+              <Button
+                type="button"
+                onClick={() => setShowFilters(false)}
+                className="mt-4 w-full"
+              >
+                Show {total} products
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* ==================== Main Content ==================== */}
         <section className="min-w-0 flex-1">
+          {/* Toolbar */}
           <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="relative flex-1">
+            <form onSubmit={handleSearch} className="relative flex-1">
               <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search in products..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="Search products..."
                 className="pl-10 pr-10"
+                aria-label="Search products"
               />
-              {search && (
+              {searchInput && (
                 <button
                   type="button"
-                  onClick={() => setSearch("")}
+                  onClick={() => setSearchInput("")}
                   aria-label="Clear search"
-                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                 >
                   <X className="h-4 w-4" />
                 </button>
               )}
-            </div>
+            </form>
+
             <div className="flex items-center gap-2">
+              {/* Mobile Filter Toggle */}
               <Button
                 type="button"
                 variant="outline"
-                className="gap-2"
-                onClick={() => setShowFilters((open) => !open)}
+                className="gap-2 lg:hidden"
+                onClick={() => setShowFilters(true)}
               >
-                <SlidersHorizontal className="h-4 w-4" /> Filters{" "}
-                {activeFilterCount > 0 && <Badge>{activeFilterCount}</Badge>}
+                <SlidersHorizontal className="h-4 w-4" />
+                Filters
+                {activeFilterCount > 0 && (
+                  <span className="ml-1 rounded-full bg-primary px-1.5 text-xs text-primary-foreground">
+                    {activeFilterCount}
+                  </span>
+                )}
               </Button>
+
+              {/* Sort */}
               <select
-                value={sortBy}
-                onChange={(event) =>
-                  setSortBy(event.target.value as SortOption)
-                }
-                className="h-10 rounded-xl border border-border bg-background px-3 text-sm"
+                value={initialFilters.sort}
+                onChange={(e) => handleSortChange(e.target.value as SortOption)}
+                className="h-10 rounded-xl border border-border bg-background px-3 text-sm outline-none transition-colors focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
+                aria-label="Sort products"
               >
                 <option value="popular">Popular</option>
                 <option value="price-asc">Price: Low to High</option>
                 <option value="price-desc">Price: High to Low</option>
                 <option value="newest">Newest First</option>
-                <option value="rating">Top Rated</option>
               </select>
+
+              {/* View Toggle */}
               <Button
                 type="button"
                 variant="outline"
                 onClick={() =>
-                  setViewMode((mode) => (mode === "grid" ? "list" : "grid"))
+                  setViewMode((m) => (m === "grid" ? "list" : "grid"))
                 }
+                aria-label={`Switch to ${viewMode === "grid" ? "list" : "grid"} view`}
               >
                 {viewMode === "grid" ? "List" : "Grid"}
               </Button>
             </div>
           </div>
 
+          {/* Count */}
           <p className="mb-4 text-sm text-muted-foreground">
             Showing{" "}
-            <span className="font-semibold text-foreground">
-              {visibleProducts.length}
-            </span>{" "}
+            <span className="font-semibold text-foreground">{total}</span>{" "}
             products
           </p>
-          {visibleProducts.length === 0 ? (
-            <div className="rounded-2xl border border-dashed p-12 text-center">
-              <h2 className="text-lg font-bold">No products found</h2>
-              <Button onClick={clearFilters} className="mt-4">
-                Clear Filters
-              </Button>
-            </div>
-          ) : viewMode === "grid" ? (
-            <div className="grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-4">
-              {visibleProducts.map((product) => (
-                <MainProductCard
-                  key={product.id}
-                  product={product}
-                  onAddToCart={() => handleAddToCart(product)}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col gap-3">
-              {visibleProducts.map((product) => (
-                <HorizontalProductCard
-                  key={product.id}
-                  product={product}
-                  onAddToCart={() => handleAddToCart(product)}
-                />
-              ))}
-            </div>
-          )}
+
+          {/* Products container with pending overlay */}
+          <div className="relative">
+            {isPending && (
+              <div className="pointer-events-none absolute inset-0 z-10 flex items-start justify-center bg-background/60 pt-12 backdrop-blur-[2px]">
+                <div className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm shadow-lg">
+                  <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                  <span className="font-medium">Updating results...</span>
+                </div>
+              </div>
+            )}
+
+            {/* Empty state */}
+            {products.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-border p-12 text-center">
+                <h2 className="text-lg font-bold">No products found</h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Try adjusting your filters or search.
+                </p>
+                <Button onClick={clearFilters} className="mt-4">
+                  Clear Filters
+                </Button>
+              </div>
+            ) : viewMode === "grid" ? (
+              <div className="grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-4">
+                {products.map((item) => (
+                  <MainProductCard
+                    key={item.id}
+                    product={item}
+                    onAddToCart={() => handleAddToCart(item)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {products.map((item) => (
+                  <HorizontalProductCard
+                    key={item.id}
+                    product={item}
+                    onAddToCart={() => handleAddToCart(item)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </section>
       </div>
     </main>

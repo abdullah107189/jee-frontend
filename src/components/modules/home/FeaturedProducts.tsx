@@ -1,9 +1,9 @@
 import { Flame } from "lucide-react";
 import ProductCard from "@/components/shared/productCard/ProductCard";
-import { getProducts } from "@/services/product.service";
+import { productService } from "@/services/product.service";
 
 export default async function FeaturedProducts() {
-  const featuredResponse = await getProducts({
+  const featuredResponse = await productService.getProducts({
     limit: 8,
     isPublished: true,
     isActive: true,
