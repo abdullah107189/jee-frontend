@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface CartItem {
   id: string;
@@ -7,7 +7,7 @@ export interface CartItem {
   price: number;
   originalPrice?: number;
   image: string;
-  quantity: number;
+  stockQuantity: number;
   warrantyMonths: number;
   brand?: string;
   category?: string;
@@ -25,39 +25,82 @@ const initialState: CartState = {
 };
 
 const cartSlice = createSlice({
-  name: 'cart',
+  name: "cart",
   initialState,
   reducers: {
     hydrateCart: (state, action: PayloadAction<CartItem[]>) => {
       state.items = action.payload;
       state.hydrated = true;
     },
-    addToCart: (
-      state,
-      action: PayloadAction<Omit<CartItem, 'quantity'> & { quantity?: number }>
-    ) => {
-      const existingIndex = state.items.findIndex((item) => item.id === action.payload.id);
-      const qtyToAdd = action.payload.quantity || 1;
-      if (existingIndex > -1) {
-        state.items[existingIndex].quantity += qtyToAdd;
-      } else {
-        state.items.push({ ...action.payload, quantity: qtyToAdd });
+    addToCart: (state, action: PayloadAction<CartItem>) => {
+      const newItem = action.payload;
+
+      const existingItem = state.items.find((item) => item.id === newItem.id);
+
+      if (existingItem) {
+        const requestedQuantity =
+          existingItem.stockQuantity + newItem.stockQuantity;
+
+        if (existingItem.maxQuantity != null) {
+          existingItem.stockQuantity = Math.min(
+            requestedQuantity,
+            existingItem.maxQuantity,
+          );
+        } else {
+          existingItem.stockQuantity = requestedQuantity;
+        }
+
+        return;
       }
+
+      state.items.push({
+        ...newItem,
+        stockQuantity: Math.min(
+          newItem.stockQuantity || 1,
+          newItem.maxQuantity ?? Infinity,
+        ),
+      });
     },
+
     removeFromCart: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter((item) => item.id !== action.payload);
     },
-    updateQuantity: (state, action: PayloadAction<{ id: string; quantity: number }>) => {
-      const item = state.items.find((i) => i.id === action.payload.id);
-      if (item) {
-        item.quantity = Math.max(1, action.payload.quantity);
+    updateStockQuantity: (
+      state,
+      action: PayloadAction<{ id: string; StockQuantity: number }>,
+    ) => {
+      const item = state.items.find((item) => item.id === action.payload.id);
+
+      if (!item) return;
+
+      const requestedQuantity = action.payload?.StockQuantity;
+
+      // Minimum StockQuantity = 1
+      if (requestedQuantity < 1) {
+        item.stockQuantity = 1;
+        return;
       }
+
+      // Maximum stock protection
+      if (item.maxQuantity != null && requestedQuantity > item.maxQuantity) {
+        item.stockQuantity = item.maxQuantity;
+        return;
+      }
+
+      item.stockQuantity = requestedQuantity;
     },
+
     clearCart: (state) => {
       state.items = [];
     },
   },
 });
 
-export const { hydrateCart, addToCart, removeFromCart, updateQuantity, clearCart } = cartSlice.actions;
+export const {
+  hydrateCart,
+  addToCart,
+  removeFromCart,
+  updateStockQuantity,
+  clearCart,
+} = cartSlice.actions;
 export default cartSlice.reducer;

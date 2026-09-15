@@ -38,9 +38,9 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   clearCart,
   removeFromCart,
-  updateQuantity,
+  updateStockQuantity,
   type CartItem,
-} from "@/store/slices/cartSlice"; 
+} from "@/store/slices/cartSlice";
 import Breadcrumb from "@/components/shared/Breadcrumb";
 
 const DELIVERY_FEE = 100;
@@ -58,8 +58,11 @@ export function CartView() {
   /* --------------------------- Derived totals --------------------------- */
   const { subtotal, itemCount, delivery, total, remainingForFree } =
     useMemo(() => {
-      const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-      const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
+      const subtotal = items.reduce(
+        (sum, i) => sum + i.price * i.stockQuantity,
+        0,
+      );
+      const itemCount = items.reduce((sum, i) => sum + i.stockQuantity, 0);
       const isFreeDelivery = subtotal >= FREE_DELIVERY_THRESHOLD;
       const delivery = isFreeDelivery ? 0 : DELIVERY_FEE;
 
@@ -73,11 +76,11 @@ export function CartView() {
     }, [items]);
 
   /* ------------------------------- Actions ------------------------------ */
-  const handleUpdateQuantity = (id: string, newQty: number) => {
+  const handleUpdateStockQuantity = (id: string, newQty: number) => {
     if (newQty < 1) return;
     setPendingId(id);
     try {
-      dispatch(updateQuantity({ id, quantity: newQty }));
+      dispatch(updateStockQuantity({ id, StockQuantity: newQty }));
     } catch {
       toast.error("Failed to update quantity");
     } finally {
@@ -196,35 +199,13 @@ export function CartView() {
         </AlertDialog>
       </header>
 
-      {/* Free delivery banner */}
-      {remainingForFree > 0 ? (
-        <div className="flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 p-3 text-sm">
-          <Truck className="h-4 w-4 shrink-0 text-primary" />
-          <p className="text-muted-foreground">
-            Add{" "}
-            <span className="font-semibold text-foreground">
-              ৳{remainingForFree.toLocaleString()}
-            </span>{" "}
-            more to unlock{" "}
-            <span className="font-semibold text-primary">FREE delivery</span>
-          </p>
-        </div>
-      ) : (
-        <div className="flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 text-sm">
-          <Truck className="h-4 w-4 shrink-0 text-emerald-600" />
-          <p className="font-medium text-emerald-700 dark:text-emerald-400">
-            🎉 You&apos;ve unlocked FREE delivery!
-          </p>
-        </div>
-      )}
-
       {/* Grid */}
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px] xl:gap-8">
         {/* Items list */}
         <section className="space-y-3 sm:space-y-4" aria-label="Cart items">
           {items.map((item) => {
             const canIncrement =
-              item.maxQuantity == null || item.quantity < item.maxQuantity;
+              item.maxQuantity == null || item.stockQuantity < item.maxQuantity;
             const isThisPending = pendingId === item.id;
 
             return (
@@ -279,7 +260,8 @@ export function CartView() {
                             Subtotal
                           </p>
                           <p className="mt-0.5 font-semibold tabular-nums">
-                            ৳{(item.price * item.quantity).toLocaleString()}
+                            ৳
+                            {(item.price * item.stockQuantity).toLocaleString()}
                           </p>
                         </div>
                       </div>
@@ -303,9 +285,12 @@ export function CartView() {
                             size="icon"
                             className="h-8 w-8 rounded-r-none hover:bg-accent sm:h-9 sm:w-9"
                             onClick={() =>
-                              handleUpdateQuantity(item.id, item.quantity - 1)
+                              handleUpdateStockQuantity(
+                                item.id,
+                                item.stockQuantity - 1,
+                              )
                             }
-                            disabled={isThisPending || item.quantity <= 1}
+                            disabled={isThisPending || item.stockQuantity <= 1}
                             aria-label="Decrease quantity"
                           >
                             <Minus className="h-3.5 w-3.5" />
@@ -318,7 +303,7 @@ export function CartView() {
                             {isThisPending ? (
                               <Loader2 className="h-3.5 w-3.5 animate-spin" />
                             ) : (
-                              item.quantity
+                              item.stockQuantity
                             )}
                           </span>
 
@@ -328,7 +313,10 @@ export function CartView() {
                             size="icon"
                             className="h-8 w-8 rounded-l-none hover:bg-accent sm:h-9 sm:w-9"
                             onClick={() =>
-                              handleUpdateQuantity(item.id, item.quantity + 1)
+                              handleUpdateStockQuantity(
+                                item.id,
+                                item.stockQuantity + 1,
+                              )
                             }
                             disabled={isThisPending || !canIncrement}
                             aria-label="Increase quantity"
@@ -358,7 +346,7 @@ export function CartView() {
                           Item total
                         </span>
                         <span className="text-sm font-bold tabular-nums">
-                          ৳{(item.price * item.quantity).toLocaleString()}
+                          ৳{(item.price * item.stockQuantity).toLocaleString()}
                         </span>
                       </div>
                     </div>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProductDetails } from "@/components/modules/products/productDetails/product-details";
-import { productServices } from "@/services/product.service"; 
+import { productServices } from "@/services/product.service";
 
 /* -------------------------------------------------------------------------- */
 /* Types                                                                      */
@@ -39,7 +39,7 @@ export async function generateMetadata({
     keywords: [
       product.name,
       product.brand?.name ?? "",
-      product.category?.name ?? "",
+      product.category?.name ?? "", 
       "buy online bangladesh",
       "authentic product",
     ].filter(Boolean),

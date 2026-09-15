@@ -5,28 +5,28 @@ import { ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { addToCart } from "@/store/slices/cartSlice";
 import { useAppDispatch } from "@/store/hooks";
-import type { ProductItem } from "@/lib/types/product.types";
 import HorizontalProductCard from "@/components/shared/productCard/HorizontalProductCard";
 import { Button } from "@/components/ui/Button";
+import { ProductCardData } from "@/lib/types/product.types";
 
 export default function LatestProductsClient({
   products,
 }: {
-  products: ProductItem[];
+  products: ProductCardData[];
 }) {
   const dispatch = useAppDispatch();
 
-  const handleAddToCart = (item: ProductItem) => {
-    const product = item.product;
-
+  const handleAddToCart = (product: ProductCardData) => {
     dispatch(
       addToCart({
         id: product.id,
         slug: product.slug,
         name: product.name,
         price: product.price,
-        image: product.images?.[0],
+        image: product.image || product.image || "/product-placeholder.jpg",
         warrantyMonths: product.warrantyMonths,
+        stockQuantity: 1,
+        maxQuantity: product.stockQuantity,
       }),
     );
 

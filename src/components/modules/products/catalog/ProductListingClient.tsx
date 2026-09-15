@@ -1,26 +1,30 @@
 "use client";
 
 import { useCallback, useState, useTransition } from "react";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { Search, SlidersHorizontal, X, Loader2 } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-
-import HorizontalProductCard from "@/components/shared/productCard/HorizontalProductCard";
-import MainProductCard from "../MainProductCard";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { SidebarFilters } from "../SidebarFilters";
 
 import { useAppDispatch } from "@/store/hooks";
 import { addToCart } from "@/store/slices/cartSlice";
 import type { Brand, Category } from "@/lib/fixtures/product/types";
-import { ProductCardData } from "@/lib/types/product.types";
+import type { ProductCardData } from "@/lib/types/product.types";
+import { MobileFilterDrawer } from "../filters/MobileFilterDrawer";
+import { ProductGrid } from "./ProductGrid";
+import { ProductList } from "./ProductList";
+import { ProductListingHeader } from "./ProductListingHeader";
+import { ProductListingToolbar } from "./ProductListingToolbar";
+import { ProductListingEmpty } from "./ProductListingEmpty";
+import { ProductListingPending } from "./ProductListingPending";
+import { ProductPagination } from "./ProductPagination";
+import { SidebarFilters } from "../filters/SidebarFilters";
 
-/* --------------------------- Types --------------------------- */
-type ViewMode = "grid" | "list";
-type SortOption = "popular" | "price-asc" | "price-desc" | "newest";
+/* -------------------------------------------------------------------------- */
+/* Types                                                                      */
+/* -------------------------------------------------------------------------- */
+export type SortOption = "popular" | "price-asc" | "price-desc" | "newest";
+export type ViewMode = "grid" | "list";
 
-interface InitialFilters {
+export interface InitialFilters {
   search: string;
   categoryId: string | null;
   brandIds: string[];
@@ -28,47 +32,63 @@ interface InitialFilters {
   sort: SortOption;
 }
 
-interface Props {
+interface ProductListingClientProps {
   products: ProductCardData[];
   categories: Category[];
   brands: Brand[];
   total: number;
+  page: number;
+  limit: number;
   initialFilters: InitialFilters;
 }
 
 const MAX_PRICE = 1_000_000;
 
-/* ------------------------- Component ------------------------- */
+/* -------------------------------------------------------------------------- */
+/* Helpers                                                                    */
+/* -------------------------------------------------------------------------- */
+function countActiveFilters(filters: InitialFilters): number {
+  return (
+    (filters.categoryId ? 1 : 0) +
+    filters.brandIds.length +
+    (filters.priceRange[0] > 0 ? 1 : 0) +
+    (filters.priceRange[1] < MAX_PRICE ? 1 : 0)
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Component                                                                  */
+/* -------------------------------------------------------------------------- */
 export default function ProductListingClient({
   products,
   categories,
   brands,
   total,
+  page,
+  limit,
   initialFilters,
-}: Props) {
+}: ProductListingClientProps) {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
 
-  /* -------------------- Local UI state -------------------- */
+  const [isPending, startTransition] = useTransition();
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [showFilters, setShowFilters] = useState(false);
   const [searchInput, setSearchInput] = useState(initialFilters.search);
 
-  /* ---------------- URL Update Helper ---------------- */
+  /* ---------------- URL sync ---------------- */
   const updateURL = useCallback(
-    (updates: Record<string, string | null>) => {
+    (updates: Record<string, string | null>, resetPage = true) => {
       const params = new URLSearchParams(searchParams.toString());
 
       Object.entries(updates).forEach(([key, value]) => {
-        if (value === null || value === "") {
-          params.delete(key);
-        } else {
-          params.set(key, value);
-        }
+        if (value === null || value === "") params.delete(key);
+        else params.set(key, value);
       });
+
+      if (resetPage) params.set("page", "1");
 
       startTransition(() => {
         router.replace(`${pathname}?${params.toString()}`, {
@@ -79,14 +99,14 @@ export default function ProductListingClient({
     [router, pathname, searchParams],
   );
 
-  /* -------------------- Filter Handlers -------------------- */
+  /* ---------------- Handlers ---------------- */
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    updateURL({ q: searchInput.trim() || null, page: "1" });
+    updateURL({ q: searchInput.trim() || null });
   };
 
   const handleCategoryChange = (categoryId: string | null) => {
-    updateURL({ category: categoryId, page: "1" });
+    updateURL({ category: categoryId });
     setShowFilters(false);
   };
 
@@ -95,40 +115,42 @@ export default function ProductListingClient({
     const next = current.includes(brandId)
       ? current.filter((id) => id !== brandId)
       : [...current, brandId];
-    updateURL({ brands: next.length ? next.join(",") : null, page: "1" });
+    updateURL({ brands: next.length ? next.join(",") : null });
   };
 
   const handleWarrantyChange = (_period: string) => {
-    // Extend later: warranty as CSV in URL
+    // extend later
   };
 
   const handlePriceChange = (range: [number, number]) => {
     updateURL({
       minPrice: range[0] > 0 ? String(range[0]) : null,
       maxPrice: range[1] < MAX_PRICE ? String(range[1]) : null,
-      page: "1",
     });
   };
 
   const handleSortChange = (value: SortOption) => {
-    updateURL({ sort: value, page: "1" });
+    updateURL({ sort: value === "popular" ? null : value });
   };
 
-  const clearFilters = () => {
+  const handleClearFilters = () => {
     setSearchInput("");
     startTransition(() => {
       router.replace(pathname, { scroll: false });
     });
   };
 
-  /* -------------------- Add to Cart -------------------- */
+  const handlePageChange = (newPage: number) => {
+    if (newPage === page || newPage < 1) return;
+
+    updateURL({ page: newPage === 1 ? null : String(newPage) }, false);
+
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   const handleAddToCart = (product: ProductCardData) => {
-    if (!product) {
-      toast.error("Product not found");
-      return;
-    }
-
     dispatch(
       addToCart({
         id: product.id,
@@ -136,7 +158,7 @@ export default function ProductListingClient({
         name: product.name,
         price: product.price,
         originalPrice: product.comparePrice ?? undefined,
-        image: product?.image ?? "/images/product-placeholder.png",
+        image: product.image ?? "/images/product-placeholder.png",
         warrantyMonths: product.warrantyMonths,
         brand: product.brandName ?? undefined,
         category: product.categoryName ?? undefined,
@@ -146,217 +168,97 @@ export default function ProductListingClient({
     toast.success(`${product.name} added to cart`);
   };
 
-  /* -------------------- Filter Count -------------------- */
-  const activeFilterCount =
-    (initialFilters.categoryId ? 1 : 0) +
-    initialFilters.brandIds.length +
-    (initialFilters.priceRange[0] > 0 ? 1 : 0) +
-    (initialFilters.priceRange[1] < MAX_PRICE ? 1 : 0);
+  /* ---------------- Derived ---------------- */
+  const activeFilterCount = countActiveFilters(initialFilters);
+  const totalPages = Math.max(1, Math.ceil(total / limit));
 
-  /* ------------------------- Render ------------------------- */
+  const sidebarFiltersProps = {
+    filters: {
+      categoryId: initialFilters.categoryId,
+      brandIds: initialFilters.brandIds,
+      warrantyPeriods: [],
+      priceRange: initialFilters.priceRange,
+    },
+    categories,
+    brands,
+    onCategoryChange: handleCategoryChange,
+    onBrandChange: handleBrandChange,
+    onWarrantyChange: handleWarrantyChange,
+    onPriceChange: handlePriceChange,
+    onClearFilters: handleClearFilters,
+  };
+
+  /* ---------------- Render ---------------- */
   return (
     <main className="mxw">
-      {/* ==================== Header ==================== */}
-      <header className="mt-2">
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
-          All Products
-        </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-          Browse our premium collection of fans, electronics, and home
-          appliances with guaranteed warranty.
-        </p>
-      </header>
+      <ProductListingHeader />
 
-      <div className="mt-5 flex flex-col gap-5 sm:mt-6 lg:flex-row lg:gap-8">
-        {/* ==================== Desktop Sidebar ==================== */}
+      <div className="mt-5 flex flex-col gap-5 sm:mt-8 lg:flex-row lg:gap-8">
+        {/* Desktop sidebar */}
         <aside className="hidden lg:block lg:w-64 lg:shrink-0">
-          <SidebarFilters
-            filters={{
-              categoryId: initialFilters.categoryId,
-              brandIds: initialFilters.brandIds,
-              warrantyPeriods: [],
-              priceRange: initialFilters.priceRange,
-            }}
-            categories={categories}
-            brands={brands}
-            onCategoryChange={handleCategoryChange}
-            onBrandChange={handleBrandChange}
-            onWarrantyChange={handleWarrantyChange}
-            onPriceChange={handlePriceChange}
-            onClearFilters={clearFilters}
-          />
+          <SidebarFilters {...sidebarFiltersProps} />
         </aside>
 
-        {/* ==================== Mobile Filters Drawer ==================== */}
+        {/* Mobile drawer */}
         {showFilters && (
-          <div className="fixed inset-0 z-50 lg:hidden">
-            <div
-              className="absolute inset-0 bg-foreground/50 backdrop-blur-sm"
-              onClick={() => setShowFilters(false)}
-              aria-hidden="true"
-            />
-
-            <div className="absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-3xl border-t border-border bg-background p-4 shadow-2xl">
-              <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-muted" />
-
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-bold">Filters</h2>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setShowFilters(false)}
-                  aria-label="Close filters"
-                >
-                  <X className="h-5 w-5" />
-                </Button>
-              </div>
-
-              <SidebarFilters
-                filters={{
-                  categoryId: initialFilters.categoryId,
-                  brandIds: initialFilters.brandIds,
-                  warrantyPeriods: [],
-                  priceRange: initialFilters.priceRange,
-                }}
-                categories={categories}
-                brands={brands}
-                onCategoryChange={handleCategoryChange}
-                onBrandChange={handleBrandChange}
-                onWarrantyChange={handleWarrantyChange}
-                onPriceChange={handlePriceChange}
-                onClearFilters={clearFilters}
-              />
-
-              <Button
-                type="button"
-                onClick={() => setShowFilters(false)}
-                className="mt-4 w-full"
-              >
-                Show {total} products
-              </Button>
-            </div>
-          </div>
+          <MobileFilterDrawer
+            total={total}
+            onClose={() => setShowFilters(false)}
+            sidebarFiltersProps={sidebarFiltersProps}
+          />
         )}
 
-        {/* ==================== Main Content ==================== */}
-        <section className="min-w-0 flex-1">
-          {/* Toolbar */}
-          <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <form onSubmit={handleSearch} className="relative flex-1">
-              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                placeholder="Search products..."
-                className="pl-10 pr-10"
-                aria-label="Search products"
-              />
-              {searchInput && (
-                <button
-                  type="button"
-                  onClick={() => setSearchInput("")}
-                  aria-label="Clear search"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              )}
-            </form>
+        {/* Main */}
+        <section className="mb-5 min-w-0 flex-1">
+          <ProductListingToolbar
+            searchInput={searchInput}
+            onSearchInput={setSearchInput}
+            onSearch={handleSearch}
+            onClearSearch={() => setSearchInput("")}
+            sort={initialFilters.sort}
+            onSortChange={handleSortChange}
+            viewMode={viewMode}
+            onToggleView={() =>
+              setViewMode((m) => (m === "grid" ? "list" : "grid"))
+            }
+            onOpenFilters={() => setShowFilters(true)}
+            activeFilterCount={activeFilterCount}
+          />
 
-            <div className="flex items-center gap-2">
-              {/* Mobile Filter Toggle */}
-              <Button
-                type="button"
-                variant="outline"
-                className="gap-2 lg:hidden"
-                onClick={() => setShowFilters(true)}
-              >
-                <SlidersHorizontal className="h-4 w-4" />
-                Filters
-                {activeFilterCount > 0 && (
-                  <span className="ml-1 rounded-full bg-primary px-1.5 text-xs text-primary-foreground">
-                    {activeFilterCount}
-                  </span>
-                )}
-              </Button>
-
-              {/* Sort */}
-              <select
-                value={initialFilters.sort}
-                onChange={(e) => handleSortChange(e.target.value as SortOption)}
-                className="h-10 rounded-xl border border-border bg-background px-3 text-sm outline-none transition-colors focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
-                aria-label="Sort products"
-              >
-                <option value="popular">Popular</option>
-                <option value="price-asc">Price: Low to High</option>
-                <option value="price-desc">Price: High to Low</option>
-                <option value="newest">Newest First</option>
-              </select>
-
-              {/* View Toggle */}
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() =>
-                  setViewMode((m) => (m === "grid" ? "list" : "grid"))
-                }
-                aria-label={`Switch to ${viewMode === "grid" ? "list" : "grid"} view`}
-              >
-                {viewMode === "grid" ? "List" : "Grid"}
-              </Button>
-            </div>
-          </div>
-
-          {/* Count */}
           <p className="mb-4 text-sm text-muted-foreground">
             Showing{" "}
             <span className="font-semibold text-foreground">{total}</span>{" "}
             products
           </p>
 
-          {/* Products container with pending overlay */}
           <div className="relative">
-            {isPending && (
-              <div className="pointer-events-none absolute inset-0 z-10 flex items-start justify-center bg-background/60 pt-12 backdrop-blur-[2px]">
-                <div className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm shadow-lg">
-                  <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                  <span className="font-medium">Updating results...</span>
-                </div>
-              </div>
-            )}
+            {isPending && <ProductListingPending />}
 
-            {/* Empty state */}
             {products.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-border p-12 text-center">
-                <h2 className="text-lg font-bold">No products found</h2>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Try adjusting your filters or search.
-                </p>
-                <Button onClick={clearFilters} className="mt-4">
-                  Clear Filters
-                </Button>
-              </div>
-            ) : viewMode === "grid" ? (
-              <div className="grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-4">
-                {products.map((item) => (
-                  <MainProductCard
-                    key={item.id}
-                    product={item}
-                    onAddToCart={() => handleAddToCart(item)}
-                  />
-                ))}
-              </div>
+              <ProductListingEmpty onClear={handleClearFilters} />
             ) : (
-              <div className="flex flex-col gap-3">
-                {products.map((item) => (
-                  <HorizontalProductCard
-                    key={item.id}
-                    product={item}
-                    onAddToCart={() => handleAddToCart(item)}
+              <>
+                {viewMode === "grid" ? (
+                  <ProductGrid
+                    products={products}
+                    onAddToCart={handleAddToCart}
                   />
-                ))}
-              </div>
+                ) : (
+                  <ProductList
+                    products={products}
+                    onAddToCart={handleAddToCart}
+                  />
+                )}
+
+                {totalPages > 1 && (
+                  <ProductPagination
+                    currentPage={page}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                    isPending={isPending}
+                  />
+                )}
+              </>
             )}
           </div>
         </section>
