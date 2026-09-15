@@ -1,16 +1,16 @@
-import type { ProductItem } from "@/Types/product";
+import type { ProductCardData } from "@/lib/types/product.types";
 import { ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 interface ProductCardProps {
-  product: ProductItem;
+  product: ProductCardData;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const data = product.product;
+  const data = product;
 
-  const image = data.images?.[0] ?? "/images/product-placeholder.png";
+  const image = data.image ?? "/product-placeholder.png";
 
   const hasDiscount =
     data.comparePrice != null && data.comparePrice > data.price;

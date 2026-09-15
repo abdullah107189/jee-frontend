@@ -1,16 +1,15 @@
-import type { Metadata } from 'next';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import CategoriesContent from './components/CategoriesContent';
+import type { Metadata } from "next";
+import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import CategoriesContent from "@/components/modules/admin/categories/CategoriesContent";
+import { getAdminCategories } from "@/services/admin.service";
 
 export const metadata: Metadata = {
-  title: 'Categories | TechStore Admin',
-  description: 'Manage product categories.',
+  title: "Categories | JEE Admin",
+  description: "Manage product categories.",
 };
 
-export default function AdminCategoriesPage() {
-  return (
-    <DashboardLayout allowedRole="admin">
-      <CategoriesContent />
-    </DashboardLayout>
-  );
+export default async function AdminCategoriesPage() {
+  const categories = await getAdminCategories();
+
+  return <CategoriesContent categories={categories} />;
 }

@@ -1,16 +1,15 @@
-import type { Metadata } from 'next';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import AdminWarrantiesContent from './components/AdminWarrantiesContent';
+import type { Metadata } from "next";
+import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import AdminWarrantiesContent from "@/components/modules/admin/warranties/AdminWarrantiesContent";
+import { getAdminWarranties } from "@/services/warranty.service";
 
 export const metadata: Metadata = {
-  title: 'Warranties | TechStore Admin',
-  description: 'View all customer warranties across the platform.',
+  title: "Warranties | JEE Admin",
+  description: "View all customer warranties across the platform.",
 };
 
-export default function AdminWarrantiesPage() {
-  return (
-    <DashboardLayout allowedRole="admin">
-      <AdminWarrantiesContent />
-    </DashboardLayout>
-  );
+export default async function AdminWarrantiesPage() {
+  const warranties = await getAdminWarranties();
+
+  return <AdminWarrantiesContent warranties={warranties} />;
 }

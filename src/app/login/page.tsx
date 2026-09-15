@@ -1,75 +1,134 @@
-"use client";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { ShieldCheck, Truck, BadgeCheck, Sparkles } from "lucide-react";
+import { getCurrentUser } from "@/services/auth.service";
+import { LoginForm } from "@/components/modules/login/login-form";
+import Image from "next/image";
 
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
-import { useLoginMutation } from '@/lib/redux/features/auth/authApi';
-import { setCredentials } from '@/lib/redux/features/auth/authSlice';
-import { useAppDispatch } from '@/lib/redux/hooks';
-import { MainLayout } from '@/components/layout/MainLayout';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
+/* ----------------------------- SEO Metadata ----------------------------- */
+export const metadata: Metadata = {
+  title: "Sign In | Jee Store",
+  description:
+    "Sign in to your Jee Store account to track orders, manage warranties, and shop premium smartphones, gadgets, and home appliances in Bangladesh.",
+  keywords: ["login", "sign in", "Jee Store", "account", "Bangladesh gadgets"],
+  openGraph: {
+    title: "Sign In | Jee Store",
+    description:
+      "Sign in to your Jee Store account — Bangladesh's trusted tech & lifestyle store.",
+    url: "https://jeestore.com/login",
+    siteName: "Jee Store",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Sign In | Jee Store",
+    description:
+      "Sign in to your Jee Store account — Bangladesh's trusted tech store.",
+  },
+  robots: { index: true, follow: true },
+  alternates: { canonical: "https://jeestore.com/login" },
+};
 
-export default function LoginPage() {
-  const { register, handleSubmit } = useForm();
-  const [login, { isLoading }] = useLoginMutation();
-  const dispatch = useAppDispatch();
-  const router = useRouter();
-
-  const onSubmit = async (data: any) => {
-    try {
-      const res = await login(data).unwrap();
-      dispatch(setCredentials(res));
-      // Sync session into a cookie so server-side guards (DashboardLayout) can read it
-      document.cookie = `user_session=${encodeURIComponent(
-        JSON.stringify({ id: '1', name: res.user.name, email: res.user.email ?? '', role: res.user.role })
-      )}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
-      toast.success(`Welcome back, ${res.user.name}`);
-      router.push(`/${res.user.role}`);
-    } catch (err) {
-      toast.error('Failed to login');
-    }
-  };
+/* -------------------- Redirect if already logged in -------------------- */
+export default async function LoginPage() {
+  // Server-side check — prevents flash of login page for logged-in users
+  const user = await getCurrentUser();
+  if (user) {
+    redirect(`/${user.role}`);
+  }
 
   return (
-    <MainLayout>
-      <div className="flex min-h-[80vh] items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <Card className="w-full max-w-md rounded-2xl sm:rounded-[2rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.08)] bg-white/50 backdrop-blur-xl">
-          <CardHeader className="space-y-1 text-center pb-6 sm:pb-8">
-            <CardTitle className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">Welcome back</CardTitle>
-            <p className="text-sm sm:text-base text-slate-500 font-medium">Sign in to your account</p>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
-              <div className="space-y-1.5 sm:space-y-2">
-                <label className="text-xs sm:text-sm font-semibold text-slate-700">Email</label>
-                <Input {...register('email')} type="email" placeholder="admin@example.com" className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-white" required />
-              </div>
-              <div className="space-y-1.5 sm:space-y-2">
-                <label className="text-xs sm:text-sm font-semibold text-slate-700">Role (Demo)</label>
-                <select 
-                  {...register('role')} 
-                  className="flex h-12 sm:h-14 w-full rounded-xl sm:rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm sm:text-base text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+    <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-background via-background to-primary/5">
+      {/* Background pattern */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-center opacity-50 [mask-image:radial-gradient(ellipse_at_center,white,transparent_75%)]"
+      />
+      {/* Decorative blobs — JEE brand blue */}
+      <div
+        aria-hidden="true"
+        className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-primary/20 blur-3xl"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-primary/10 blur-3xl"
+      />
+
+      <div className="relative mx-auto flex min-h-screen max-w-7xl items-center justify-center px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+        <div className="grid w-full grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 xl:gap-16">
+          {/* ============ LEFT: Branding (SSR) ============ */}
+          <section className="hidden flex-col justify-center lg:flex">
+            <Link
+              href="/"
+              className="flex items-center gap-2.5 group shrink-0 p-1"
+            >
+              <Image
+                src="/JEE.png"
+                alt="JEE Logo"
+                width={100}
+                height={200}
+                className="w-25 h-auto"
+              />
+            </Link>
+
+            <div className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
+              <Sparkles className="h-4 w-4" />
+              <span>Welcome back to Jee Store</span>
+            </div>
+
+            <h1 className="mb-4 text-4xl font-extrabold leading-tight tracking-tight text-foreground xl:text-5xl">
+              Sign in and continue
+              <span className="block jee-gradient-text">shopping smarter.</span>
+            </h1>
+
+            <p className="mb-8 max-w-md text-base text-muted-foreground">
+              Access your orders, warranties, wishlist and exclusive member
+              deals — all in one place.
+            </p>
+
+            <ul className="space-y-4">
+              {[
+                {
+                  icon: Truck,
+                  title: "Track Your Orders",
+                  desc: "Real-time delivery updates",
+                },
+                {
+                  icon: BadgeCheck,
+                  title: "Manage Warranties",
+                  desc: "One-click warranty checks",
+                },
+                {
+                  icon: ShieldCheck,
+                  title: "Secure & Private",
+                  desc: "Your data stays protected",
+                },
+              ].map(({ icon: Icon, title, desc }) => (
+                <li
+                  key={title}
+                  className="flex items-start gap-3 rounded-2xl border border-border bg-card/50 p-4 backdrop-blur-sm"
                 >
-                  <option value="admin">Admin</option>
-                  <option value="seller">Seller</option>
-                  <option value="customer">Customer</option>
-                </select>
-                <p className="text-[10px] sm:text-xs text-slate-500 font-medium pt-1">Select a role to preview different dashboards</p>
-              </div>
-              <div className="space-y-1.5 sm:space-y-2">
-                <label className="text-xs sm:text-sm font-semibold text-slate-700">Password</label>
-                <Input {...register('password')} type="password" placeholder="••••••••" className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-white" required />
-              </div>
-              <Button type="submit" className="w-full h-12 sm:h-14 rounded-xl sm:rounded-2xl text-sm sm:text-base shadow-lg shadow-blue-500/25 mt-2 sm:mt-4" disabled={isLoading}>
-                {isLoading ? 'Signing in...' : 'Sign In'}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                    <Icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">
+                      {title}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{desc}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          {/* ============ RIGHT: Login Form (Client Island) ============ */}
+          <section className="flex items-center justify-center">
+            <LoginForm />
+          </section>
+        </div>
       </div>
-    </MainLayout>
+    </main>
   );
 }

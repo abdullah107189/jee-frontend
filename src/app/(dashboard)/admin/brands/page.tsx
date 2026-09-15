@@ -1,16 +1,17 @@
 import type { Metadata } from 'next';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import BrandsContent from './components/BrandsContent';
+import BrandsContent from '@/components/modules/admin/brands/BrandsContent';
+import { getAdminBrands } from '@/services/admin.service';
 
 export const metadata: Metadata = {
-  title: 'Brands | TechStore Admin',
+  title: 'Brands | JEE Admin',
   description: 'Manage product brands.',
 };
 
-export default function AdminBrandsPage() {
-  return (
-    <DashboardLayout allowedRole="admin">
-      <BrandsContent />
-    </DashboardLayout>
+export default async function AdminBrandsPage() {
+  const brands = await getAdminBrands();
+
+  return ( 
+      <BrandsContent brands={brands} /> 
   );
 }

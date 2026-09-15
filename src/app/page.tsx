@@ -1,47 +1,36 @@
+// app/page.tsx — Home (SLIM NOW!)
 import type { Metadata } from "next";
-import { MainLayout } from "@/components/layout/MainLayout";  
-import TrustBadges from "./(home)/TrustBadges";
-import CategoriesSection from "./(home)/CategoriesSection";
-import FeaturedProducts from "./(home)/FeaturedProducts";
-import LatestProducts from "./(home)/LatestProducts";
-import { HeroSection } from "./(home)/HeroSection";
+import { PublicLayout } from "@/components/layout/PublicLayout";
+import { HeroSection } from "@/components/modules/home/HeroSection";
+import TrustBadges from "@/components/modules/home/TrustBadges";
+import CategoriesSection from "@/components/modules/home/CategoriesSection";
+import FeaturedProducts from "@/components/modules/home/FeaturedProducts";
+import LatestProducts from "@/components/modules/home/LatestProducts";
 
 export const metadata: Metadata = {
-  title: {
-    default: "Vision Electronics — Authentic Appliances with Digital Warranty",
-    template: "%s | Vision Electronics",
-  },
+  title: "Authentic Appliances with Digital Warranty",
   description:
-    "Shop genuine electronics online or verify offline purchases instantly via unique product IDs & QR codes. Fans, AC, lights & appliances with verified digital warranty.",
-  keywords: [
-    "electronics bangladesh",
-    "digital warranty",
-    "ceiling fan",
-    "authentic appliances",
-    "warranty check",
-  ],
-  openGraph: {
-    title: "Vision Electronics — Authentic Appliances with Digital Warranty",
-    description:
-      "Genuine electronics with verifiable digital warranty via Unique Product IDs & QR codes.",
-    type: "website",
-    locale: "en_US",
-  },
-  robots: { index: true, follow: true },
+    "Shop genuine electronics online or verify offline purchases instantly via unique product IDs & QR codes.",
 };
 
-// JSON-LD for rich results in Google
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "Vision Electronics",
-  description:
-    "Authentic appliances with digital warranty verification system.",
+  name: "JEE",
+  url: "https://jeestore.com",
+  description: "Authentic appliances with digital warranty verification.",
+  logo: "https://jeestore.com/logo.png",
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: "+8809612345678",
+    contactType: "customer service",
+    areaServed: "BD",
+  },
 };
 
 export default function HomePage() {
   return (
-    <MainLayout>
+    <PublicLayout>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -53,6 +42,6 @@ export default function HomePage() {
         <FeaturedProducts />
         <LatestProducts />
       </div>
-    </MainLayout>
+    </PublicLayout>
   );
 }

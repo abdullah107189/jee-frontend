@@ -7,10 +7,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod"; 
-import {
-  useCreateOrderMutation,
-  useVerifyBKashMutation,
-} from "@/lib/redux/features/order/orderApi";
+import { createOrderAction, verifyBkashAction } from "@/actions/customer.actions";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import {
@@ -26,8 +23,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from '../../../../hooks/use-toast';
 import { Loader2, ArrowLeft, CreditCard, CheckCircle } from "lucide-react";
 import Link from "next/link";
-import { useGetCartItemsQuery } from "@/lib/redux/features/cart/cartApi";
-import type { CartItem } from "@/lib/types/cart.types";
+import { useAppSelector } from "@/store/hooks";
+import type { CartItem } from "@/store/slices/cartSlice";
 
 // Validation Schema
 const checkoutSchema = z.object({
@@ -57,11 +54,11 @@ export default function CheckoutPage() {
     "form" | "verification" | "complete"
   >("form");
 
-  const { data: cartData, isLoading } = useGetCartItemsQuery();
-  const [createOrder, { isLoading: isOrdering }] = useCreateOrderMutation();
-  const [verifyBKash, { isLoading: isVerifying }] = useVerifyBKashMutation();
+  const items = useAppSelector((state) => state.cart.items) as CartItem[];
+  const [isOrdering, setIsOrdering] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
 
-  const items = (cartData ?? []) as CartItem[];
+  const isLoading = useAppSelector((state) => !state.cart.hydrated);
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0) + 100; // with delivery
 
   const form = useForm<CheckoutFormValues>({
@@ -79,11 +76,12 @@ export default function CheckoutPage() {
     transactionId: string;
   }) => {
     try {
-      const result = await verifyBKash({
+      setIsVerifying(true);
+      const result = await verifyBkashAction({
         bKashNumber: data.bKashNumber,
         transactionId: data.transactionId,
         amount: 70, // Advance amount
-      }).unwrap();
+      });
 
       if (result.data.verified) {
         setIsBkashVerified(true);
@@ -106,6 +104,8 @@ export default function CheckoutPage() {
         description: error?.data?.message || "Failed to verify payment",
         variant: "destructive",
       });
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -122,9 +122,10 @@ export default function CheckoutPage() {
     }
 
     try {
+      setIsOrdering(true);
       const orderData = {
         items: items.map((item: CartItem) => ({
-          productItemId: item.productItemId,
+          productItemId: item.id,
           quantity: item.quantity,
         })),
         shippingAddress: {
@@ -145,7 +146,7 @@ export default function CheckoutPage() {
         notes: data.notes,
       };
 
-      const result = await createOrder(orderData).unwrap();
+      const result = await createOrderAction(orderData);
 
       setPaymentStep("complete");
 
@@ -164,6 +165,8 @@ export default function CheckoutPage() {
         description: error?.data?.message || "Please try again",
         variant: "destructive",
       });
+    } finally {
+      setIsOrdering(false);
     }
   };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import type { ProductItem } from "@/Types/product";
+import type { ProductItem } from "@/lib/types/product.types";
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, ShoppingCart, X } from "lucide-react";

@@ -1,16 +1,15 @@
-import type { Metadata } from 'next';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import AuditLogsContent from './components/AuditLogsContent';
+import type { Metadata } from "next";
+import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import AuditLogsContent from "@/components/modules/admin/audit-logs/AuditLogsContent";
+import { getAuditLogs } from "@/services/admin.service";
 
 export const metadata: Metadata = {
-  title: 'Audit Logs | TechStore Admin',
-  description: 'System audit logs and activity history.',
+  title: "Audit Logs | JEE Admin",
+  description: "System audit logs and activity history.",
 };
 
-export default function AdminAuditLogsPage() {
-  return (
-    <DashboardLayout allowedRole="admin">
-      <AuditLogsContent />
-    </DashboardLayout>
-  );
+export default async function AdminAuditLogsPage() {
+  const logs = await getAuditLogs();
+
+  return <AuditLogsContent logs={logs} />;
 }

@@ -19,8 +19,9 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
-import { useAppSelector } from "@/lib/redux/hooks";
-import { selectCartCount } from "@/lib/redux/features/cart/selectors";
+import { selectCartCount } from "@/store/selectors";
+import { useAppSelector } from "@/store/hooks";
+import type { CurrentUser } from "@/services/auth.service";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,10 +43,9 @@ import { Badge } from "../ui/Badge";
 import { Input } from "../ui/Input";
 import Image from "next/image";
 
-export function Navbar() {
+export function Navbar({ user }: { user: CurrentUser | null }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user } = useAppSelector((state) => state.auth);
   const totalCartCount = useAppSelector(selectCartCount);
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -119,8 +119,17 @@ export function Navbar() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20 gap-4">
             {/* Logo - Jee */}
-            <Link href="/" className="flex items-center gap-2.5 group shrink-0 p-1">
-              <Image src="/JEE.png" alt="JEE Logo" width={100} height={200} />
+            <Link
+              href="/"
+              className="flex items-center gap-2.5 group shrink-0 p-1"
+            >
+              <Image
+                src="/JEE.png"
+                alt="JEE Logo"
+                width={100}
+                height={200}
+                className="w-25 h-auto"
+              />
             </Link>
 
             {/* Desktop Navigation - Center */}
