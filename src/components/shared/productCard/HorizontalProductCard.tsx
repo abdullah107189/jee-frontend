@@ -1,22 +1,22 @@
 "use client";
 
-import type { ProductItem } from "@/lib/types/product.types";
 import Image from "next/image";
 import Link from "next/link";
 import { ShoppingCart, ShieldCheck } from "lucide-react";
+import { ProductCardData } from "@/lib/types/product.types";
 
 interface HorizontalProductCardProps {
-  product: ProductItem;
-  onAddToCart?: (product: ProductItem) => void;
+  product: ProductCardData;
+  onAddToCart?: (product: ProductCardData) => void;
 }
 
 export default function HorizontalProductCard({
   product,
   onAddToCart,
 }: HorizontalProductCardProps) {
-  const data = product.product;
+  const data = product;
 
-  const image = data.images?.[0] ?? "/images/product-placeholder.png";
+  const image = data.image || "/product-placeholder.png";
 
   const hasDiscount =
     data.comparePrice != null && data.comparePrice > data.price;

@@ -8,20 +8,13 @@ type ProductGalleryProps = {
   productName: string;
 };
 
-export function ProductGallery({
-  images,
-  productName,
-}: ProductGalleryProps) {
-  const [selectedImage, setSelectedImage] = useState(
-    images?.[0]
-  );
+export function ProductGallery({ images, productName }: ProductGalleryProps) {
+  const [selectedImage, setSelectedImage] = useState(images?.[0]);
 
   if (!images?.length) {
     return (
       <div className="flex aspect-square items-center justify-center rounded-2xl border bg-muted">
-        <span className="text-muted-foreground">
-          No image available
-        </span>
+        <span className="text-muted-foreground">No image available</span>
       </div>
     );
   }

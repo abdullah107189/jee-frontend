@@ -40,8 +40,8 @@ import {
   removeFromCart,
   updateQuantity,
   type CartItem,
-} from "@/store/slices/cartSlice";
-import { Breadcrumb } from "@/components/shared/Breadcrumb";
+} from "@/store/slices/cartSlice"; 
+import Breadcrumb from "@/components/shared/Breadcrumb";
 
 const DELIVERY_FEE = 100;
 const FREE_DELIVERY_THRESHOLD = 5000;

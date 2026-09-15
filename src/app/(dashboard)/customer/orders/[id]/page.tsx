@@ -4,8 +4,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { OrderDetails } from "@/components/modules/customer/orders/details/OrderDetails";
-import { getCustomerOrderDetails } from "@/services/customer.service";
-import { Breadcrumb } from "@/components/shared/Breadcrumb";
+import { getCustomerOrderDetails } from "@/services/customer.service"; 
 
 type Props = {
   params: { id: string };

@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import type { ProductItem } from "@/lib/types/product.types";
+import type { ProductDetail } from "@/lib/types/product.types";
 import type { Brand, Category } from "@/lib/fixtures/product/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
@@ -128,14 +128,25 @@ const getBrands = async (options?: ServiceOptions) => {
   }
 };
 
-const getProductBySlug = async (slug: string) => {
+/* -------------------------------------------------------------------------- */
+/* Detail                                                                    */
+/* -------------------------------------------------------------------------- */
+const getProductBySlug = async (
+  slug: string,
+): Promise<ProductDetail | null> => {
   try {
     const url = new URL(`${API_URL}/products/slug/${slug}`);
-    const res = await fetch(url.toString());
+    const res = await fetch(url.toString(), {
+      next: { tags: [`product:${slug}`] },
+    });
+
+    if (!res.ok) return null;
+
     const result = await res.json();
-    return result;
+    return (result.data as ProductDetail) ?? null;
   } catch (error) {
-    return { success: false, data: null, error: error };
+    console.error("[productServices.getProductBySlug]", error);
+    return null;
   }
 };
 
