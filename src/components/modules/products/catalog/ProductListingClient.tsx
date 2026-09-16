@@ -5,16 +5,24 @@ import { useAppDispatch } from "@/store/hooks";
 import { addToCart } from "@/store/slices/cartSlice";
 import { toast } from "sonner";
 
-import type { ProductCardData, ProductListingClientProps, SortOption, ViewMode } from "@/lib/types/product.types";
+import type {
+  ProductCardData,
+  ProductListingClientProps,
+  SortOption,
+  ViewMode,
+} from "@/lib/types/product.types";
 
 import { MobileFilterDrawer } from "../filters/MobileFilterDrawer";
 import { MAX_PRICE, SidebarFilters } from "../filters/SidebarFilters";
 import { ProductListingHeader } from "./ProductListingHeader";
-import { ProductListingToolbar } from "./ProductListingToolbar"; 
+import { ProductListingToolbar } from "./ProductListingToolbar";
 import { useProductListing } from "@/hooks/products/useProductListing";
-import { countActiveFilters, getTotalPages, PRODUCT_PAGE_SIZE } from "@/lib/helpers/productListing.helpers";
+import {
+  countActiveFilters,
+  getTotalPages,
+  PRODUCT_PAGE_SIZE,
+} from "@/lib/helpers/productListing.helpers";
 import { ProductListingContent } from "./ProductListingContent";
- 
 
 export default function ProductListingClient({
   products,
@@ -158,7 +166,6 @@ export default function ProductListingClient({
    * Sidebar
    * --------------------------------------------------------------------------
    */
-
   const sidebarFiltersProps = {
     filters: {
       categoryId: initialFilters.categoryId,
@@ -174,13 +181,9 @@ export default function ProductListingClient({
     brands,
 
     onCategoryChange: handleCategoryChange,
-
     onBrandChange: handleBrandChange,
-
     onWarrantyChange: handleWarrantyChange,
-
     onPriceChange: handlePriceChange,
-
     onClearFilters: handleClearFilters,
   };
 
@@ -194,9 +197,9 @@ export default function ProductListingClient({
     <main className="mxw">
       <ProductListingHeader />
 
-      <div className="mt-5 flex flex-col gap-5 sm:mt-8 lg:flex-row lg:gap-8">
+      <div className="mt-5 flex flex-col gap-5 sm:mt-8 lg:flex-row lg:gap-8 relative">
         {/* Desktop Sidebar */}
-        <aside className="hidden lg:block lg:w-64 lg:shrink-0">
+        <aside className="hidden lg:block lg:w-64 lg:shrink-0 sticky top-0 z-10">
           <SidebarFilters {...sidebarFiltersProps} />
         </aside>
 

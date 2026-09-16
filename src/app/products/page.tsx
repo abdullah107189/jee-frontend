@@ -4,6 +4,8 @@ import { productServices } from "@/services/product.service";
 import { MOCK_BRANDS, MOCK_CATEGORIES } from "@/lib/fixtures/product/mockData";
 import { parseProductSearchParams, MAX_PRICE } from "./_lib/params";
 import { buildProductMetadata } from "./_lib/metadata";
+import { categoryServices } from "@/services/category.service";
+import { brandServices } from "@/services/brand.service";
 
 /* -------------------------------------------------------------------------- */
 /* Types                                                                      */
@@ -32,7 +34,7 @@ export default async function ProductsPage({
   const PAGE_LIMIT = 20;
 
   /* ---------------- Parallel fetch ---------------- */
-  const [productsRes] = await Promise.all([
+  const [productsRes, categoryRes, brandsRes] = await Promise.all([
     productServices.getProducts({
       search: params.search,
       categoryId: params.categoryId,
@@ -46,17 +48,15 @@ export default async function ProductsPage({
       isActive: true,
       options: { cache: "no-store" },
     }),
-    // productServices.getCategories({ cache: "no-store" }),
-    // productServices.getBrands({ cache: "no-store" }),
+    categoryServices.getCategories(),
+    brandServices.getBrands(),
   ]);
 
   /* ---------------- Data ---------------- */
   const products = productsRes?.data ?? [];
+  const categories = categoryRes?.data ?? [];
+  const brands = brandsRes?.data ?? [];
   const total = productsRes?.total ?? 0;
-
-  // TODO: replace with real API data
-  const categories = MOCK_CATEGORIES;
-  const brands = MOCK_BRANDS;
 
   /* ---------------- Render ---------------- */
   return (

@@ -5,10 +5,9 @@ import { Filter, RotateCcw } from "lucide-react";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
-import { MOCK_CATEGORIES } from "@/lib/fixtures/product/mockData";
-import type { Brand, Category } from "@/lib/fixtures/product/types";
 import { Slider } from "../../../ui/slider";
+import { Brand, Category } from "@/lib/fixtures/product/types";
+import { PriceRangeSection } from "./PriceRangeSection";
 
 /* ================================================================
    TYPES
@@ -26,14 +25,10 @@ type SidebarFiltersProps = {
   categories?: Category[];
   brands?: Brand[];
 
-  onCategoryChange: (categoryId: string | null) => void;
-
+  onCategoryChange: (id: string | null) => void;
   onBrandChange: (brandId: string) => void;
-
   onWarrantyChange: (warranty: string) => void;
-
   onPriceChange: (range: [number, number]) => void;
-
   onClearFilters: () => void;
 };
 
@@ -42,29 +37,6 @@ type SidebarFiltersProps = {
 ================================================================ */
 
 export const MAX_PRICE = 100000;
-
-export const BRANDS = [
-  {
-    id: "brand_vision",
-    name: "Vision",
-  },
-  {
-    id: "brand_walton",
-    name: "Walton",
-  },
-  {
-    id: "brand_philips",
-    name: "Philips",
-  },
-  {
-    id: "brand_gree",
-    name: "Gree",
-  },
-  {
-    id: "brand_samsung",
-    name: "Samsung",
-  },
-];
 
 export const WARRANTY_PERIODS = [
   {
@@ -88,10 +60,9 @@ export const WARRANTY_PERIODS = [
 /* ================================================================
    COMPONENT
 ================================================================ */
-
 export function SidebarFilters({
   filters,
-  categories = MOCK_CATEGORIES,
+  categories,
   brands,
   onCategoryChange,
   onBrandChange,
@@ -145,25 +116,15 @@ export function SidebarFilters({
 
       <FilterSection title="Categories" noBorder>
         <div className="flex flex-col gap-1">
-          {categories.map((category) => {
-            /*
-             * IMPORTANT:
-             *
-             * তোমার category data-তে id থাকলে:
-             *
-             * category.categoryId
-             *
-             * ব্যবহার হবে।
-             */
-
-            const isSelected = categoryId === category.categoryId;
+          {categories?.map((category) => {
+            const isSelected = categoryId === category.id;
 
             return (
               <button
-                key={category.categoryId}
+                key={category.id}
                 type="button"
                 onClick={() =>
-                  onCategoryChange(isSelected ? null : category.categoryId)
+                  onCategoryChange(isSelected ? null : category.id)
                 }
                 className={[
                   "flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-all",
@@ -172,17 +133,7 @@ export function SidebarFilters({
                     : "text-muted-foreground hover:bg-secondary hover:text-foreground",
                 ].join(" ")}
               >
-                <span>{category.name}</span>
-
-                <span
-                  className={
-                    isSelected
-                      ? "text-xs text-primary"
-                      : "text-xs text-muted-foreground"
-                  }
-                >
-                  {category.productCount}
-                </span>
+                {category.name}
               </button>
             );
           })}
@@ -192,59 +143,13 @@ export function SidebarFilters({
       {/* ==========================================================
           PRICE
       ========================================================== */}
-
       <FilterSection title="Price Range">
-        <div className="px-1">
-          <Slider
-            value={priceRange}
-            min={0}
-            max={MAX_PRICE}
-            step={500}
-            onValueChange={(value) => {
-              if (Array.isArray(value) && value.length === 2) {
-                onPriceChange([value[0], value[1]]);
-              }
-            }}
-          />
-        </div>
-
-        <div className="mt-5 grid grid-cols-2 gap-2">
-          {/* MIN */}
-
-          <div>
-            <label
-              htmlFor="min-price"
-              className="mb-1.5 block text-[10px] font-medium uppercase tracking-wide text-muted-foreground"
-            >
-              Min
-            </label>
-
-            <Input
-              id="min-price"
-              value={`৳ ${priceRange[0].toLocaleString("en-US")}`}
-              readOnly
-              className="h-9 text-xs"
-            />
-          </div>
-
-          {/* MAX */}
-
-          <div>
-            <label
-              htmlFor="max-price"
-              className="mb-1.5 block text-[10px] font-medium uppercase tracking-wide text-muted-foreground"
-            >
-              Max
-            </label>
-
-            <Input
-              id="max-price"
-              value={`৳ ${priceRange[1].toLocaleString("en-US")}`}
-              readOnly
-              className="h-9 text-xs"
-            />
-          </div>
-        </div>
+        <PriceRangeSection
+          priceRange={priceRange}
+          maxPrice={MAX_PRICE}
+          onPriceChange={onPriceChange}
+          debounceMs={500} // ← type korar por 500ms wait
+        />
       </FilterSection>
 
       {/* ==========================================================
@@ -253,22 +158,19 @@ export function SidebarFilters({
 
       <FilterSection title="Brands">
         <div className="flex flex-col gap-3">
-          {(
-            brands ??
-            BRANDS.map((brand) => ({ brandId: brand.id, name: brand.name }))
-          ).map((brand) => {
-            const checked = brandIds.includes(brand.brandId);
+          {brands?.map((brand) => {
+            const checked = brandIds.includes(brand?.id);
 
             return (
               <label
-                key={brand.brandId}
-                htmlFor={`brand-${brand.brandId}`}
+                key={brand?.id}
+                htmlFor={`brand-${brand?.id}`}
                 className="flex cursor-pointer items-center gap-2.5 text-sm"
               >
                 <Checkbox
-                  id={`brand-${brand.brandId}`}
+                  id={`brand-${brand?.id}`}
                   checked={checked}
-                  onCheckedChange={() => onBrandChange(brand.brandId)}
+                  onCheckedChange={() => onBrandChange(brand?.id)}
                 />
 
                 <span

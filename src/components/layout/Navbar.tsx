@@ -116,19 +116,17 @@ export function Navbar({ user }: { user: CurrentUser | null }) {
             : "bg-background/60 backdrop-blur-md border-b border-transparent"
         }`}
       >
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mxw">
           <div className="flex items-center justify-between h-16 md:h-20 gap-4">
             {/* Logo - Jee */}
-            <Link
-              href="/"
-              className="flex items-center gap-2.5 group shrink-0 p-1"
-            >
+            <Link href="/">
               <Image
                 src="/JEE.png"
                 alt="JEE Logo"
                 width={100}
                 height={200}
-                className="w-25 h-auto"
+                // className={`${isScrolled ? "w-10" : "w-20"} h-auto`}
+                className="w-20 h-auto"
               />
             </Link>
 

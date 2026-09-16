@@ -86,8 +86,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   /* ---------- Variant change ---------- */
   const handleVariantChange = (variant: ProductVariantDetail) => {
     setSelectedVariant(variant);
-
-    // নতুন variant select করলে quantity আবার 1 হবে
     setStockQuantity(1);
   };
 
@@ -142,14 +140,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             )}
 
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                aria-label="Add to wishlist"
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
-              >
-                <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-              </button>
-
               <Badge
                 variant={inStock ? "outline" : "destructive"}
                 className="text-[10px] sm:text-xs"
@@ -203,11 +193,15 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
           {/* Quantity + Buttons */}
           <div className="mt-5 flex flex-wrap items-center gap-2 sm:gap-3">
-            <QuantitySelector
-              max={selectedVariant.stockQuantity}
-              value={stockQuantity}
-              onChange={setStockQuantity}
-            />
+            {inStock ? (
+              <QuantitySelector
+                max={selectedVariant.stockQuantity}
+                value={stockQuantity}
+                onChange={setStockQuantity}
+              />
+            ) : (
+              "Out of Stock"
+            )}
 
             {inStock ? (
               <>
