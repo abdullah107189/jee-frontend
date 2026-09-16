@@ -1,106 +1,123 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-export interface CartItem {
-  id: string;
-  slug: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  stockQuantity: number;
-  warrantyMonths: number;
-  brand?: string;
-  category?: string;
-  maxQuantity?: number;
-}
-
-interface CartState {
-  items: CartItem[];
-  hydrated: boolean;
-}
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type {
+  CartItemInput,
+  CartItem,
+  CartState,
+} from "@/lib/types/cart.types";
 
 const initialState: CartState = {
   items: [],
   hydrated: false,
+  lastUpdatedAt: null,
 };
 
 const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    hydrateCart: (state, action: PayloadAction<CartItem[]>) => {
-      state.items = action.payload;
-      state.hydrated = true;
-    },
-    addToCart: (state, action: PayloadAction<CartItem>) => {
-      const newItem = action.payload;
+    /* ---------------- Add to cart ---------------- */
+    addToCart: {
+      reducer(state, action: PayloadAction<CartItem>) {
+        const incoming = action.payload;
 
-      const existingItem = state.items.find((item) => item.id === newItem.id);
+        const existing = state.items.find(
+          (item) => item.variantId === incoming.variantId,
+        );
 
-      if (existingItem) {
-        const requestedQuantity =
-          existingItem.stockQuantity + newItem.stockQuantity;
-
-        if (existingItem.maxQuantity != null) {
-          existingItem.stockQuantity = Math.min(
-            requestedQuantity,
-            existingItem.maxQuantity,
+        if (existing) {
+          const nextQty = Math.min(
+            existing.quantity + incoming.quantity,
+            incoming.maxQuantity,
           );
+          existing.quantity = nextQty;
+          existing.price = incoming.price;
+          existing.originalPrice = incoming.originalPrice;
+          existing.image = incoming.image ?? existing.image;
+          existing.stockQuantity = incoming.stockQuantity;
+          existing.maxQuantity = incoming.maxQuantity;
         } else {
-          existingItem.stockQuantity = requestedQuantity;
+          state.items.push(incoming);
         }
 
-        return;
-      }
+        state.lastUpdatedAt = Date.now();
+      },
+      /* ✅ prepare — defaults handle koro */
+      prepare(input: CartItemInput) {
+        const quantity = Math.max(1, input.quantity ?? 1);
+        const stockQuantity = Math.max(1, input.stockQuantity ?? 1);
+        const maxQuantity = Math.max(1, input.maxQuantity ?? stockQuantity);
 
-      state.items.push({
-        ...newItem,
-        stockQuantity: Math.min(
-          newItem.stockQuantity || 1,
-          newItem.maxQuantity ?? Infinity,
-        ),
-      });
+        const item: CartItem = {
+          id: input.id,
+          slug: input.slug,
+          name: input.name,
+
+          variantId: input.variantId,
+          variantSku: input.variantSku ?? "",
+
+          price: input.price,
+          originalPrice: input.originalPrice,
+
+          image: input.image,
+          warrantyMonths: input.warrantyMonths,
+
+          brand: input.brand,
+          category: input.category,
+
+          quantity: Math.min(quantity, maxQuantity),
+          maxQuantity,
+          stockQuantity,
+        };
+
+        return { payload: item };
+      },
     },
 
-    removeFromCart: (state, action: PayloadAction<string>) => {
+    /* ---------------- Remove ---------------- */
+    removeFromCart(state, action: PayloadAction<string>) {
       state.items = state.items.filter((item) => item.id !== action.payload);
+      state.lastUpdatedAt = Date.now();
     },
-    updateStockQuantity: (
+
+    /* ---------------- Update quantity ---------------- */
+    updateQuantity(
       state,
-      action: PayloadAction<{ id: string; StockQuantity: number }>,
-    ) => {
-      const item = state.items.find((item) => item.id === action.payload.id);
+      action: PayloadAction<{ id: string; quantity: number }>,
+    ) {
+      const { id, quantity } = action.payload;
+      const item = state.items.find((i) => i.id === id);
 
       if (!item) return;
 
-      const requestedQuantity = action.payload?.StockQuantity;
-
-      // Minimum StockQuantity = 1
-      if (requestedQuantity < 1) {
-        item.stockQuantity = 1;
-        return;
-      }
-
-      // Maximum stock protection
-      if (item.maxQuantity != null && requestedQuantity > item.maxQuantity) {
-        item.stockQuantity = item.maxQuantity;
-        return;
-      }
-
-      item.stockQuantity = requestedQuantity;
+      item.quantity = Math.max(1, Math.min(quantity, item.maxQuantity));
+      state.lastUpdatedAt = Date.now();
     },
 
-    clearCart: (state) => {
+    /* ---------------- Clear ---------------- */
+    clearCart(state) {
       state.items = [];
+      state.lastUpdatedAt = Date.now();
+    },
+
+    /* ---------------- Hydrate ---------------- */
+    setHydrated(state, action: PayloadAction<boolean>) {
+      state.hydrated = action.payload;
+    },
+
+    replaceCart(state, action: PayloadAction<CartItem[]>) {
+      state.items = action.payload;
+      state.lastUpdatedAt = Date.now();
     },
   },
 });
 
 export const {
-  hydrateCart,
   addToCart,
   removeFromCart,
-  updateStockQuantity,
+  updateQuantity,
   clearCart,
+  setHydrated,
+  replaceCart,
 } = cartSlice.actions;
+
 export default cartSlice.reducer;

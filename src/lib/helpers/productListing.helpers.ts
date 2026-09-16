@@ -1,3 +1,6 @@
+import { CartItemInput } from "../types/cart.types";
+import { ProductCardData } from "../types/product.types";
+
 export const PRODUCT_PAGE_SIZE = 10;
 
 export const MAX_PRICE = 1_000_000;
@@ -29,4 +32,48 @@ export function getTotalPages(
   limit = PRODUCT_PAGE_SIZE,
 ): number {
   return Math.max(1, Math.ceil(total / limit));
+}
+export function toCartItem(
+  card: {
+    id: string;
+    variantId: string;
+    variantSku?: string | null;
+
+    name: string;
+    slug: string;
+
+    price: number;
+    comparePrice: number | null;
+
+    image: string | null;
+
+    warrantyMonths: number;
+    stockQuantity: number;
+
+    brandName: string | null;
+    categoryName: string | null;
+  },
+  quantity = 1,
+): CartItemInput {
+  return {
+    id: card.id,
+    slug: card.slug,
+    name: card.name,
+
+    variantId: card.variantId,
+    variantSku: card.variantSku ?? undefined,
+
+    price: card.price,
+    originalPrice: card.comparePrice ?? undefined,
+
+    image: card.image,
+    warrantyMonths: card.warrantyMonths,
+
+    brand: card.brandName ?? undefined,
+    category: card.categoryName ?? undefined,
+
+    quantity,
+    maxQuantity: card.stockQuantity || 1,
+    stockQuantity: card.stockQuantity || 1,
+  };
 }

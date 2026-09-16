@@ -21,6 +21,7 @@ import {
   countActiveFilters,
   getTotalPages,
   PRODUCT_PAGE_SIZE,
+  toCartItem,
 } from "@/lib/helpers/productListing.helpers";
 import { ProductListingContent } from "./ProductListingContent";
 import { MAX_PRICE } from "@/app/products/_lib/params";
@@ -153,22 +154,7 @@ export default function ProductListingClient({
    */
 
   const handleAddToCart = (product: ProductCardData) => {
-    dispatch(
-      addToCart({
-        id: product.id,
-        slug: product.slug,
-        name: product.name,
-        price: product.price,
-
-        image: product.image || "/product-placeholder.jpg",
-
-        warrantyMonths: product.warrantyMonths,
-
-        stockQuantity: 1,
-
-        maxQuantity: product.stockQuantity,
-      }),
-    );
+    dispatch(addToCart(toCartItem(product)));
 
     toast.success(`${product.name} added to cart`);
   };

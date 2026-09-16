@@ -23,7 +23,6 @@ import { ProductSpecifications } from "./product-specifications";
 import { RelatedProducts } from "./related-products";
 
 import type {
-  ProductCardData,
   ProductDetail,
   ProductVariantDetail,
 } from "@/lib/types/product.types";
@@ -68,12 +67,12 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
   const discount =
     selectedVariant.comparePrice &&
-    selectedVariant.comparePrice > selectedVariant.price
+      selectedVariant.comparePrice > selectedVariant.price
       ? Math.round(
-          ((selectedVariant.comparePrice - selectedVariant.price) /
-            selectedVariant.comparePrice) *
-            100,
-        )
+        ((selectedVariant.comparePrice - selectedVariant.price) /
+          selectedVariant.comparePrice) *
+        100,
+      )
       : 0;
 
   /* ---------- Gallery images ---------- */
@@ -94,23 +93,28 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const handleAddToCart = () => {
     dispatch(
       addToCart({
-        id: selectedVariant.id,
+        id: product.id,
+        variantId: selectedVariant.id,
+        variantSku: selectedVariant.sku,
+
         slug: product.slug,
         name: product.name,
+
         price: selectedVariant.price,
-        image:
-          selectedVariant.images?.[0] ||
-          product.images?.[0] ||
-          "/product-placeholder.jpg",
+        originalPrice: selectedVariant.comparePrice ?? undefined,
+
+        image: selectedVariant.images[0] ?? null,
         warrantyMonths: product.warrantyMonths,
-        stockQuantity,
+
+        brand: product.brand?.name,
+        category: product.category?.name,
+
+        quantity: 1,
         maxQuantity: selectedVariant.stockQuantity,
+        stockQuantity: selectedVariant.stockQuantity,
       }),
     );
-
-    toast.success(`${product.name} added to cart!`);
   };
-
   return (
     <div className="container-page">
       {/* Breadcrumb */}

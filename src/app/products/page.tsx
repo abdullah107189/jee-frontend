@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import ProductListingClient from "@/components/modules/products/catalog/ProductListingClient";
 import { productServices } from "@/services/product.service";
-import { MOCK_BRANDS, MOCK_CATEGORIES } from "@/lib/fixtures/product/mockData";
 import { parseProductSearchParams, MAX_PRICE } from "./_lib/params";
 import { buildProductMetadata } from "./_lib/metadata";
 import { categoryServices } from "@/services/category.service";

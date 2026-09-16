@@ -8,6 +8,8 @@ import { useAppDispatch } from "@/store/hooks";
 import HorizontalProductCard from "@/components/shared/productCard/HorizontalProductCard";
 import { Button } from "@/components/ui/Button";
 import { ProductCardData } from "@/lib/types/product.types";
+import { CartItemInput } from "@/lib/types/cart.types";
+import { toCartItem } from "@/lib/helpers/productListing.helpers";
 
 export default function LatestProductsClient({
   products,
@@ -17,20 +19,8 @@ export default function LatestProductsClient({
   const dispatch = useAppDispatch();
 
   const handleAddToCart = (product: ProductCardData) => {
-    dispatch(
-      addToCart({
-        id: product.id,
-        slug: product.slug,
-        name: product.name,
-        price: product.price,
-        image: product.image || product.image || "/product-placeholder.jpg",
-        warrantyMonths: product.warrantyMonths,
-        stockQuantity: 1,
-        maxQuantity: product.stockQuantity,
-      }),
-    );
-
-    toast.success(`${product.name} added to cart!`);
+    dispatch(addToCart(toCartItem(product)));
+    toast.success(`${product.name} added to cart`);
   };
 
   return (
