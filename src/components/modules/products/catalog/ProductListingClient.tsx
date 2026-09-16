@@ -1,64 +1,21 @@
 "use client";
 
-import { useCallback, useState, useTransition } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { toast } from "sonner";
-
+import { useState } from "react";
 import { useAppDispatch } from "@/store/hooks";
 import { addToCart } from "@/store/slices/cartSlice";
-import type { Brand, Category } from "@/lib/fixtures/product/types";
-import type { ProductCardData } from "@/lib/types/product.types";
+import { toast } from "sonner";
+
+import type { ProductCardData, ProductListingClientProps, SortOption, ViewMode } from "@/lib/types/product.types";
+
 import { MobileFilterDrawer } from "../filters/MobileFilterDrawer";
-import { ProductGrid } from "./ProductGrid";
-import { ProductList } from "./ProductList";
+import { MAX_PRICE, SidebarFilters } from "../filters/SidebarFilters";
 import { ProductListingHeader } from "./ProductListingHeader";
-import { ProductListingToolbar } from "./ProductListingToolbar";
-import { ProductListingEmpty } from "./ProductListingEmpty";
-import { ProductListingPending } from "./ProductListingPending";
-import { ProductPagination } from "./ProductPagination";
-import { SidebarFilters } from "../filters/SidebarFilters";
+import { ProductListingToolbar } from "./ProductListingToolbar"; 
+import { useProductListing } from "@/hooks/products/useProductListing";
+import { countActiveFilters, getTotalPages, PRODUCT_PAGE_SIZE } from "@/lib/helpers/productListing.helpers";
+import { ProductListingContent } from "./ProductListingContent";
+ 
 
-/* -------------------------------------------------------------------------- */
-/* Types                                                                      */
-/* -------------------------------------------------------------------------- */
-export type SortOption = "popular" | "price-asc" | "price-desc" | "newest";
-export type ViewMode = "grid" | "list";
-
-export interface InitialFilters {
-  search: string;
-  categoryId: string | null;
-  brandIds: string[];
-  priceRange: [number, number];
-  sort: SortOption;
-}
-
-interface ProductListingClientProps {
-  products: ProductCardData[];
-  categories: Category[];
-  brands: Brand[];
-  total: number;
-  page: number;
-  limit: number;
-  initialFilters: InitialFilters;
-}
-
-const MAX_PRICE = 1_000_000;
-
-/* -------------------------------------------------------------------------- */
-/* Helpers                                                                    */
-/* -------------------------------------------------------------------------- */
-function countActiveFilters(filters: InitialFilters): number {
-  return (
-    (filters.categoryId ? 1 : 0) +
-    filters.brandIds.length +
-    (filters.priceRange[0] > 0 ? 1 : 0) +
-    (filters.priceRange[1] < MAX_PRICE ? 1 : 0)
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/* Component                                                                  */
-/* -------------------------------------------------------------------------- */
 export default function ProductListingClient({
   products,
   categories,
@@ -69,86 +26,111 @@ export default function ProductListingClient({
   initialFilters,
 }: ProductListingClientProps) {
   const dispatch = useAppDispatch();
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
 
-  const [isPending, startTransition] = useTransition();
+  const { isPending, updateURL, clearFilters, changePage } =
+    useProductListing();
+
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [showFilters, setShowFilters] = useState(false);
   const [searchInput, setSearchInput] = useState(initialFilters.search);
 
-  /* ---------------- URL sync ---------------- */
-  const updateURL = useCallback(
-    (updates: Record<string, string | null>, resetPage = true) => {
-      const params = new URLSearchParams(searchParams.toString());
+  /*
+   * --------------------------------------------------------------------------
+   * Derived
+   * --------------------------------------------------------------------------
+   */
 
-      Object.entries(updates).forEach(([key, value]) => {
-        if (value === null || value === "") params.delete(key);
-        else params.set(key, value);
-      });
+  // Always use maximum 10 products per page.
+  const pageSize = Math.min(limit || PRODUCT_PAGE_SIZE, PRODUCT_PAGE_SIZE);
 
-      if (resetPage) params.set("page", "1");
+  const totalPages = getTotalPages(total, pageSize);
 
-      startTransition(() => {
-        router.replace(`${pathname}?${params.toString()}`, {
-          scroll: false,
-        });
-      });
-    },
-    [router, pathname, searchParams],
-  );
+  const activeFilterCount = countActiveFilters({
+    categoryId: initialFilters.categoryId,
+    brandIds: initialFilters.brandIds,
+    priceRange: initialFilters.priceRange,
+  });
 
-  /* ---------------- Handlers ---------------- */
+  /*
+   * --------------------------------------------------------------------------
+   * Search
+   * --------------------------------------------------------------------------
+   */
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    updateURL({ q: searchInput.trim() || null });
+
+    updateURL({
+      q: searchInput.trim() || null,
+    });
   };
 
+  /*
+   * --------------------------------------------------------------------------
+   * Filters
+   * --------------------------------------------------------------------------
+   */
+
   const handleCategoryChange = (categoryId: string | null) => {
-    updateURL({ category: categoryId });
+    updateURL({
+      category: categoryId,
+    });
+
     setShowFilters(false);
   };
 
   const handleBrandChange = (brandId: string) => {
     const current = initialFilters.brandIds;
+
     const next = current.includes(brandId)
       ? current.filter((id) => id !== brandId)
       : [...current, brandId];
-    updateURL({ brands: next.length ? next.join(",") : null });
+
+    updateURL({
+      brands: next.length ? next.join(",") : null,
+    });
   };
 
   const handleWarrantyChange = (_period: string) => {
-    // extend later
+    // TODO: implement warranty filter
   };
 
   const handlePriceChange = (range: [number, number]) => {
     updateURL({
       minPrice: range[0] > 0 ? String(range[0]) : null,
+
       maxPrice: range[1] < MAX_PRICE ? String(range[1]) : null,
     });
   };
 
-  const handleSortChange = (value: SortOption) => {
-    updateURL({ sort: value === "popular" ? null : value });
-  };
+  /*
+   * --------------------------------------------------------------------------
+   * Sort
+   * --------------------------------------------------------------------------
+   */
 
-  const handleClearFilters = () => {
-    setSearchInput("");
-    startTransition(() => {
-      router.replace(pathname, { scroll: false });
+  const handleSortChange = (value: SortOption) => {
+    updateURL({
+      sort: value === "popular" ? null : value,
     });
   };
 
-  const handlePageChange = (newPage: number) => {
-    if (newPage === page || newPage < 1) return;
+  /*
+   * --------------------------------------------------------------------------
+   * Clear filters
+   * --------------------------------------------------------------------------
+   */
 
-    updateURL({ page: newPage === 1 ? null : String(newPage) }, false);
-
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+  const handleClearFilters = () => {
+    setSearchInput("");
+    clearFilters();
   };
+
+  /*
+   * --------------------------------------------------------------------------
+   * Cart
+   * --------------------------------------------------------------------------
+   */
 
   const handleAddToCart = (product: ProductCardData) => {
     dispatch(
@@ -157,49 +139,68 @@ export default function ProductListingClient({
         slug: product.slug,
         name: product.name,
         price: product.price,
-        originalPrice: product.comparePrice ?? undefined,
-        image: product.image ?? "/images/product-placeholder.png",
+
+        image: product.image || "/product-placeholder.jpg",
+
         warrantyMonths: product.warrantyMonths,
-        brand: product.brandName ?? undefined,
-        category: product.categoryName ?? undefined,
+
+        stockQuantity: 1,
+
+        maxQuantity: product.stockQuantity,
       }),
     );
 
     toast.success(`${product.name} added to cart`);
   };
 
-  /* ---------------- Derived ---------------- */
-  const activeFilterCount = countActiveFilters(initialFilters);
-  const totalPages = Math.max(1, Math.ceil(total / limit));
+  /*
+   * --------------------------------------------------------------------------
+   * Sidebar
+   * --------------------------------------------------------------------------
+   */
 
   const sidebarFiltersProps = {
     filters: {
       categoryId: initialFilters.categoryId,
+
       brandIds: initialFilters.brandIds,
+
       warrantyPeriods: [],
+
       priceRange: initialFilters.priceRange,
     },
+
     categories,
     brands,
+
     onCategoryChange: handleCategoryChange,
+
     onBrandChange: handleBrandChange,
+
     onWarrantyChange: handleWarrantyChange,
+
     onPriceChange: handlePriceChange,
+
     onClearFilters: handleClearFilters,
   };
 
-  /* ---------------- Render ---------------- */
+  /*
+   * --------------------------------------------------------------------------
+   * Render
+   * --------------------------------------------------------------------------
+   */
+
   return (
     <main className="mxw">
       <ProductListingHeader />
 
       <div className="mt-5 flex flex-col gap-5 sm:mt-8 lg:flex-row lg:gap-8">
-        {/* Desktop sidebar */}
+        {/* Desktop Sidebar */}
         <aside className="hidden lg:block lg:w-64 lg:shrink-0">
           <SidebarFilters {...sidebarFiltersProps} />
         </aside>
 
-        {/* Mobile drawer */}
+        {/* Mobile Filters */}
         {showFilters && (
           <MobileFilterDrawer
             total={total}
@@ -208,7 +209,7 @@ export default function ProductListingClient({
           />
         )}
 
-        {/* Main */}
+        {/* Main Content */}
         <section className="mb-5 min-w-0 flex-1">
           <ProductListingToolbar
             searchInput={searchInput}
@@ -219,48 +220,22 @@ export default function ProductListingClient({
             onSortChange={handleSortChange}
             viewMode={viewMode}
             onToggleView={() =>
-              setViewMode((m) => (m === "grid" ? "list" : "grid"))
+              setViewMode((mode) => (mode === "grid" ? "list" : "grid"))
             }
             onOpenFilters={() => setShowFilters(true)}
             activeFilterCount={activeFilterCount}
           />
 
-          <p className="mb-4 text-sm text-muted-foreground">
-            Showing{" "}
-            <span className="font-semibold text-foreground">{total}</span>{" "}
-            products
-          </p>
-
-          <div className="relative">
-            {isPending && <ProductListingPending />}
-
-            {products.length === 0 ? (
-              <ProductListingEmpty onClear={handleClearFilters} />
-            ) : (
-              <>
-                {viewMode === "grid" ? (
-                  <ProductGrid
-                    products={products}
-                    onAddToCart={handleAddToCart}
-                  />
-                ) : (
-                  <ProductList
-                    products={products}
-                    onAddToCart={handleAddToCart}
-                  />
-                )}
-
-                {totalPages > 1 && (
-                  <ProductPagination
-                    currentPage={page}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                    isPending={isPending}
-                  />
-                )}
-              </>
-            )}
-          </div>
+          <ProductListingContent
+            products={products}
+            viewMode={viewMode}
+            isPending={isPending}
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={changePage}
+            onAddToCart={handleAddToCart}
+            onClearFilters={handleClearFilters}
+          />
         </section>
       </div>
     </main>

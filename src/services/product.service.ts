@@ -78,26 +78,40 @@ function buildConfig(options?: ServiceOptions): RequestInit {
 /* Service                                                                    */
 /* -------------------------------------------------------------------------- */
 const getProducts = async (options: GetProductsOptions = {}) => {
+  const page = options.page ?? 1;
+  const limit = options.limit ?? 10;
+
+  const fallback = {
+    success: false,
+    data: [],
+    total: 0,
+    page,
+    limit,
+    totalPages: 0,
+  };
+
   try {
     const url = new URL(`${API_URL}/products`);
-    const query = buildQuery(options);
-    url.search = query.toString();
-
-    console.log("[getProducts] Fetching:", url.toString()); // ← ADD
+    url.search = buildQuery(options).toString();
 
     const config = buildConfig(options.options);
     config.next = { ...config.next, tags: ["products"] };
 
     const res = await fetch(url.toString(), config);
-
-    console.log("[getProducts] Status:", res.status); // ← ADD
-    console.log("[getProducts] Content-Type:", res.headers.get("content-type")); // ← ADD
-
     const result = await res.json();
-    return result;
+
+    return {
+      success: result.status === "success",
+      data: result.data ?? [],
+      total: result.meta?.total ?? 0,
+      page: result.meta?.page ?? page,
+      limit: result.meta?.limit ?? limit,
+      totalPages: result.meta?.totalPages ?? 0,
+      message: result.message,
+    };
   } catch (error) {
-    console.error("[getProducts] Error:", error); // ← ADD
-    return { success: false, data: null, error: error };
+    console.error("[productServices.getProducts]", error);
+    return fallback;
   }
 };
 const getCategories = async (options?: ServiceOptions) => {

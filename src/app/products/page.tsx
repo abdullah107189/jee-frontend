@@ -29,6 +29,7 @@ export default async function ProductsPage({
   searchParams,
 }: ProductsPageProps) {
   const params = await parseProductSearchParams(searchParams);
+  const PAGE_LIMIT = 20;
 
   /* ---------------- Parallel fetch ---------------- */
   const [productsRes] = await Promise.all([
@@ -40,7 +41,7 @@ export default async function ProductsPage({
       maxPrice: params.maxPrice,
       sort: params.sort,
       page: params.page,
-      limit: params.limit,
+      limit: PAGE_LIMIT,
       isPublished: true,
       isActive: true,
       options: { cache: "no-store" },
@@ -51,7 +52,7 @@ export default async function ProductsPage({
 
   /* ---------------- Data ---------------- */
   const products = productsRes?.data ?? [];
-  const total = productsRes?.total ?? products.length;
+  const total = productsRes?.total ?? 0;
 
   // TODO: replace with real API data
   const categories = MOCK_CATEGORIES;
@@ -65,7 +66,7 @@ export default async function ProductsPage({
       brands={brands}
       total={total}
       page={params.page}
-      limit={params.limit}
+      limit={PAGE_LIMIT}
       initialFilters={{
         search: params.search ?? "",
         categoryId: params.categoryId ?? null,

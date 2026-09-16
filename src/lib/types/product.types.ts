@@ -1,3 +1,5 @@
+import { Brand, Category } from "../fixtures/product/types";
+
 export type ProductCardData = {
   id: string;
   name: string;
@@ -14,6 +16,44 @@ export type ProductCardData = {
   brandName: string | null;
   categoryName: string | null;
 };
+
+export type SortOption = "popular" | "price-asc" | "price-desc" | "newest";
+
+export type ViewMode = "grid" | "list";
+
+export interface InitialFilters {
+  search: string;
+  categoryId: string | null;
+  brandIds: string[];
+  priceRange: [number, number];
+  sort: SortOption;
+}
+
+export interface ProductListingClientProps {
+  products: ProductCardData[];
+  categories: Category[];
+  brands: Brand[];
+  total: number;
+  page: number;
+  limit: number;
+  initialFilters: InitialFilters;
+}
+
+export interface SidebarFiltersProps {
+  filters: {
+    categoryId: string | null;
+    brandIds: string[];
+    warrantyPeriods: string[];
+    priceRange: [number, number];
+  };
+  categories: Category[];
+  brands: Brand[];
+  onCategoryChange: (categoryId: string | null) => void;
+  onBrandChange: (brandId: string) => void;
+  onWarrantyChange: (period: string) => void;
+  onPriceChange: (range: [number, number]) => void;
+  onClearFilters: () => void;
+}
 
 /* -------------------------------------------------------------------------- */
 /* Detail — backend `/products/slug/:slug` response                           */
