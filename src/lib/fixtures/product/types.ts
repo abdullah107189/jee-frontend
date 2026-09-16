@@ -1,4 +1,3 @@
-
 export interface Category {
   id: string;
   name: string;
@@ -17,4 +16,9 @@ export interface Brand {
   slug: string;
   logo: string | null;
   description: string | null;
+}
+
+export interface WarrantyFilterOption {
+  months: number;
+  label: string;
 }

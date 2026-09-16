@@ -13,7 +13,7 @@ import type {
 } from "@/lib/types/product.types";
 
 import { MobileFilterDrawer } from "../filters/MobileFilterDrawer";
-import { MAX_PRICE, SidebarFilters } from "../filters/SidebarFilters";
+import { SidebarFilters } from "../filters/SidebarFilters";
 import { ProductListingHeader } from "./ProductListingHeader";
 import { ProductListingToolbar } from "./ProductListingToolbar";
 import { useProductListing } from "@/hooks/products/useProductListing";
@@ -23,11 +23,13 @@ import {
   PRODUCT_PAGE_SIZE,
 } from "@/lib/helpers/productListing.helpers";
 import { ProductListingContent } from "./ProductListingContent";
+import { MAX_PRICE } from "@/app/products/_lib/params";
 
 export default function ProductListingClient({
   products,
   categories,
   brands,
+  warranties,
   total,
   page,
   limit,
@@ -56,6 +58,7 @@ export default function ProductListingClient({
   const activeFilterCount = countActiveFilters({
     categoryId: initialFilters.categoryId,
     brandIds: initialFilters.brandIds,
+    warrantyMonths: initialFilters.warrantyMonths ?? [],
     priceRange: initialFilters.priceRange,
   });
 
@@ -99,9 +102,18 @@ export default function ProductListingClient({
     });
   };
 
-  const handleWarrantyChange = (_period: string) => {
-    // TODO: implement warranty filter
+  const handleWarrantyChange = (months: number) => {
+    const current = initialFilters.warrantyMonths ?? [];
+
+    const next = current.includes(months)
+      ? current.filter((value) => value !== months)
+      : [...current, months];
+
+    updateURL({
+      warrantyMonths: next.length ? next.join(",") : null,
+    });
   };
+
 
   const handlePriceChange = (range: [number, number]) => {
     updateURL({
@@ -169,16 +181,14 @@ export default function ProductListingClient({
   const sidebarFiltersProps = {
     filters: {
       categoryId: initialFilters.categoryId,
-
-      brandIds: initialFilters.brandIds,
-
-      warrantyPeriods: [],
-
+      brandIds: initialFilters.brandIds ?? [],
+      warrantyMonths: initialFilters.warrantyMonths ?? [],
       priceRange: initialFilters.priceRange,
     },
 
     categories,
     brands,
+    warranties,
 
     onCategoryChange: handleCategoryChange,
     onBrandChange: handleBrandChange,
@@ -186,6 +196,9 @@ export default function ProductListingClient({
     onPriceChange: handlePriceChange,
     onClearFilters: handleClearFilters,
   };
+
+
+
 
   /*
    * --------------------------------------------------------------------------

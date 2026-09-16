@@ -3,7 +3,7 @@
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import type { SortOption, ViewMode } from "./ProductListingClient";
+import { SortOption, ViewMode } from "@/lib/types/product.types";
 
 /* -------------------------------------------------------------------------- */
 /* Types                                                                      */

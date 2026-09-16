@@ -4,19 +4,18 @@ import type { ReactNode } from "react";
 import { Filter, RotateCcw } from "lucide-react";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/Input";
-import { Slider } from "../../../ui/slider";
-import { Brand, Category } from "@/lib/fixtures/product/types";
+import {
+  Brand,
+  Category,
+  WarrantyFilterOption,
+} from "@/lib/fixtures/product/types";
 import { PriceRangeSection } from "./PriceRangeSection";
-
-/* ================================================================
-   TYPES
-================================================================ */
+import { MAX_PRICE } from "@/app/products/_lib/params";
 
 export type ProductFilters = {
   categoryId: string | null;
   brandIds: string[];
-  warrantyPeriods: string[];
+  warrantyMonths: number[];
   priceRange: [number, number];
 };
 
@@ -24,67 +23,46 @@ type SidebarFiltersProps = {
   filters: ProductFilters;
   categories?: Category[];
   brands?: Brand[];
+  warranties: WarrantyFilterOption[];
 
   onCategoryChange: (id: string | null) => void;
   onBrandChange: (brandId: string) => void;
-  onWarrantyChange: (warranty: string) => void;
+  onWarrantyChange: (months: number) => void;
   onPriceChange: (range: [number, number]) => void;
   onClearFilters: () => void;
 };
 
-/* ================================================================
-   CONSTANTS
-================================================================ */
 
-export const MAX_PRICE = 100000;
-
-export const WARRANTY_PERIODS = [
-  {
-    value: "1 Year",
-    label: "1 Year",
-  },
-  {
-    value: "2 Years",
-    label: "2 Years",
-  },
-  {
-    value: "5 Years",
-    label: "5 Years",
-  },
-  {
-    value: "10 Years",
-    label: "10 Years",
-  },
-];
-
-/* ================================================================
-   COMPONENT
-================================================================ */
 export function SidebarFilters({
   filters,
-  categories,
-  brands,
+  categories = [],
+  brands = [],
+  warranties = [],
   onCategoryChange,
   onBrandChange,
   onWarrantyChange,
   onPriceChange,
   onClearFilters,
 }: SidebarFiltersProps) {
-  const { categoryId, brandIds, warrantyPeriods, priceRange } = filters;
+  const {
+    categoryId,
+    brandIds,
+    warrantyMonths,
+    priceRange,
+  } = filters;
+
 
   const activeFilterCount =
     (categoryId ? 1 : 0) +
     brandIds.length +
-    warrantyPeriods.length +
+    warrantyMonths.length +
     (priceRange[0] > 0 ? 1 : 0) +
     (priceRange[1] < MAX_PRICE ? 1 : 0);
 
-  return (
-    <aside className="flex w-full flex-col gap-6 lg:w-70 lg:shrink-0 mb-10">
-      {/* ==========================================================
-          FILTER HEADER
-      ========================================================== */}
 
+  return (
+    <aside className="mb-10 flex w-full flex-col gap-6 lg:w-70 lg:shrink-0">
+      {/* Filter Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Filter className="h-4 w-4" />
@@ -110,13 +88,10 @@ export function SidebarFilters({
         )}
       </div>
 
-      {/* ==========================================================
-          CATEGORIES
-      ========================================================== */}
-
+      {/* Categories */}
       <FilterSection title="Categories" noBorder>
         <div className="flex flex-col gap-1">
-          {categories?.map((category) => {
+          {categories.map((category) => {
             const isSelected = categoryId === category.id;
 
             return (
@@ -124,7 +99,9 @@ export function SidebarFilters({
                 key={category.id}
                 type="button"
                 onClick={() =>
-                  onCategoryChange(isSelected ? null : category.id)
+                  onCategoryChange(
+                    isSelected ? null : category.id,
+                  )
                 }
                 className={[
                   "flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-all",
@@ -140,37 +117,34 @@ export function SidebarFilters({
         </div>
       </FilterSection>
 
-      {/* ==========================================================
-          PRICE
-      ========================================================== */}
+      {/* Price */}
       <FilterSection title="Price Range">
         <PriceRangeSection
           priceRange={priceRange}
           maxPrice={MAX_PRICE}
           onPriceChange={onPriceChange}
-          debounceMs={500} // ← type korar por 500ms wait
+          debounceMs={500}
         />
       </FilterSection>
 
-      {/* ==========================================================
-          BRANDS
-      ========================================================== */}
-
+      {/* Brands */}
       <FilterSection title="Brands">
         <div className="flex flex-col gap-3">
-          {brands?.map((brand) => {
-            const checked = brandIds.includes(brand?.id);
+          {brands.map((brand) => {
+            const checked = brandIds.includes(brand.id);
 
             return (
               <label
-                key={brand?.id}
-                htmlFor={`brand-${brand?.id}`}
+                key={brand.id}
+                htmlFor={`brand-${brand.id}`}
                 className="flex cursor-pointer items-center gap-2.5 text-sm"
               >
                 <Checkbox
-                  id={`brand-${brand?.id}`}
+                  id={`brand-${brand.id}`}
                   checked={checked}
-                  onCheckedChange={() => onBrandChange(brand?.id)}
+                  onCheckedChange={() =>
+                    onBrandChange(brand.id)
+                  }
                 />
 
                 <span
@@ -188,25 +162,23 @@ export function SidebarFilters({
         </div>
       </FilterSection>
 
-      {/* ==========================================================
-          WARRANTY
-      ========================================================== */}
-
-      <FilterSection title="Warranty Period">
+      <FilterSection title="Warranty">
         <div className="flex flex-col gap-3">
-          {WARRANTY_PERIODS.map((warranty) => {
-            const checked = warrantyPeriods.includes(warranty.value);
+          {warranties.map((warranty) => {
+            const checked = warrantyMonths.includes(warranty.months);
 
             return (
               <label
-                key={warranty.value}
-                htmlFor={`warranty-${warranty.value}`}
+                key={warranty.months}
+                htmlFor={`warranty-${warranty.months}`}
                 className="flex cursor-pointer items-center gap-2.5 text-sm"
               >
                 <Checkbox
-                  id={`warranty-${warranty.value}`}
+                  id={`warranty-${warranty.months}`}
                   checked={checked}
-                  onCheckedChange={() => onWarrantyChange(warranty.value)}
+                  onCheckedChange={() =>
+                    onWarrantyChange(warranty.months)
+                  }
                 />
 
                 <span
@@ -223,13 +195,10 @@ export function SidebarFilters({
           })}
         </div>
       </FilterSection>
+
     </aside>
   );
 }
-
-/* ================================================================
-   FILTER SECTION
-================================================================ */
 
 type FilterSectionProps = {
   title: string;
@@ -244,7 +213,9 @@ function FilterSection({
 }: FilterSectionProps) {
   return (
     <section
-      className={[!noBorder && "border-t border-border pt-5 lg:pt-6"]
+      className={[
+        !noBorder && "border-t border-border pt-5 lg:pt-6",
+      ]
         .filter(Boolean)
         .join(" ")}
     >

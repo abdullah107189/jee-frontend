@@ -1,17 +1,13 @@
-import type {
-  ProductDetail,
-  ProductCardData,
-} from "@/lib/types/product.types";
+import type { ProductDetail, ProductCardData } from "@/lib/types/product.types";
 
 import type {
   GetProductsOptions,
+  ProductFiltersResponse,
   ProductsResponse,
   ServiceOptions,
 } from "./types/product.service.types";
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 const PRODUCT_PAGE_SIZE = 10;
 
@@ -19,77 +15,55 @@ const PRODUCT_PAGE_SIZE = 10;
 /* Helpers                                                                    */
 /* -------------------------------------------------------------------------- */
 
-function buildProductQuery(
-  options: GetProductsOptions,
-): URLSearchParams {
-  const query = new URLSearchParams();
-
-  query.set(
-    "page",
-    String(options.page ?? 1),
-  );
-
-  query.set(
-    "limit",
-    String(
-      Math.min(
-        options.limit ?? PRODUCT_PAGE_SIZE,
-        PRODUCT_PAGE_SIZE,
-      ),
-    ),
-  );
+function buildProductQuery(options: GetProductsOptions) {
+  const params = new URLSearchParams();
 
   if (options.search) {
-    query.set("search", options.search);
+    params.set("search", options.search);
   }
 
   if (options.categoryId) {
-    query.set(
-      "categoryId",
-      options.categoryId,
-    );
+    params.set("categoryId", options.categoryId);
   }
 
   if (options.brandIds?.length) {
-    query.set(
-      "brandIds",
-      options.brandIds.join(","),
-    );
+    params.set("brandIds", options.brandIds.join(","));
   }
 
   if (options.minPrice !== undefined) {
-    query.set(
-      "minPrice",
-      String(options.minPrice),
-    );
+    params.set("minPrice", String(options.minPrice));
   }
 
   if (options.maxPrice !== undefined) {
-    query.set(
-      "maxPrice",
-      String(options.maxPrice),
-    );
+    params.set("maxPrice", String(options.maxPrice));
+  }
+
+  // ⭐ IMPORTANT
+  if (options.warrantyMonths?.length) {
+    params.set("warrantyMonths", options.warrantyMonths.join(","));
   }
 
   if (options.sort) {
-    query.set("sort", options.sort);
+    params.set("sort", options.sort);
+  }
+
+  if (options.page !== undefined) {
+    params.set("page", String(options.page));
+  }
+
+  if (options.limit !== undefined) {
+    params.set("limit", String(options.limit));
   }
 
   if (options.isPublished !== undefined) {
-    query.set(
-      "isPublished",
-      String(options.isPublished),
-    );
+    params.set("isPublished", String(options.isPublished));
   }
 
   if (options.isActive !== undefined) {
-    query.set(
-      "isActive",
-      String(options.isActive),
-    );
+    params.set("isActive", String(options.isActive));
   }
 
-  return query;
+  return params;
 }
 
 function buildFetchConfig(
@@ -102,9 +76,7 @@ function buildFetchConfig(
     config.cache = options.cache;
   }
 
-  if (
-    options?.revalidate !== undefined
-  ) {
+  if (options?.revalidate !== undefined) {
     config.next = {
       revalidate: options.revalidate,
     };
@@ -126,79 +98,47 @@ function buildFetchConfig(
 
 async function getProducts(
   options: GetProductsOptions = {},
-): Promise<
-  ProductsResponse<ProductCardData>
-> {
+): Promise<ProductsResponse<ProductCardData>> {
   const page = options.page ?? 1;
 
-  const limit = Math.min(
-    options.limit ?? PRODUCT_PAGE_SIZE,
-    PRODUCT_PAGE_SIZE,
-  );
+  const limit = Math.min(options.limit ?? PRODUCT_PAGE_SIZE, PRODUCT_PAGE_SIZE);
 
-  const fallback: ProductsResponse<ProductCardData> =
-    {
-      success: false,
-      data: [],
-      total: 0,
-      page,
-      limit,
-      totalPages: 0,
-    };
+  const fallback: ProductsResponse<ProductCardData> = {
+    success: false,
+    data: [],
+    total: 0,
+    page,
+    limit,
+    totalPages: 0,
+  };
 
   try {
-    const url = new URL(
-      `${API_URL}/products`,
-    );
+    const url = new URL(`${API_URL}/products`);
 
-    url.search =
-      buildProductQuery(options).toString();
+    url.search = buildProductQuery(options).toString();
 
-    const config = buildFetchConfig(
-      options.options,
-      ["products"],
-    );
+    const config = buildFetchConfig(options.options, ["products"]);
 
-    const response = await fetch(
-      url.toString(),
-      config,
-    );
+    const response = await fetch(url.toString(), config);
 
     if (!response.ok) {
-      console.error(
-        `[productServices.getProducts] ${response.status}`,
-      );
-
+      console.error(`[productServices.getProducts] ${response.status}`);
       return fallback;
     }
 
     const result = await response.json();
 
     return {
-      success:
-        result.status === "success",
-
+      success: result.status === "success",
       data: result.data ?? [],
-
-      total:
-        result.meta?.total ?? 0,
-
-      page:
-        result.meta?.page ?? page,
-
-      limit:
-        result.meta?.limit ?? limit,
-
-      totalPages:
-        result.meta?.totalPages ?? 0,
-
+      total: result.meta?.total ?? 0,
+      page: result.meta?.page ?? page,
+      limit: result.meta?.limit ?? limit,
+      totalPages: result.meta?.totalPages ?? 0,
       message: result.message,
     };
   } catch (error) {
-    console.error(
-      "[productServices.getProducts]",
-      error,
-    );
+    console.error("[productServices.getProducts]", error);
 
     return fallback;
   }
@@ -208,50 +148,75 @@ async function getProducts(
 /* Detail                                                                     */
 /* -------------------------------------------------------------------------- */
 
-async function getProductBySlug(
-  slug: string,
-): Promise<ProductDetail | null> {
+async function getProductBySlug(slug: string): Promise<ProductDetail | null> {
   if (!slug) return null;
 
   try {
-    const url = new URL(
-      `${API_URL}/products/slug/${encodeURIComponent(slug)}`,
-    );
+    const url = new URL(`${API_URL}/products/slug/${encodeURIComponent(slug)}`);
 
     const response = await fetch(
       url.toString(),
-      buildFetchConfig(
-        undefined,
-        [`product:${slug}`],
-      ),
+      buildFetchConfig(undefined, [`product:${slug}`]),
     );
 
     if (!response.ok) {
       return null;
     }
 
-    const result =
-      await response.json();
+    const result = await response.json();
 
-    return (
-      (result.data as ProductDetail) ??
-      null
-    );
+    return (result.data as ProductDetail) ?? null;
   } catch (error) {
-    console.error(
-      "[productServices.getProductBySlug]",
-      error,
-    );
+    console.error("[productServices.getProductBySlug]", error);
 
     return null;
   }
 }
 
 /* -------------------------------------------------------------------------- */
-/* Export                                                                     */
+/* get filter for warrenty                                                    */
 /* -------------------------------------------------------------------------- */
+
+const getProductFilters = async (): Promise<ProductFiltersResponse> => {
+  try {
+    const response = await fetch(`${API_URL}/products/filters`, {
+      next: {
+        revalidate: 300,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Product filters request failed: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    return {
+      success: result.success === true || result.status === "success",
+
+      data: result.data ?? {
+        warrantyMonths: [],
+        warranties: [],
+      },
+
+      message: result.message,
+    };
+  } catch (error) {
+    console.error("[productServices.getProductFilters]", error);
+
+    return {
+      success: false,
+      data: {
+        warrantyMonths: [],
+        warranties: [],
+      },
+      message: "Failed to fetch product filters",
+    };
+  }
+};
 
 export const productServices = {
   getProducts,
   getProductBySlug,
+  getProductFilters,
 };

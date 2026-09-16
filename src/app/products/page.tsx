@@ -34,13 +34,14 @@ export default async function ProductsPage({
   const PAGE_LIMIT = 20;
 
   /* ---------------- Parallel fetch ---------------- */
-  const [productsRes, categoryRes, brandsRes] = await Promise.all([
+  const [productsRes, categoryRes, brandsRes, warrantyRes] = await Promise.all([
     productServices.getProducts({
       search: params.search,
       categoryId: params.categoryId,
       brandIds: params.brandIds.length ? params.brandIds : undefined,
       minPrice: params.minPrice,
       maxPrice: params.maxPrice,
+      warrantyMonths: params.warrantyMonths,
       sort: params.sort,
       page: params.page,
       limit: PAGE_LIMIT,
@@ -50,12 +51,14 @@ export default async function ProductsPage({
     }),
     categoryServices.getCategories(),
     brandServices.getBrands(),
+    productServices.getProductFilters(),
   ]);
 
   /* ---------------- Data ---------------- */
   const products = productsRes?.data ?? [];
   const categories = categoryRes?.data ?? [];
   const brands = brandsRes?.data ?? [];
+  const warranties = warrantyRes?.data?.warranties ?? [];
   const total = productsRes?.total ?? 0;
 
   /* ---------------- Render ---------------- */
@@ -64,13 +67,15 @@ export default async function ProductsPage({
       products={products}
       categories={categories}
       brands={brands}
+      warranties={warranties}
       total={total}
       page={params.page}
       limit={PAGE_LIMIT}
       initialFilters={{
         search: params.search ?? "",
         categoryId: params.categoryId ?? null,
-        brandIds: params.brandIds,
+        brandIds: params.brandIds ?? null,
+        warrantyMonths: params.warrantyMonths ?? null,
         priceRange: [params.minPrice ?? 0, params.maxPrice ?? MAX_PRICE],
         sort: params.sort,
       }}

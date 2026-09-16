@@ -21,10 +21,11 @@ export type SortOption = "popular" | "price-asc" | "price-desc" | "newest";
 
 export type ViewMode = "grid" | "list";
 
-export interface InitialFilters {
+export interface initialFilters {
   search: string;
   categoryId: string | null;
   brandIds: string[];
+  warrantyMonths: number[];
   priceRange: [number, number];
   sort: SortOption;
 }
@@ -32,11 +33,12 @@ export interface InitialFilters {
 export interface ProductListingClientProps {
   products: ProductCardData[];
   categories: Category[];
+  warranties: { months: number; label: string }[];
   brands: Brand[];
   total: number;
   page: number;
   limit: number;
-  initialFilters: InitialFilters;
+  initialFilters: initialFilters;
 }
 
 export interface SidebarFiltersProps {
