@@ -4,7 +4,6 @@ import type { RootState } from "./store";
 export const selectCart = (state: RootState) => state.cart;
 export const selectCartItems = (state: RootState) => state.cart.items;
 export const selectCartHydrated = (state: RootState) => state.cart.hydrated;
-
 /** Total number of physical units across all cart lines. */
 export const selectCartCount = createSelector([selectCartItems], (items) =>
   items.reduce((sum, item) => sum + item.quantity, 0),

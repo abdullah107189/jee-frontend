@@ -1,33 +1,31 @@
-import { CartItem } from "@/lib/types/cart.types";
+// app/checkout/page.tsx
+import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { CheckoutForm } from "./checkout-form";
+import { getCurrentUser } from "@/services/auth.service";
 
-type ShippingAddress = {
-    name: string;
-    phone: string;
-    address: string;
-    city: string;
-    postalCode: string;
-    country: string;
+export const metadata: Metadata = {
+  title: "Checkout",
+  description:
+    "Complete your order securely with delivery address and payment method.",
+  robots: { index: false, follow: false },
 };
 
-// Cart → Order payload
-const buildOrderPayload = (
-    items: CartItem[],
-    shippingAddress: ShippingAddress,
-) => {
-    const subtotal = items.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0,
-    );
+export default async function CheckoutPage() {
+  const user = await getCurrentUser();
 
-    return {
-        items: items.map((item) => ({
-            productItemId: item.id,
-            price: item.price,
-            total: item.price * item.quantity,
-        })),
-        shippingAddress,
-        subtotal,
-        total: subtotal,
-        paymentMethod: "Bkash",
-    };
-};
+  if (!user) redirect("/login?redirect=/checkout");
+
+  return (
+    <main className="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <CheckoutForm
+        user={{
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone ?? "",
+        }}
+      />
+    </main>
+  );
+}

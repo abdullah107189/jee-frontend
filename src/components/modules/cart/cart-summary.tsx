@@ -92,14 +92,15 @@ export function CartSummary({ subtotal, itemCount }: CartSummaryProps) {
             </div>
           </div>
 
-          <Button
-            size="lg"
-            className="w-full rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:bg-primary/90"
-            onClick={() => router.push("/customer/checkout")}
-          >
-            Proceed to Checkout
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
+          <Link href={"/checkout"}>
+            <Button
+              size="lg"
+              className="w-full rounded-xl bg-primary text-primary-foreground transition-all hover:bg-primary/90 mb-2"
+            >
+              Proceed to Checkout
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
 
           <Link href="/products">
             <Button variant="outline" size="lg" className="w-full rounded-xl">
@@ -124,6 +125,6 @@ export function CartSummary({ subtotal, itemCount }: CartSummaryProps) {
           </p>
         </CardContent>
       </Card>
-    </aside>
+    </aside >
   );
 }

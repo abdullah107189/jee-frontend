@@ -9,6 +9,7 @@ const SESSION_SECRET =
 export type AuthRole = "admin" | "seller" | "customer";
 
 export type CurrentUser = {
+  phone: string;
   id: number | string;
   name: string;
   email: string;

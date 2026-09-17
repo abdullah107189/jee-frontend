@@ -12,6 +12,7 @@ import {
 import {
   selectCartCount,
   selectCartItems,
+  selectCartHydrated,
   selectCartSubtotal,
 } from "@/store/selectors";
 import type { CartItemInput } from "@/lib/types/cart.types";
@@ -22,6 +23,7 @@ export function useCart() {
   const items = useAppSelector(selectCartItems);
   const count = useAppSelector(selectCartCount);
   const subtotal = useAppSelector(selectCartSubtotal);
+  const isHydrated = useAppSelector(selectCartHydrated);
 
   const add = useCallback(
     (item: CartItemInput) => dispatch(addToCart(item)),
@@ -41,5 +43,5 @@ export function useCart() {
 
   const clear = useCallback(() => dispatch(clearCart()), [dispatch]);
 
-  return { items, count, subtotal, add, remove, update, clear };
+  return { items, count, subtotal, add, remove, update, clear, isHydrated };
 }
