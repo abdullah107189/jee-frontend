@@ -314,8 +314,8 @@ export function CheckoutForm({ user }: CheckoutFormProps) {
                     {/* ==================== LEFT: Form ==================== */}
                     <div className="space-y-5 sm:space-y-6 lg:col-span-2">
                         {/* ---------- Delivery Address (merged Location + Contact) ---------- */}
-                        <Card className="rounded-2xl">
-                            <CardContent className="space-y-5 p-4 sm:p-6">
+                        <Card className="rounded-xl">
+                            <CardContent className="space-y-5 ">
                                 <SectionHeading
                                     icon={MapPin}
                                     title="Delivery Address"
@@ -345,7 +345,7 @@ export function CheckoutForm({ user }: CheckoutFormProps) {
                                     >
                                         <Truck className="h-3.5 w-3.5 shrink-0" />
                                         <span>
-                                            {insideDhaka ? "Inside Dhaka" : "Outside Dhaka"} —{" "}
+                                            {insideDhaka ? "Inside Dhaka" : "Outside Dhaka District"} — {" "}
                                             <span className="font-semibold">
                                                 ৳{deliveryFee}
                                             </span>{" "}
@@ -474,7 +474,7 @@ export function CheckoutForm({ user }: CheckoutFormProps) {
                         </Card>
 
                         {/* ---------- Payment ---------- */}
-                        <Card className="rounded-2xl">
+                        <Card className="rounded-xl">
                             <CardContent className="space-y-5 p-4 sm:p-6">
                                 <SectionHeading
                                     icon={Wallet}
@@ -649,8 +649,8 @@ export function CheckoutForm({ user }: CheckoutFormProps) {
                         </Card>
 
                         {/* ---------- Notes ---------- */}
-                        <Card className="rounded-2xl">
-                            <CardContent className="space-y-3 p-4 sm:p-6">
+                        <Card className="rounded-xl">
+                            <CardContent className="space-y-3">
                                 <SectionHeading title="Order notes (optional)" />
 
                                 <FormField
@@ -759,7 +759,7 @@ export function CheckoutForm({ user }: CheckoutFormProps) {
                                                             : "text-muted-foreground",
                                                     )}
                                                 >
-                                                    {insideDhaka ? "Inside Dhaka" : "Outside Dhaka"}
+                                                    {insideDhaka ? "Inside Dhaka" : "Outside Dhaka District"}
                                                 </Badge>
                                             )}
                                         </span>

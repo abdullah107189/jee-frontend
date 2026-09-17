@@ -145,13 +145,13 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         description: "Proceeding to checkout with current quantity.",
       });
       // Still redirect to checkout
-      router.push("/customer/checkout");
+      router.push("/checkout");
       return;
     }
 
     add(buildCartPayload());
     toast.success("Redirecting to checkout...");
-    router.push("/customer/checkout");
+    router.push("/checkout");
   };
 
   return (
