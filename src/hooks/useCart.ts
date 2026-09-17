@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback } from "react";
-
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   addToCart,
@@ -11,8 +10,8 @@ import {
 } from "@/store/slices/cartSlice";
 import {
   selectCartCount,
-  selectCartItems,
   selectCartHydrated,
+  selectCartItems,
   selectCartSubtotal,
 } from "@/store/selectors";
 import type { CartItemInput } from "@/lib/types/cart.types";
@@ -25,23 +24,47 @@ export function useCart() {
   const subtotal = useAppSelector(selectCartSubtotal);
   const isHydrated = useAppSelector(selectCartHydrated);
 
+  /* ✅ Check if variant already in cart */
+  const has = useCallback(
+    (variantId: string) => items.some((i) => i.variantId === variantId),
+    [items],
+  );
+
+  /* ✅ Get existing quantity of a variant */
+  const getQuantity = useCallback(
+    (variantId: string) =>
+      items.find((i) => i.variantId === variantId)?.quantity ?? 0,
+    [items],
+  );
+
   const add = useCallback(
     (item: CartItemInput) => dispatch(addToCart(item)),
     [dispatch],
   );
 
   const remove = useCallback(
-    (id: string) => dispatch(removeFromCart(id)),
+    (variantId: string) => dispatch(removeFromCart(variantId)),
     [dispatch],
   );
 
   const update = useCallback(
-    (id: string, quantity: number) =>
-      dispatch(updateQuantity({ id, quantity })),
+    (variantId: string, quantity: number) =>
+      dispatch(updateQuantity({ variantId, quantity })),
     [dispatch],
   );
 
   const clear = useCallback(() => dispatch(clearCart()), [dispatch]);
 
-  return { items, count, subtotal, add, remove, update, clear, isHydrated };
+  return {
+    items,
+    count,
+    subtotal,
+    isHydrated,
+    has,
+    getQuantity,
+    add,
+    remove,
+    update,
+    clear,
+  };
 }

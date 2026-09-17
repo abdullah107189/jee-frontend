@@ -2,11 +2,8 @@
 
 import { useState } from "react";
 import { useAppDispatch } from "@/store/hooks";
-import { addToCart } from "@/store/slices/cartSlice";
-import { toast } from "sonner";
 
 import type {
-  ProductCardData,
   ProductListingClientProps,
   SortOption,
   ViewMode,
@@ -25,6 +22,8 @@ import {
 } from "@/lib/helpers/productListing.helpers";
 import { ProductListingContent } from "./ProductListingContent";
 import { MAX_PRICE } from "@/app/products/_lib/params";
+import { useCart } from "@/hooks/useCart";
+import { useAddToCart } from "@/hooks/useAddToCart";
 
 export default function ProductListingClient({
   products,
@@ -152,12 +151,7 @@ export default function ProductListingClient({
    * Cart
    * --------------------------------------------------------------------------
    */
-
-  const handleAddToCart = (product: ProductCardData) => {
-    dispatch(addToCart(toCartItem(product)));
-
-    toast.success(`${product.name} added to cart`);
-  };
+  const handleAddToCart = useAddToCart();
 
   /*
    * --------------------------------------------------------------------------

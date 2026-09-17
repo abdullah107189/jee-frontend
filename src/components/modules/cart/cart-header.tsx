@@ -78,7 +78,7 @@ export function CartHeader({ itemCount, onClear }: CartHeaderProps) {
 
             <AlertDialogAction
               onClick={() => startClearTransition(onClear)}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive text-background hover:bg-destructive/90"
             >
               Yes, clear cart
             </AlertDialogAction>

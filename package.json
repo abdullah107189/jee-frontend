@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev --turbo --port 3000",
     "build": "next build",
+    "start": "next start",
     "preview": "next start --port 3000",
     "clean": "rm -rf .next dist server.js",
     "lint": "tsc --noEmit"

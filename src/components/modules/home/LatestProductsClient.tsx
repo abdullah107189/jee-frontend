@@ -10,18 +10,15 @@ import { Button } from "@/components/ui/Button";
 import { ProductCardData } from "@/lib/types/product.types";
 import { CartItemInput } from "@/lib/types/cart.types";
 import { toCartItem } from "@/lib/helpers/productListing.helpers";
+import { useCart } from "@/hooks/useCart";
+import { useAddToCart } from "@/hooks/useAddToCart";
 
 export default function LatestProductsClient({
   products,
 }: {
   products: ProductCardData[];
 }) {
-  const dispatch = useAppDispatch();
-
-  const handleAddToCart = (product: ProductCardData) => {
-    dispatch(addToCart(toCartItem(product)));
-    toast.success(`${product.name} added to cart`);
-  };
+  const handleAddToCart = useAddToCart();
 
   return (
     <section className="w-full">

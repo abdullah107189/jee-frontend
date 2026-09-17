@@ -20,6 +20,7 @@ const cartSlice = createSlice({
       reducer(state, action: PayloadAction<CartItem>) {
         const incoming = action.payload;
 
+        // ✅ variant-based uniqueness
         const existing = state.items.find(
           (item) => item.variantId === incoming.variantId,
         );
@@ -41,7 +42,6 @@ const cartSlice = createSlice({
 
         state.lastUpdatedAt = Date.now();
       },
-      /* ✅ prepare — defaults handle koro */
       prepare(input: CartItemInput) {
         const quantity = Math.max(1, input.quantity ?? 1);
         const stockQuantity = Math.max(1, input.stockQuantity ?? 1);
@@ -73,19 +73,21 @@ const cartSlice = createSlice({
       },
     },
 
-    /* ---------------- Remove ---------------- */
+    /* ---------------- Remove (by variantId) ---------------- */
     removeFromCart(state, action: PayloadAction<string>) {
-      state.items = state.items.filter((item) => item.id !== action.payload);
+      state.items = state.items.filter(
+        (item) => item.variantId !== action.payload,
+      );
       state.lastUpdatedAt = Date.now();
     },
 
-    /* ---------------- Update quantity ---------------- */
+    /* ---------------- Update quantity (by variantId) ---------------- */
     updateQuantity(
       state,
-      action: PayloadAction<{ id: string; quantity: number }>,
+      action: PayloadAction<{ variantId: string; quantity: number }>,
     ) {
-      const { id, quantity } = action.payload;
-      const item = state.items.find((i) => i.id === id);
+      const { variantId, quantity } = action.payload;
+      const item = state.items.find((i) => i.variantId === variantId);
 
       if (!item) return;
 

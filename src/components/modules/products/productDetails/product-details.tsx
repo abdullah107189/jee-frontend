@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Heart,
   Minus,
@@ -10,6 +11,7 @@ import {
   Check,
   Bell,
 } from "lucide-react";
+import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/Badge";
 import { Separator } from "@/components/ui/separator";
@@ -26,31 +28,29 @@ import type {
   ProductDetail,
   ProductVariantDetail,
 } from "@/lib/types/product.types";
-import { useAppDispatch } from "@/store/hooks";
-import { addToCart } from "@/store/slices/cartSlice";
-import { toast } from "sonner";
+import { useCart } from "@/hooks/useCart";
 
 /* -------------------------------------------------------------------------- */
-/* Component                                                                  */
+/* Types                                                                      */
 /* -------------------------------------------------------------------------- */
-
 interface ProductDetailsProps {
   product: ProductDetail;
 }
 
+/* -------------------------------------------------------------------------- */
+/* Component                                                                  */
+/* -------------------------------------------------------------------------- */
 export function ProductDetails({ product }: ProductDetailsProps) {
-  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const { add, has } = useCart();
 
-  /* ---------- Default variant ---------- */
   const initialVariant =
     product.variants.find((v) => v.isDefault) ?? product.variants[0];
 
-  /* ---------- Selected variant state ---------- */
   const [selectedVariant, setSelectedVariant] =
     useState<ProductVariantDetail>(initialVariant);
 
-  /* ---------- Quantity state ---------- */
-  const [stockQuantity, setStockQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(1);
 
   if (!initialVariant) {
     return (
@@ -62,8 +62,9 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     );
   }
 
-  /* ---------- Derived values from selected variant ---------- */
-  const inStock = selectedVariant.inStock ?? selectedVariant.stockQuantity > 0;
+  /* ---------- Derived ---------- */
+  const inStock =
+    selectedVariant.inStock ?? selectedVariant.stockQuantity > 0;
 
   const discount =
     selectedVariant.comparePrice &&
@@ -75,7 +76,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       )
       : 0;
 
-  /* ---------- Gallery images ---------- */
   const galleryImages = useMemo(
     () =>
       selectedVariant.images?.length ? selectedVariant.images : product.images,
@@ -85,36 +85,75 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   /* ---------- Variant change ---------- */
   const handleVariantChange = (variant: ProductVariantDetail) => {
     setSelectedVariant(variant);
-    setStockQuantity(1);
+    setQuantity(1);
   };
 
-  /* ---------- Add to cart ---------- */
+  /* ---------- Build cart payload ---------- */
+  const buildCartPayload = () => ({
+    id: product.id,
+    variantId: selectedVariant.id,
+    variantSku: selectedVariant.sku,
 
+    slug: product.slug,
+    name: product.name,
+
+    price: selectedVariant.price,
+    originalPrice: selectedVariant.comparePrice ?? undefined,
+
+    image: selectedVariant.images[0] ?? null,
+    warrantyMonths: product.warrantyMonths,
+
+    brand: product.brand?.name,
+    category: product.category?.name,
+
+    quantity,
+    maxQuantity: selectedVariant.stockQuantity,
+    stockQuantity: selectedVariant.stockQuantity,
+  });
+
+  /* ---------- Add to Cart ---------- */
   const handleAddToCart = () => {
-    dispatch(
-      addToCart({
-        id: product.id,
-        variantId: selectedVariant.id,
-        variantSku: selectedVariant.sku,
+    if (!inStock) {
+      toast.error("Out of stock");
+      return;
+    }
 
-        slug: product.slug,
-        name: product.name,
+    if (has(selectedVariant.id)) {
+      toast.warning(`"${product.name}" already in your cart`, {
+        description: "Change quantity from cart page.", action: {
+          label: "View Cart",
+          onClick: () => router.push("/cart"),
+        },
+      });
+      return;
+    }
 
-        price: selectedVariant.price,
-        originalPrice: selectedVariant.comparePrice ?? undefined,
-
-        image: selectedVariant.images[0] ?? null,
-        warrantyMonths: product.warrantyMonths,
-
-        brand: product.brand?.name,
-        category: product.category?.name,
-
-        quantity: 1,
-        maxQuantity: selectedVariant.stockQuantity,
-        stockQuantity: selectedVariant.stockQuantity,
-      }),
-    );
+    add(buildCartPayload());
+    toast.success(`"${product.name}" added to cart`);
   };
+
+  /* ---------- Buy Now ---------- */
+  const handleBuyNow = () => {
+    if (!inStock) {
+      toast.error("Out of stock");
+      return;
+    }
+
+    // ✅ Same variant already in cart?
+    if (has(selectedVariant.id)) {
+      toast.warning(`"${product.name}" already in your cart`, {
+        description: "Proceeding to checkout with current quantity.",
+      });
+      // Still redirect to checkout
+      router.push("/customer/checkout");
+      return;
+    }
+
+    add(buildCartPayload());
+    toast.success("Redirecting to checkout...");
+    router.push("/customer/checkout");
+  };
+
   return (
     <div className="container-page">
       {/* Breadcrumb */}
@@ -143,14 +182,12 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               </p>
             )}
 
-            <div className="flex items-center gap-2">
-              <Badge
-                variant={inStock ? "outline" : "destructive"}
-                className="text-[10px] sm:text-xs"
-              >
-                {inStock ? "In Stock" : "Out of Stock"}
-              </Badge>
-            </div>
+            <Badge
+              variant={inStock ? "outline" : "destructive"}
+              className="text-[10px] sm:text-xs"
+            >
+              {inStock ? "In Stock" : "Out of Stock"}
+            </Badge>
           </div>
 
           {/* Title */}
@@ -198,17 +235,13 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           {/* Quantity + Buttons */}
           <div className="mt-5 flex flex-wrap items-center gap-2 sm:gap-3">
             {inStock ? (
-              <QuantitySelector
-                max={selectedVariant.stockQuantity}
-                value={stockQuantity}
-                onChange={setStockQuantity}
-              />
-            ) : (
-              "Out of Stock"
-            )}
-
-            {inStock ? (
               <>
+                <QuantitySelector
+                  max={selectedVariant.stockQuantity}
+                  value={quantity}
+                  onChange={setQuantity}
+                />
+
                 <Button
                   type="button"
                   variant="outline"
@@ -224,6 +257,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                   type="button"
                   size="lg"
                   className="h-11 min-w-[140px] flex-1 gap-2 rounded-full bg-orange-500 text-white hover:bg-orange-600 sm:h-12"
+                  onClick={handleBuyNow}
                 >
                   <Zap className="h-4 w-4" />
                   Buy Now
@@ -257,14 +291,12 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           {/* Warranty */}
           <div className="mt-5 flex items-start gap-3 rounded-xl border border-border bg-muted/30 p-3 sm:p-4">
             <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 sm:h-5 sm:w-5" />
-
             <div>
               <p className="text-xs font-semibold sm:text-sm">
                 {product.warrantyMonths >= 12
                   ? `${Math.floor(product.warrantyMonths / 12)} Year(s) Warranty`
                   : `${product.warrantyMonths} Month(s) Warranty`}
               </p>
-
               <p className="mt-0.5 text-[11px] text-muted-foreground sm:text-xs">
                 {product.warrantyTerms ??
                   "Official manufacturer warranty included."}
@@ -272,7 +304,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             </div>
           </div>
 
-          {/* Variant summary */}
+          {/* SKU */}
           {Object.keys(selectedVariant.attributes ?? {}).length > 0 && (
             <p className="mt-3 text-[11px] text-muted-foreground sm:text-xs">
               SKU: <span className="font-mono">{selectedVariant.sku}</span>
@@ -296,7 +328,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               <h2 className="mb-3 text-base font-bold sm:text-lg">
                 Description
               </h2>
-
               <DescriptionContent
                 description={product.description}
                 specifications={product.specifications}
@@ -344,17 +375,12 @@ function TabTrigger({
       className="flex-shrink-0 rounded-none border-b-2 border-transparent px-3 py-2.5 text-xs font-medium data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none sm:px-4 sm:text-sm"
     >
       {label}
-
       {typeof count === "number" && (
         <span className="text-muted-foreground"> ({count})</span>
       )}
     </TabsTrigger>
   );
 }
-
-/* -------------------------------------------------------------------------- */
-/* Quantity Selector                                                          */
-/* -------------------------------------------------------------------------- */
 
 function QuantitySelector({
   max,
@@ -363,22 +389,15 @@ function QuantitySelector({
 }: {
   max: number;
   value: number;
-  onChange: (stockQuantity: number) => void;
+  onChange: (v: number) => void;
 }) {
   const decrease = () => {
-    if (value > 1) {
-      onChange(value - 1);
-    }
+    if (value > 1) onChange(value - 1);
   };
 
   const increase = () => {
-    if (value < max) {
-      onChange(value + 1);
-    }
+    if (value < max) onChange(value + 1);
   };
-
-  const isDecreaseDisabled = value <= 1;
-  const isIncreaseDisabled = value >= max || max <= 0;
 
   return (
     <div className="flex h-11 items-center rounded-full border border-border sm:h-12">
@@ -386,25 +405,23 @@ function QuantitySelector({
         type="button"
         aria-label="Decrease quantity"
         onClick={decrease}
-        disabled={isDecreaseDisabled}
-        className="flex h-full cursor-pointer w-9 items-center justify-center text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40 sm:w-10"
+        disabled={value <= 1}
+        className="flex h-full w-9 cursor-pointer items-center justify-center text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40 sm:w-10"
       >
         <Minus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
       </button>
-
       <span
         aria-live="polite"
         className="min-w-7 select-none text-center text-sm font-semibold sm:min-w-8"
       >
         {value}
       </span>
-
       <button
         type="button"
         aria-label="Increase quantity"
         onClick={increase}
-        disabled={isIncreaseDisabled}
-        className="flex h-full cursor-pointer w-9 items-center justify-center text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40 sm:w-10"
+        disabled={value >= max || max <= 0}
+        className="flex h-full w-9 cursor-pointer items-center justify-center text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40 sm:w-10"
       >
         <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
       </button>
@@ -426,7 +443,6 @@ function DescriptionContent({
   return (
     <div className="space-y-2 text-sm leading-7 text-muted-foreground">
       {description && <p>{description}</p>}
-
       {bullets.length > 0 && (
         <ul className="mt-3 list-inside list-disc space-y-1.5">
           {bullets.map((item, i) => (
@@ -434,8 +450,9 @@ function DescriptionContent({
           ))}
         </ul>
       )}
-
-      {!description && bullets.length === 0 && <p>No description available.</p>}
+      {!description && bullets.length === 0 && (
+        <p>No description available.</p>
+      )}
     </div>
   );
 }

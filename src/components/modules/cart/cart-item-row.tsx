@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Minus, Plus, ShieldCheck, Trash2 } from "lucide-react";
-import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -13,8 +12,8 @@ import type { CartItem } from "@/lib/types/cart.types";
 
 interface CartItemRowProps {
   item: CartItem;
-  onUpdateQuantity: (id: string, quantity: number) => void;
-  onRemove: (id: string) => void;
+  onUpdateQuantity: (variantId: string, quantity: number) => void;
+  onRemove: (variantId: string) => void;
 }
 
 export function CartItemRow({
@@ -23,12 +22,13 @@ export function CartItemRow({
   onRemove,
 }: CartItemRowProps) {
   const canDecrement = item.quantity > 1;
-  const canIncrement = item.maxQuantity == null || item.quantity < item.maxQuantity;
+  const canIncrement =
+    item.maxQuantity == null || item.quantity < item.maxQuantity;
   const lineTotal = item.price * item.quantity;
 
+  /* ✅ Toast remove hoye geche — parent (cart-view) e ache */
   const handleRemove = () => {
-    onRemove(item.id);
-    toast.success(`"${item.name}" removed from cart`);
+    onRemove(item.variantId);   // ✅ variantId
   };
 
   return (
@@ -95,12 +95,15 @@ export function CartItemRow({
             {/* Controls */}
             <div className="mt-3 flex items-center justify-between gap-2 sm:mt-4">
               <div className="inline-flex items-center rounded-lg border border-border bg-background">
+                {/* Decrease — ✅ variantId */}
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8 rounded-r-none hover:bg-accent sm:h-9 sm:w-9"
-                  onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
+                  onClick={() =>
+                    onUpdateQuantity(item.variantId, item.quantity - 1)
+                  }
                   disabled={!canDecrement}
                   aria-label="Decrease quantity"
                 >
@@ -114,12 +117,15 @@ export function CartItemRow({
                   {item.quantity}
                 </span>
 
+                {/* Increase — ✅ variantId */}
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8 rounded-l-none hover:bg-accent sm:h-9 sm:w-9"
-                  onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                  onClick={() =>
+                    onUpdateQuantity(item.variantId, item.quantity + 1)
+                  }
                   disabled={!canIncrement}
                   aria-label="Increase quantity"
                 >
@@ -127,6 +133,7 @@ export function CartItemRow({
                 </Button>
               </div>
 
+              {/* Remove — ✅ variantId (via handleRemove) */}
               <Button
                 type="button"
                 variant="ghost"

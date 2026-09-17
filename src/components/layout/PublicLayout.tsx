@@ -17,6 +17,7 @@ export async function PublicLayout({ children }: PublicLayoutProps) {
     email: "test@example.com",
     name: "John",
     role: "admin",
+    phone: "01711111111",
   };
 
   return (

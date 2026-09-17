@@ -16,7 +16,6 @@ import { CartSummary } from "./cart-summary";
 
 export function CartView() {
   const { items, count, subtotal, remove, update, clear } = useCart();
-  console.log("CartView items:", items);
   const hydrated = useAppSelector(selectCartHydrated);
 
   // SSR guard: never render persisted cart contents before mount.
@@ -33,12 +32,19 @@ export function CartView() {
     return <CartEmpty />;
   }
 
-  const handleRemove = (id: string) => {
-    const item = items.find((entry) => entry.id === id);
-    remove(id);
+  /* ---------------- Remove (variant-based) ---------------- */
+  const handleRemove = (variantId: string) => {
+    const item = items.find((entry) => entry.variantId === variantId);
+    remove(variantId);
     if (item) toast.success(`"${item.name}" removed from cart`);
   };
 
+  /* ---------------- Update quantity (variant-based) ---------------- */
+  const handleUpdateQuantity = (variantId: string, quantity: number) => {
+    update(variantId, quantity);
+  };
+
+  /* ---------------- Clear ---------------- */
   const handleClear = () => {
     clear();
     toast.success("Cart cleared");
@@ -57,7 +63,7 @@ export function CartView() {
             <CartItemRow
               key={item.variantId}
               item={item}
-              onUpdateQuantity={(id, quantity) => update(id, quantity)}
+              onUpdateQuantity={handleUpdateQuantity}
               onRemove={handleRemove}
             />
           ))}

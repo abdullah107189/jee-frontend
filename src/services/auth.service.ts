@@ -77,7 +77,13 @@ export async function authenticate(credentials: {
   )
     throw new Error("Invalid credentials");
 
-  return { id: "1", name: "Md. Rahman", email, role: role as AuthRole };
+  return {
+    id: "1",
+    name: "Md. Rahman",
+    email,
+    role: role as AuthRole,
+    phone: "01711111111",
+  };
 }
 
 export async function createSession(user: CurrentUser) {
