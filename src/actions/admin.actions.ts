@@ -1,106 +1,214 @@
-'use server';
+"use server";
 
-import { requireRole } from '@/services/auth.service';
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import {
-  bulkAddAdminProductItems,
-  updateAdminOrderStatus,
-  updateAdminSellerStatus,
-  updateAdminUserRole,
-  updateAdminUserStatus,
-  updateAdminWarrantyClaimStatus,
-  updateAdminWarrantyStatus,
-  verifyAdminOrderPayment,
-} from '@/services/admin.service';
+  loginSchema,
+  registerSchema,
+  verifyOtpSchema,
+  resendOtpSchema,
+} from "@/lib/auth/schema";
+import { forwardSetCookies, clearAuthCookies } from "@/lib/auth/cookie";
+import type { AuthActionState, AuthUser } from "@/lib/types/auth.types";
 
-type ActionResult = { success: boolean; message: string };
+const API_URL = process.env.API_URL!;
 
-const USER_ROLES = new Set(['admin', 'seller', 'customer']);
-const USER_STATUSES = new Set(['Active', 'Disabled']);
-const SELLER_STATUSES = new Set(['Approved', 'Pending', 'Suspended', 'Disabled']);
-const ORDER_STATUSES = new Set(['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled']);
-const WARRANTY_STATUSES = new Set(['Active', 'Claimed', 'Expired', 'Void']);
-const CLAIM_STATUSES = new Set(['Submitted', 'In Progress', 'Approved', 'Completed', 'Rejected']);
-
-function requiredText(value: unknown, field: string, maxLength = 120) {
-  if (typeof value !== 'string' || value.trim().length === 0 || value.length > maxLength) {
-    throw new Error(`Invalid ${field}`);
-  }
-  return value.trim();
-}
-
-export async function updateUserRoleAction(input: { id: string; role: string }): Promise<ActionResult> {
-  await requireRole('admin');
-  const id = requiredText(input?.id, 'user id');
-  const role = requiredText(input?.role, 'role');
-  if (!USER_ROLES.has(role)) throw new Error('Invalid user role');
-  return updateAdminUserRole(id, role);
-}
-
-export async function updateUserStatusAction(input: { id: string; status: string }): Promise<ActionResult> {
-  await requireRole('admin');
-  const id = requiredText(input?.id, 'user id');
-  const status = requiredText(input?.status, 'status');
-  if (!USER_STATUSES.has(status)) throw new Error('Invalid user status');
-  return updateAdminUserStatus(id, status);
-}
-
-export async function updateSellerStatusAction(input: { id: string; status: string; reason?: string }): Promise<ActionResult> {
-  await requireRole('admin');
-  const id = requiredText(input?.id, 'seller id');
-  const status = requiredText(input?.status, 'status');
-  if (!SELLER_STATUSES.has(status)) throw new Error('Invalid seller status');
-  if (input.reason !== undefined) requiredText(input.reason, 'reason', 500);
-  return updateAdminSellerStatus(id, status);
-}
-
-export async function bulkAddProductItemsAction(input: { productId: string; items: Array<{ uniqueId: string; serialNumber?: string; status: string }> }): Promise<ActionResult> {
-  await requireRole('admin');
-  const productId = requiredText(input?.productId, 'product id');
-  if (!Array.isArray(input?.items) || input.items.length === 0 || input.items.length > 500) {
-    throw new Error('Invalid product items');
-  }
-
-  const ids = new Set<string>();
-  const items = input.items.map((item) => {
-    const uniqueId = requiredText(item?.uniqueId, 'unique id', 100);
-    if (!/^[A-Z0-9-]+$/.test(uniqueId) || ids.has(uniqueId)) throw new Error('Invalid or duplicate unique id');
-    ids.add(uniqueId);
-    const status = requiredText(item?.status, 'item status');
-    if (!new Set(['AVAILABLE', 'RESERVED', 'DAMAGED']).has(status)) throw new Error('Invalid item status');
-    return { ...item, uniqueId, status };
+/* ─────────────────────────────────────────
+   Login
+   ───────────────────────────────────────── */
+export async function loginAction(
+  _prevState: AuthActionState | null,
+  formData: FormData,
+): Promise<AuthActionState> {
+  const parsed = loginSchema.safeParse({
+    email: formData.get("email"),
+    password: formData.get("password"),
   });
 
-  return bulkAddAdminProductItems(productId, items);
+  if (!parsed.success) {
+    return {
+      success: false,
+      message: "Invalid input",
+      fieldErrors: parsed.error.flatten().fieldErrors as Record<
+        string,
+        string[]
+      >,
+    };
+  }
+
+  try {
+    const res = await fetch(`${API_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(parsed.data),
+    });
+
+    const json = await res.json();
+
+    if (!res.ok || !json.success) {
+      return { success: false, message: json.message ?? "Login failed" };
+    }
+
+    await forwardSetCookies(res);
+
+    return {
+      success: true,
+      message: "Login successful",
+      user: json.data.user as AuthUser,
+    };
+  } catch {
+    return { success: false, message: "Network error. Please try again." };
+  }
 }
 
-export async function updateOrderStatusAction(input: { id: string; status: string }): Promise<ActionResult> {
-  await requireRole('admin');
-  const id = requiredText(input?.id, 'order id');
-  const status = requiredText(input?.status, 'status');
-  if (!ORDER_STATUSES.has(status)) throw new Error('Invalid order status');
-  return updateAdminOrderStatus(id, status);
+/* ─────────────────────────────────────────
+   Register
+   ───────────────────────────────────────── */
+export async function registerAction(
+  _prevState: AuthActionState | null,
+  formData: FormData,
+): Promise<AuthActionState> {
+  const raw = {
+    name: formData.get("name"),
+    email: formData.get("email"),
+    phone: formData.get("phone"),
+    password: formData.get("password"),
+    confirmPassword: formData.get("confirmPassword"),
+    terms: formData.get("terms") === "on",
+  };
+
+  const parsed = registerSchema.safeParse(raw);
+  if (!parsed.success) {
+    return {
+      success: false,
+      message: "Please fix the errors",
+      fieldErrors: parsed.error.flatten().fieldErrors as Record<
+        string,
+        string[]
+      >,
+    };
+  }
+
+  const { name, email, phone, password } = parsed.data;
+
+  try {
+    const res = await fetch(`${API_URL}/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, phone, password }),
+    });
+
+    const json = await res.json();
+
+    if (!res.ok || !json.success) {
+      return {
+        success: false,
+        message: json.message ?? "Registration failed",
+      };
+    }
+
+    return {
+      success: true,
+      message: json.message ?? "OTP sent to your email",
+    };
+  } catch {
+    return { success: false, message: "Network error. Please try again." };
+  }
 }
 
-export async function verifyOrderPaymentAction(input: { id: string; verified: boolean }): Promise<ActionResult> {
-  await requireRole('admin');
-  const id = requiredText(input?.id, 'order id');
-  if (typeof input?.verified !== 'boolean') throw new Error('Invalid payment verification value');
-  return verifyAdminOrderPayment(id, input.verified);
+/* ─────────────────────────────────────────
+   Verify OTP
+   ───────────────────────────────────────── */
+export async function verifyEmailAction(
+  _prevState: AuthActionState | null,
+  formData: FormData,
+): Promise<AuthActionState> {
+  const parsed = verifyOtpSchema.safeParse({
+    email: formData.get("email"),
+    otp: formData.get("otp"),
+  });
+
+  if (!parsed.success) {
+    return {
+      success: false,
+      message: "Invalid OTP",
+      fieldErrors: parsed.error.flatten().fieldErrors as Record<
+        string,
+        string[]
+      >,
+    };
+  }
+
+  try {
+    const res = await fetch(`${API_URL}/auth/verify-email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(parsed.data),
+    });
+
+    const json = await res.json();
+
+    if (!res.ok || !json.success) {
+      return {
+        success: false,
+        message: json.message ?? "Verification failed",
+      };
+    }
+
+    return {
+      success: true,
+      message: json.message ?? "Email verified successfully!",
+      user: json.data?.user as AuthUser,
+    };
+  } catch {
+    return { success: false, message: "Network error. Please try again." };
+  }
 }
 
-export async function updateWarrantyStatusAction(input: { id: string; status: string }): Promise<ActionResult> {
-  await requireRole('admin');
-  const id = requiredText(input?.id, 'warranty id');
-  const status = requiredText(input?.status, 'status');
-  if (!WARRANTY_STATUSES.has(status)) throw new Error('Invalid warranty status');
-  return updateAdminWarrantyStatus(id, status);
+/* ─────────────────────────────────────────
+   Resend OTP
+   ───────────────────────────────────────── */
+export async function resendOtpAction(
+  _prevState: AuthActionState | null,
+  formData: FormData,
+): Promise<AuthActionState> {
+  const parsed = resendOtpSchema.safeParse({ email: formData.get("email") });
+  if (!parsed.success) return { success: false, message: "Invalid email" };
+
+  try {
+    const res = await fetch(`${API_URL}/auth/resend-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(parsed.data),
+    });
+    const json = await res.json();
+    return {
+      success: json.success,
+      message: json.message ?? "OTP resent",
+    };
+  } catch {
+    return { success: false, message: "Network error" };
+  }
 }
 
-export async function updateWarrantyClaimStatusAction(input: { id: string; status: string; resolutionNotes?: string }): Promise<ActionResult> {
-  await requireRole('admin');
-  const id = requiredText(input?.id, 'claim id');
-  const status = requiredText(input?.status, 'status');
-  if (!CLAIM_STATUSES.has(status)) throw new Error('Invalid claim status');
-  if (input.resolutionNotes !== undefined) requiredText(input.resolutionNotes, 'resolution notes', 2000);
-  return updateAdminWarrantyClaimStatus(id, status, input.resolutionNotes);
+/* ─────────────────────────────────────────
+   Logout
+   ───────────────────────────────────────── */
+export async function logoutAction(): Promise<void> {
+  try {
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore.toString();
+
+    await fetch(`${API_URL}/auth/logout`, {
+      method: "POST",
+      headers: { Cookie: cookieHeader },
+    });
+  } catch {
+    // ignore
+  }
+
+  await clearAuthCookies(); 
+  revalidatePath("/", "layout");
+  redirect("/");
 }

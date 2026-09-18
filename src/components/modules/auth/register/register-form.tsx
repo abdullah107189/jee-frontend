@@ -5,18 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import {
-  Eye,
-  EyeOff,
-  Mail,
-  Lock,
-  User,
-  Phone,
-  ArrowRight,
-  Loader2,
-  CheckCircle2,
-  XCircle,
+  Eye, EyeOff, Mail, Lock, User, Phone,
+  ArrowRight, Loader2, CheckCircle2, XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -25,59 +16,14 @@ import { Input } from "@/components/ui/Input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+  Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
 } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
+import { registerAction } from "@/actions/auth.actions";
+import { registerSchema, type RegisterFormValues } from "@/lib/auth/schema";
 
-/* ----------------------------- Schema ---------------------------------- */
-const registerSchema = z
-  .object({
-    name: z
-      .string()
-      .min(2, { message: "Name must be at least 2 characters" })
-      .max(50, { message: "Name is too long" }),
-
-    email: z
-      .string()
-      .min(1, { message: "Email is required" })
-      .email({ message: "Please enter a valid email" }),
-
-    phone: z
-      .string()
-      .trim()
-      .regex(/^(01[3-9]\d{8}|\+8801[3-9]\d{8})$/, {
-        message: "Please enter a valid BD phone number",
-      }),
-
-    password: z
-      .string()
-      .min(8, { message: "Password must be at least 8 characters" })
-      .regex(/[A-Z]/, { message: "Must contain an uppercase letter" })
-      .regex(/[a-z]/, { message: "Must contain a lowercase letter" })
-      .regex(/[0-9]/, { message: "Must contain a number" }),
-
-    confirmPassword: z.string().min(1, { message: "Please confirm password" }),
-
-    terms: z.boolean().refine((val) => val === true, {
-      message: "You must accept the terms and conditions",
-    }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
-
-type RegisterFormValues = z.infer<typeof registerSchema>;
-
-/* --------------------------- Component --------------------------------- */
 export function RegisterForm() {
   const router = useRouter();
-
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -85,17 +31,12 @@ export function RegisterForm() {
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      password: "",
-      confirmPassword: "",
-      terms: false,
+      name: "", email: "", phone: "",
+      password: "", confirmPassword: "", terms: false,
     },
   });
 
   const password = form.watch("password");
-
   const checks = {
     length: password.length >= 8,
     uppercase: /[A-Z]/.test(password),
@@ -107,18 +48,32 @@ export function RegisterForm() {
     setIsLoading(true);
 
     try {
-      // TODO: replace with real API call
-      await new Promise((r) => setTimeout(r, 1200));
+      const fd = new FormData();
+      fd.set("name", data.name);
+      fd.set("email", data.email);
+      fd.set("phone", data.phone);
+      fd.set("password", data.password);
+      fd.set("confirmPassword", data.confirmPassword);
+      fd.set("terms", data.terms ? "on" : "");
 
-      toast.success("Account created successfully!", {
-        description: "Redirecting you to the login page...",
-      });
+      const res = await registerAction(null, fd);
 
-      router.push("/login?registered=true");
+      if (!res.success) {
+        toast.error(res.message);
+        if (res.fieldErrors) {
+          for (const [key, errors] of Object.entries(res.fieldErrors)) {
+            form.setError(key as keyof RegisterFormValues, {
+              message: errors[0],
+            });
+          }
+        }
+        return;
+      }
+
+      toast.success("OTP sent to your email!");
+      router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
     } catch {
-      toast.error("Registration failed", {
-        description: "Something went wrong. Please try again.",
-      });
+      toast.error("Network error. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -127,19 +82,12 @@ export function RegisterForm() {
   return (
     <Card className="w-full max-w-md border-border/50 bg-card/80 shadow-2xl backdrop-blur-xl">
       <CardHeader className="space-y-2 text-center">
-        {/* Mobile logo */}
-        <Link
-          href="/"
-          className="mx-auto mb-2 flex items-center gap-2 lg:hidden"
-          aria-label="Jee Store Home"
-        >
+        <Link href="/" className="mx-auto mb-2 flex items-center gap-2 lg:hidden">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-primary to-primary/60 text-primary-foreground shadow-lg shadow-primary/30">
             <span className="text-lg font-black">J</span>
           </div>
-
           <span className="text-2xl font-black tracking-tight">Jee</span>
         </Link>
-
         <CardTitle className="text-2xl font-bold sm:text-3xl">
           Create an account
         </CardTitle>
@@ -155,11 +103,9 @@ export function RegisterForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Full Name</FormLabel>
-
                   <FormControl>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-
                       <Input
                         placeholder="John Doe"
                         autoComplete="name"
@@ -168,7 +114,6 @@ export function RegisterForm() {
                       />
                     </div>
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -181,11 +126,9 @@ export function RegisterForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
-
                   <FormControl>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-
                       <Input
                         type="email"
                         placeholder="you@example.com"
@@ -195,7 +138,6 @@ export function RegisterForm() {
                       />
                     </div>
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -208,11 +150,9 @@ export function RegisterForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Phone Number</FormLabel>
-
                   <FormControl>
                     <div className="relative">
                       <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-
                       <Input
                         type="tel"
                         placeholder="01XXXXXXXXX"
@@ -222,7 +162,6 @@ export function RegisterForm() {
                       />
                     </div>
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -235,11 +174,9 @@ export function RegisterForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Password</FormLabel>
-
                   <FormControl>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-
                       <Input
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
@@ -247,14 +184,11 @@ export function RegisterForm() {
                         className="h-11 pl-10 pr-10"
                         {...field}
                       />
-
                       <button
                         type="button"
                         onClick={() => setShowPassword((s) => !s)}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-                        aria-label={
-                          showPassword ? "Hide password" : "Show password"
-                        }
+                        aria-label={showPassword ? "Hide password" : "Show password"}
                       >
                         {showPassword ? (
                           <EyeOff className="h-4 w-4" />
@@ -264,8 +198,6 @@ export function RegisterForm() {
                       </button>
                     </div>
                   </FormControl>
-
-                  {/* Password strength */}
                   {password.length > 0 && (
                     <div className="grid grid-cols-2 gap-1.5 pt-2">
                       <PasswordCheck ok={checks.length} label="8+ characters" />
@@ -274,7 +206,6 @@ export function RegisterForm() {
                       <PasswordCheck ok={checks.number} label="Number" />
                     </div>
                   )}
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -287,11 +218,9 @@ export function RegisterForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Confirm Password</FormLabel>
-
                   <FormControl>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-
                       <Input
                         type={showConfirm ? "text" : "password"}
                         placeholder="••••••••"
@@ -299,14 +228,11 @@ export function RegisterForm() {
                         className="h-11 pl-10 pr-10"
                         {...field}
                       />
-
                       <button
                         type="button"
                         onClick={() => setShowConfirm((s) => !s)}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-                        aria-label={
-                          showConfirm ? "Hide password" : "Show password"
-                        }
+                        aria-label={showConfirm ? "Hide password" : "Show password"}
                       >
                         {showConfirm ? (
                           <EyeOff className="h-4 w-4" />
@@ -316,7 +242,6 @@ export function RegisterForm() {
                       </button>
                     </div>
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -336,31 +261,22 @@ export function RegisterForm() {
                         className="mt-0.5"
                       />
                     </FormControl>
-
                     <FormLabel className="cursor-pointer text-sm font-normal leading-snug text-muted-foreground">
                       I agree to the{" "}
-                      <Link
-                        href="/terms"
-                        className="font-medium text-primary hover:underline"
-                      >
-                        Terms of Service
+                      <Link href="/terms" className="font-medium text-primary hover:underline">
+                        Terms
                       </Link>{" "}
                       and{" "}
-                      <Link
-                        href="/privacy"
-                        className="font-medium text-primary hover:underline"
-                      >
+                      <Link href="/privacy" className="font-medium text-primary hover:underline">
                         Privacy Policy
                       </Link>
                     </FormLabel>
                   </div>
-
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Submit */}
             <Button
               type="submit"
               disabled={isLoading}
@@ -378,6 +294,12 @@ export function RegisterForm() {
                 </>
               )}
             </Button>
+            <div className="text-center text-sm text-muted-foreground">
+              Already have an account ?{" "}
+              <Link href="/login" className="font-medium text-primary hover:underline">
+                Login
+              </Link>
+            </div>
           </form>
         </Form>
       </CardContent>
@@ -385,7 +307,6 @@ export function RegisterForm() {
   );
 }
 
-/* --------------------------- Small helper ------------------------------ */
 function PasswordCheck({ ok, label }: { ok: boolean; label: string }) {
   return (
     <div
@@ -399,7 +320,6 @@ function PasswordCheck({ ok, label }: { ok: boolean; label: string }) {
       ) : (
         <XCircle className="h-3.5 w-3.5" />
       )}
-
       {label}
     </div>
   );

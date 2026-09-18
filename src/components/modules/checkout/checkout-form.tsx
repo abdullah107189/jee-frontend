@@ -45,7 +45,7 @@ import {
     PAYMENT_GATEWAYS,
     getDeliveryFee,
     isInsideDhaka,
-} from "./_lib/schema";
+} from "../../../app/(public)/checkout/_lib/schema";
 
 /* -------------------------------------------------------------------------- */
 /* Constants                                                                  */

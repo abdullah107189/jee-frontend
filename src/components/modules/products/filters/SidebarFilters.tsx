@@ -10,7 +10,7 @@ import {
   WarrantyFilterOption,
 } from "@/lib/fixtures/product/types";
 import { PriceRangeSection } from "./PriceRangeSection";
-import { MAX_PRICE } from "@/app/products/_lib/params";
+import { MAX_PRICE } from "@/app/(public)/products/_lib/params";
 
 export type ProductFilters = {
   categoryId: string | null;

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import ProductListingClient from "@/components/modules/products/catalog/ProductListingClient";
 import { productServices } from "@/services/product.service";
-import { parseProductSearchParams, MAX_PRICE } from "./_lib/params";
-import { buildProductMetadata } from "./_lib/metadata";
 import { categoryServices } from "@/services/category.service";
 import { brandServices } from "@/services/brand.service";
+import { MAX_PRICE, parseProductSearchParams } from "./_lib/params";
+import { buildProductMetadata } from "./_lib/metadata";
 
 /* -------------------------------------------------------------------------- */
 /* Types                                                                      */

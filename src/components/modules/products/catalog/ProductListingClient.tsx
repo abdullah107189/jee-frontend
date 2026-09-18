@@ -21,7 +21,7 @@ import {
   toCartItem,
 } from "@/lib/helpers/productListing.helpers";
 import { ProductListingContent } from "./ProductListingContent";
-import { MAX_PRICE } from "@/app/products/_lib/params";
+import { MAX_PRICE } from "@/app/(public)/products/_lib/params";
 import { useCart } from "@/hooks/useCart";
 import { useAddToCart } from "@/hooks/useAddToCart";
 

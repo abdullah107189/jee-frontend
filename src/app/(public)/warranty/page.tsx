@@ -1,14 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
+import { Card,  CardContent } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { checkWarrantyAction } from "@/actions/warranty.actions";
 import { QrCode, Search, ShieldAlert, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
-import { PublicLayout } from "@/components/layout/PublicLayout";
 
 export default function WarrantyCheckPage() {
   const [uniqueId, setUniqueId] = useState("");

@@ -41,7 +41,8 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body

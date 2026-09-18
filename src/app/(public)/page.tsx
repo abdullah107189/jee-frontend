@@ -1,6 +1,5 @@
 // app/page.tsx — Home (SLIM NOW!)
-import type { Metadata } from "next";
-import { PublicLayout } from "@/components/layout/PublicLayout";
+import type { Metadata } from "next"; 
 import { HeroSection } from "@/components/modules/home/HeroSection";
 import TrustBadges from "@/components/modules/home/TrustBadges";
 import CategoriesSection from "@/components/modules/home/CategoriesSection";
@@ -30,7 +29,7 @@ const jsonLd = {
 
 export default function HomePage() {
   return (
-    <PublicLayout>
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -42,6 +41,6 @@ export default function HomePage() {
         <FeaturedProducts />
         <LatestProducts />
       </div>
-    </PublicLayout>
+    </>
   );
 }

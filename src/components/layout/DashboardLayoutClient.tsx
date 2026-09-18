@@ -15,11 +15,11 @@ import {
 import { cn } from "@/lib/utils";
 import { Sidebar } from "./Sidebar";
 import { Button } from "@/components/ui/Button";
-import { CurrentUser } from "@/services/auth.service";
+import type { AuthUser } from "@/lib/types/auth.types";  // ← changed
 
 interface DashboardLayoutClientProps {
   children: React.ReactNode;
-  user: CurrentUser;
+  user: AuthUser;  // ← AuthUser (not CurrentUser)
 }
 
 export function DashboardLayoutClient({
@@ -38,7 +38,7 @@ export function DashboardLayoutClient({
 
   return (
     <>
-      {/* ---------- Mobile Overlay ---------- */}
+      {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-30 bg-foreground/50 backdrop-blur-sm transition-opacity lg:hidden"
@@ -47,7 +47,7 @@ export function DashboardLayoutClient({
         />
       )}
 
-      {/* ---------- Sidebar (Desktop static / Mobile slide-in) ---------- */}
+      {/* Sidebar */}
       <aside
         aria-label="Dashboard navigation"
         className={cn(
@@ -56,7 +56,6 @@ export function DashboardLayoutClient({
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        {/* Mobile close button */}
         <Button
           variant="ghost"
           size="icon"
@@ -67,12 +66,11 @@ export function DashboardLayoutClient({
           <X className="h-5 w-5" />
         </Button>
 
-        <Sidebar role={user.role} onClose={() => setSidebarOpen(false)} />
+        <Sidebar role={user?.role} onClose={() => setSidebarOpen(false)} />
       </aside>
 
-      {/* ---------- Main Content Area ---------- */}
+      {/* Main Content */}
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        {/* Mobile Header */}
         <header className="flex items-center justify-between border-b border-border bg-background px-4 py-3 shadow-sm lg:hidden">
           <Link
             href="/"
@@ -93,20 +91,18 @@ export function DashboardLayoutClient({
           </Button>
         </header>
 
-        {/* Page Content — SSR'd server children render here */}
         <main
           className={cn(
             "relative flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8",
-            // Extra bottom padding for seller mobile nav
-            user.role === "seller" && "pb-24 lg:pb-8",
+            user.role === "SELLER" && "pb-24 lg:pb-8",  // ← uppercase
           )}
         >
           <div className="mx-auto w-full max-w-6xl">{children}</div>
         </main>
       </div>
 
-      {/* ---------- Mobile Bottom Nav (seller only) ---------- */}
-      {user.role === "seller" && (
+      {/* Mobile Bottom Nav (seller only) */}
+      {user.role === "SELLER" && (  // ← uppercase
         <nav
           aria-label="Seller quick navigation"
           className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-around border-t border-border bg-background/95 px-2 py-1.5 backdrop-blur-md shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.08)] lg:hidden"
@@ -118,7 +114,6 @@ export function DashboardLayoutClient({
             isActive={isActiveLink("/seller")}
           />
 
-          {/* Floating center button */}
           <Link
             href="/seller/sales/new"
             className="-mt-6 flex flex-col items-center"
@@ -156,7 +151,7 @@ export function DashboardLayoutClient({
   );
 }
 
-/* ---------------- Bottom Nav Helper ---------------- */
+/* Bottom Nav Helper */
 interface BottomNavLinkProps {
   href: string;
   icon: React.ComponentType<{ className?: string }>;

@@ -1,7 +1,7 @@
 // app/checkout/page.tsx
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { CheckoutForm } from "./checkout-form";
+import { CheckoutForm } from "../../../components/modules/checkout/checkout-form";
 import { getCurrentUser } from "@/services/auth.service";
 
 export const metadata: Metadata = {

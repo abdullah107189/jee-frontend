@@ -22,6 +22,7 @@ import { logoutAction } from "@/actions/auth.actions";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import { UserRole } from "@/lib/types/common.types";
 
 const MenuItem: React.FC<{
   item: any;
@@ -30,8 +31,8 @@ const MenuItem: React.FC<{
 }> = ({ item, isActive, pathname }) => {
   const [isOpen, setIsOpen] = useState(
     isActive ||
-      (item.subItems &&
-        item.subItems.some((sub: any) => pathname === sub.href)),
+    (item.subItems &&
+      item.subItems.some((sub: any) => pathname === sub.href)),
   );
 
   if (item.subItems) {
@@ -134,13 +135,13 @@ export function Sidebar({
   role,
   onClose,
 }: {
-  role: "admin" | "seller" | "customer";
+  role: UserRole;
   onClose?: () => void;
 }) {
   const pathname = usePathname();
 
   const menu = {
-    admin: [
+    ADMIN: [
       { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
       {
         name: "Products",
@@ -178,7 +179,7 @@ export function Sidebar({
       { name: "Users", href: "/admin/users", icon: UserCog },
       { name: "Settings", href: "/admin/settings", icon: Settings },
     ],
-    seller: [
+    SELLER: [
       { name: "Dashboard", href: "/seller", icon: LayoutDashboard },
       {
         name: "New Sale",
@@ -190,7 +191,7 @@ export function Sidebar({
       { name: "Warranties", href: "/seller/warranties", icon: ShieldCheck },
       { name: "Profile", href: "/seller/profile", icon: User },
     ],
-    customer: [
+    CUSTOMER: [
       { name: "Dashboard", href: "/customer", icon: LayoutDashboard },
       { name: "My Orders", href: "/customer/orders", icon: ShoppingCart },
       { name: "Warranty Check", href: "/warranty", icon: ShieldCheck },

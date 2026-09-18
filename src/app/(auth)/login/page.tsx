@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ShieldCheck, Truck, BadgeCheck, Sparkles } from "lucide-react";
 import { getCurrentUser } from "@/services/auth.service";
-import { LoginForm } from "@/components/modules/login/login-form";
+import { LoginForm } from "@/components/modules/auth/login/login-form";
 import Image from "next/image";
 
 /* ----------------------------- SEO Metadata ----------------------------- */
