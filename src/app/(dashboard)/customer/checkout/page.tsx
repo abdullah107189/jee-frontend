@@ -24,7 +24,7 @@ import { useToast } from '../../../../hooks/use-toast';
 import { Loader2, ArrowLeft, CreditCard, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { useAppSelector } from "@/store/hooks";
-import type { CartItem } from "@/store/slices/cartSlice";
+import type { CartItem } from "@/lib/types/cart.types";
 
 // Validation Schema
 const checkoutSchema = z.object({

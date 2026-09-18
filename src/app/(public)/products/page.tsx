@@ -1,0 +1,83 @@
+import type { Metadata } from "next";
+import ProductListingClient from "@/components/modules/products/catalog/ProductListingClient";
+import { productServices } from "@/services/product.service";
+import { categoryServices } from "@/services/category.service";
+import { brandServices } from "@/services/brand.service";
+import { MAX_PRICE, parseProductSearchParams } from "./_lib/params";
+import { buildProductMetadata } from "./_lib/metadata";
+
+/* -------------------------------------------------------------------------- */
+/* Types                                                                      */
+/* -------------------------------------------------------------------------- */
+interface ProductsPageProps {
+  searchParams: Promise<Record<string, string | undefined>>;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Metadata                                                                   */
+/* -------------------------------------------------------------------------- */
+export async function generateMetadata({
+  searchParams,
+}: ProductsPageProps): Promise<Metadata> {
+  const params = await parseProductSearchParams(searchParams);
+  return buildProductMetadata(params);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Page                                                                       */
+/* -------------------------------------------------------------------------- */
+export default async function ProductsPage({
+  searchParams,
+}: ProductsPageProps) {
+  const params = await parseProductSearchParams(searchParams);
+  const PAGE_LIMIT = 20;
+
+  /* ---------------- Parallel fetch ---------------- */
+  const [productsRes, categoryRes, brandsRes, warrantyRes] = await Promise.all([
+    productServices.getProducts({
+      search: params.search,
+      categoryId: params.categoryId,
+      brandIds: params.brandIds.length ? params.brandIds : undefined,
+      minPrice: params.minPrice,
+      maxPrice: params.maxPrice,
+      warrantyMonths: params.warrantyMonths,
+      sort: params.sort,
+      page: params.page,
+      limit: PAGE_LIMIT,
+      isPublished: true,
+      isActive: true,
+      options: { cache: "no-store" },
+    }),
+    categoryServices.getCategories(),
+    brandServices.getBrands(),
+    productServices.getProductFilters(),
+  ]);
+
+  /* ---------------- Data ---------------- */
+  const products = productsRes?.data ?? [];
+  const categories = categoryRes?.data ?? [];
+  const brands = brandsRes?.data ?? [];
+  const warranties = warrantyRes?.data?.warranties ?? [];
+  const total = productsRes?.total ?? 0;
+
+  /* ---------------- Render ---------------- */
+  return (
+    <ProductListingClient
+      products={products}
+      categories={categories}
+      brands={brands}
+      warranties={warranties}
+      total={total}
+      page={params.page}
+      limit={PAGE_LIMIT}
+      initialFilters={{
+        search: params.search ?? "",
+        categoryId: params.categoryId ?? null,
+        brandIds: params.brandIds ?? null,
+        warrantyMonths: params.warrantyMonths ?? null,
+        priceRange: [params.minPrice ?? 0, params.maxPrice ?? MAX_PRICE],
+        sort: params.sort,
+      }}
+    />
+  );
+}

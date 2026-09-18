@@ -1,6 +1,14 @@
-import type { ReactNode } from "react";
+import type { Metadata } from "next";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 
-export default function SellerLayout({ children }: { children: ReactNode }) {
-  return <DashboardLayout allowedRole="seller">{children}</DashboardLayout>;
+export const metadata: Metadata = {
+  title: "Seller Dashboard | JEE",
+};
+
+export default function SellerLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <DashboardLayout allowedRole="SELLER">{children}</DashboardLayout>;
 }

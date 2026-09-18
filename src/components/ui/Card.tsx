@@ -2,7 +2,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("rounded-2xl lg:rounded-[2rem] border-none bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)]", className)} {...props} />
+  <div ref={ref} className={cn("rounded-2xl lg:rounded-3xl border-none bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)]", className)} {...props} />
 ))
 Card.displayName = "Card"
 
@@ -17,7 +17,7 @@ const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HT
 CardTitle.displayName = "CardTitle"
 
 const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("p-5 sm:p-6 lg:p-8 pt-0 sm:pt-0 lg:pt-0", className)} {...props} />
+  <div ref={ref} className={cn("p-4 sm:p-6", className)} {...props} />
 ))
 CardContent.displayName = "CardContent"
 

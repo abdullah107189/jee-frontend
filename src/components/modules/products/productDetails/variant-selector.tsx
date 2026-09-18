@@ -1,38 +1,24 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Label } from "@/components/ui/label";
+import { useMemo } from "react";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
+import type { ProductVariantDetail } from "@/lib/types/product.types";
 
 /* -------------------------------------------------------------------------- */
-/* Types — matches backend `ProductVariantDetail`                             */
+/* Types                                                                      */
 /* -------------------------------------------------------------------------- */
-export type Variant = {
-  id: string;
-  sku?: string;
-  attributes: Record<string, string | number | boolean | null>;
-  price: number;
-  comparePrice?: number | null;    // ✅ null allowed
-  images?: string[];
-  isDefault?: boolean;
-  stockQuantity?: number;
-  inStock?: boolean;
-};
+export type Variant = ProductVariantDetail;
 
-type VariantSelectorProps = {
+interface VariantSelectorProps {
   variants: Variant[];
-  defaultVariantId: string;
-  onVariantChange?: (variant: Variant) => void;
-};
+  selectedVariantId: string;
+  onVariantChange: (variant: Variant) => void;
+}
 
 /* -------------------------------------------------------------------------- */
 /* Helpers                                                                    */
 /* -------------------------------------------------------------------------- */
-/**
- * Check whether a candidate variant is compatible with the current selection
- * on all attributes except the one being filtered.
- */
 function isCompatible(
   candidate: Variant,
   selected: Variant | undefined,
@@ -51,11 +37,10 @@ function isCompatible(
 /* -------------------------------------------------------------------------- */
 export function VariantSelector({
   variants,
-  defaultVariantId,
+  selectedVariantId,
   onVariantChange,
 }: VariantSelectorProps) {
-  const [selectedVariantId, setSelectedVariantId] =
-    useState(defaultVariantId);
+  const selectedVariant = variants.find((v) => v.id === selectedVariantId);
 
   /* ---------------- Attribute groups ---------------- */
   const attributeGroups = useMemo(() => {
@@ -68,45 +53,35 @@ export function VariantSelector({
         const strValue = String(value);
 
         if (!groups[key]) groups[key] = [];
-        if (!groups[key].includes(strValue)) {
-          groups[key].push(strValue);
-        }
+        if (!groups[key].includes(strValue)) groups[key].push(strValue);
       });
     });
 
     return groups;
   }, [variants]);
 
-  /* ---------------- Selected variant ---------------- */
-  const selectedVariant = variants.find(
-    (v) => v.id === selectedVariantId,
-  );
-
-  /* ---------------- Handlers ---------------- */
   const handleSelect = (variant: Variant) => {
-    setSelectedVariantId(variant.id);
-    onVariantChange?.(variant);
+    if (variant.id !== selectedVariantId) {
+      onVariantChange(variant);
+    }
   };
 
-  /* ---------------- Render ---------------- */
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-5">
       {Object.entries(attributeGroups).map(([attributeName, values]) => {
         const selectedValue = selectedVariant?.attributes?.[attributeName];
 
         return (
           <div key={attributeName}>
-            <Label className="mb-3 block capitalize">
+            <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground sm:text-xs">
               {attributeName}:{" "}
-              <span className="font-normal text-muted-foreground">
-                {String(selectedValue ?? "")}
+              <span className="font-normal text-foreground">
+                {String(selectedValue ?? "—")}
               </span>
-            </Label>
+            </p>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {values.map((value) => {
-                // Find a variant that matches this value
-                // AND is compatible with the current selection on other attributes
                 const matchingVariant = variants.find(
                   (variant) =>
                     String(variant.attributes?.[attributeName]) === value &&
@@ -120,13 +95,14 @@ export function VariantSelector({
                     key={value}
                     type="button"
                     variant={active ? "default" : "outline"}
+                    size="sm"
                     disabled={!matchingVariant}
-                    onClick={() => {
-                      if (matchingVariant) handleSelect(matchingVariant);
-                    }}
+                    onClick={() =>
+                      matchingVariant && handleSelect(matchingVariant)
+                    }
                     className={cn(
-                      "capitalize",
-                      active && "ring-2 ring-primary/20",
+                      "h-8 rounded-full px-3 text-xs font-medium capitalize sm:h-9 sm:px-4",
+                      active && "shadow-sm",
                     )}
                   >
                     {value}

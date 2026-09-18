@@ -1,63 +1,125 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-export interface CartItem {
-  id: string;
-  slug: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  quantity: number;
-  warrantyMonths: number;
-  brand?: string;
-  category?: string;
-  maxQuantity?: number;
-}
-
-interface CartState {
-  items: CartItem[];
-  hydrated: boolean;
-}
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type {
+  CartItemInput,
+  CartItem,
+  CartState,
+} from "@/lib/types/cart.types";
 
 const initialState: CartState = {
   items: [],
   hydrated: false,
+  lastUpdatedAt: null,
 };
 
 const cartSlice = createSlice({
-  name: 'cart',
+  name: "cart",
   initialState,
   reducers: {
-    hydrateCart: (state, action: PayloadAction<CartItem[]>) => {
-      state.items = action.payload;
-      state.hydrated = true;
+    /* ---------------- Add to cart ---------------- */
+    addToCart: {
+      reducer(state, action: PayloadAction<CartItem>) {
+        const incoming = action.payload;
+
+        // ✅ variant-based uniqueness
+        const existing = state.items.find(
+          (item) => item.variantId === incoming.variantId,
+        );
+
+        if (existing) {
+          const nextQty = Math.min(
+            existing.quantity + incoming.quantity,
+            incoming.maxQuantity,
+          );
+          existing.quantity = nextQty;
+          existing.price = incoming.price;
+          existing.originalPrice = incoming.originalPrice;
+          existing.image = incoming.image ?? existing.image;
+          existing.stockQuantity = incoming.stockQuantity;
+          existing.maxQuantity = incoming.maxQuantity;
+        } else {
+          state.items.push(incoming);
+        }
+
+        state.lastUpdatedAt = Date.now();
+      },
+      prepare(input: CartItemInput) {
+        const quantity = Math.max(1, input.quantity ?? 1);
+        const stockQuantity = Math.max(1, input.stockQuantity ?? 1);
+        const maxQuantity = Math.max(1, input.maxQuantity ?? stockQuantity);
+
+        const item: CartItem = {
+          id: input.id,
+          slug: input.slug,
+          name: input.name,
+
+          variantId: input.variantId,
+          variantSku: input.variantSku ?? "",
+
+          price: input.price,
+          originalPrice: input.originalPrice,
+
+          image: input.image,
+          warrantyMonths: input.warrantyMonths,
+
+          brand: input.brand,
+          category: input.category,
+
+          quantity: Math.min(quantity, maxQuantity),
+          maxQuantity,
+          stockQuantity,
+        };
+
+        return { payload: item };
+      },
     },
-    addToCart: (
+
+    /* ---------------- Remove (by variantId) ---------------- */
+    removeFromCart(state, action: PayloadAction<string>) {
+      state.items = state.items.filter(
+        (item) => item.variantId !== action.payload,
+      );
+      state.lastUpdatedAt = Date.now();
+    },
+
+    /* ---------------- Update quantity (by variantId) ---------------- */
+    updateQuantity(
       state,
-      action: PayloadAction<Omit<CartItem, 'quantity'> & { quantity?: number }>
-    ) => {
-      const existingIndex = state.items.findIndex((item) => item.id === action.payload.id);
-      const qtyToAdd = action.payload.quantity || 1;
-      if (existingIndex > -1) {
-        state.items[existingIndex].quantity += qtyToAdd;
-      } else {
-        state.items.push({ ...action.payload, quantity: qtyToAdd });
-      }
+      action: PayloadAction<{ variantId: string; quantity: number }>,
+    ) {
+      const { variantId, quantity } = action.payload;
+      const item = state.items.find((i) => i.variantId === variantId);
+
+      if (!item) return;
+
+      item.quantity = Math.max(1, Math.min(quantity, item.maxQuantity));
+      state.lastUpdatedAt = Date.now();
     },
-    removeFromCart: (state, action: PayloadAction<string>) => {
-      state.items = state.items.filter((item) => item.id !== action.payload);
-    },
-    updateQuantity: (state, action: PayloadAction<{ id: string; quantity: number }>) => {
-      const item = state.items.find((i) => i.id === action.payload.id);
-      if (item) {
-        item.quantity = Math.max(1, action.payload.quantity);
-      }
-    },
-    clearCart: (state) => {
+
+    /* ---------------- Clear ---------------- */
+    clearCart(state) {
       state.items = [];
+      state.lastUpdatedAt = Date.now();
+    },
+
+    /* ---------------- Hydrate ---------------- */
+    setHydrated(state, action: PayloadAction<boolean>) {
+      state.hydrated = action.payload;
+    },
+
+    replaceCart(state, action: PayloadAction<CartItem[]>) {
+      state.items = action.payload;
+      state.lastUpdatedAt = Date.now();
     },
   },
 });
 
-export const { hydrateCart, addToCart, removeFromCart, updateQuantity, clearCart } = cartSlice.actions;
+export const {
+  addToCart,
+  removeFromCart,
+  updateQuantity,
+  clearCart,
+  setHydrated,
+  replaceCart,
+} = cartSlice.actions;
+
 export default cartSlice.reducer;

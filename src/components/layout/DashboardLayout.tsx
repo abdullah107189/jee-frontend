@@ -1,27 +1,25 @@
 import { redirect } from "next/navigation";
-import { CurrentUser, getCurrentUser } from "@/services/auth.service";
+import { auth, roleDashboard } from "@/lib/auth/session";
 import { DashboardLayoutClient } from "./DashboardLayoutClient";
+import type { UserRole } from "@/lib/types/auth.types";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
-  allowedRole: "admin" | "seller" | "customer";
+  allowedRole: UserRole; // ← uppercase, from lib/types
 }
 
 export async function DashboardLayout({
   children,
   allowedRole,
 }: DashboardLayoutProps) {
-  const user: CurrentUser = {
-    id: 1,
-    email: "test@example.com",
-    name: "John",
-    role: "admin",
-  };
+  // ✅ Real auth — no mock
+  const user = await auth();
 
-  await getCurrentUser();
-  // Server-side auth gate
   if (!user) redirect("/login");
-  if (user.role !== allowedRole) redirect(`/${user.role}`);
+
+  if (user.role !== allowedRole) {
+    redirect(roleDashboard(user.role));
+  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#eef2f6]">

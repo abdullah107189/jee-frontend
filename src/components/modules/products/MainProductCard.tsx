@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ShoppingCart } from "lucide-react";
 
@@ -21,16 +21,10 @@ export default function MainProductCard({
   product,
   onAddToCart,
 }: ProductCardProps) {
+  const router = useRouter();
+
   const image = product?.image;
 
-  /*
-   * Image fallback logic:
-   *
-   * 1. No image URL        → placeholder
-   * 2. example.com URL     → placeholder
-   * 3. Valid image URL     → use actual image
-   * 4. Image loading fails → placeholder
-   */
   const [imageSrc, setImageSrc] = useState(
     image && !image.includes("example.com")
       ? image
@@ -50,10 +44,25 @@ export default function MainProductCard({
 
   const isInStock = product?.stockQuantity > 0;
 
+  const handleCardClick = () => {
+    router.push(`/products/${product?.slug}`);
+  };
+
+  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    onAddToCart();
+  };
+
+  const handleBuyNow = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    router.push(`/products/${product?.slug}`);
+  };
+
   return (
     <article
+      onClick={handleCardClick}
       className="
-        group relative overflow-hidden rounded-2xl
+        group cursor-pointer relative  overflow-hidden rounded-2xl
         border border-border bg-card
         shadow-sm
         transition-all duration-300
@@ -65,91 +74,83 @@ export default function MainProductCard({
       "
     >
       {/* Product Image */}
-      <Link
-        href={`/products/${product?.slug}`}
-        aria-label={`View ${product?.name}`}
-        className="block"
-      >
-        <div className="relative aspect-square overflow-hidden bg-muted">
-          <Image
-            src={imageSrc}
-            alt={product?.name || "Product image"}
-            fill
-            sizes="
-              (max-width: 639px) 50vw,
-              (max-width: 1279px) 33vw,
-              300px
-            "
-            className="
-              object-cover
-              transition-transform duration-500
-              sm:group-hover:scale-105
-            "
-            onError={() => {
-              setImageSrc("/product-placeholder.jpg");
-            }}
-          />
+      <div className="relative aspect-16/12 overflow-hidden bg-muted">
+        <Image
+          src={imageSrc}
+          alt={product?.name || "Product image"}
+          fill
+          sizes="
+            (max-width: 639px) 50vw,
+            (max-width: 1279px) 33vw,
+            300px
+          "
+          className="
+            object-cover
+            transition-transform duration-500
+            sm:group-hover:scale-105
+          "
+          onError={() => {
+            setImageSrc("/product-placeholder.jpg");
+          }}
+        />
 
-          {/* Discount */}
-          {/* 
-          {hasDiscount && isInStock && (
+        {/* Discount */}
+        {/*
+        {hasDiscount && isInStock && (
+          <span
+            className="
+              absolute left-2.5 top-2.5
+              rounded-full
+              bg-destructive
+              px-2 py-1
+              text-[9px] font-bold
+              text-destructive-foreground
+              sm:left-3 sm:top-3 sm:text-[10px]
+            "
+          >
+            -{discountPercentage}%
+          </span>
+        )}
+        */}
+
+        {/* Out of Stock */}
+        {!isInStock && (
+          <>
+            <div className="absolute inset-0 bg-background/60" />
+
             <span
               className="
-                absolute left-2.5 top-2.5
+                absolute left-1/2 top-1/2
+                -translate-x-1/2 -translate-y-1/2
+                whitespace-nowrap
                 rounded-full
-                bg-destructive
-                px-2 py-1
-                text-[9px] font-bold
-                text-destructive-foreground
-                sm:left-3 sm:top-3 sm:text-[10px]
+                bg-foreground
+                px-3 py-1.5
+                text-[10px] font-bold
+                text-background
               "
             >
-              -{discountPercentage}%
+              Out of stock
             </span>
-          )}
-          */}
-
-          {/* Out of Stock */}
-          {!isInStock && (
-            <>
-              <div className="absolute inset-0 bg-background/60" />
-
-              <span
-                className="
-                  absolute left-1/2 top-1/2
-                  -translate-x-1/2 -translate-y-1/2
-                  whitespace-nowrap
-                  rounded-full
-                  bg-foreground
-                  px-3 py-1.5
-                  text-[10px] font-bold
-                  text-background
-                "
-              >
-                Out of stock
-              </span>
-            </>
-          )}
-        </div>
-      </Link>
+          </>
+        )}
+      </div>
 
       {/* Content */}
       <div className="p-3 sm:p-4">
         {/* Product Name */}
-        <Link href={`/products/${product?.slug}`}>
-          <h2
-            className="
-              line-clamp-2
-              min-h-10
-              text-sm font-bold leading-5
-              text-foreground
-              transition-colors
-              hover:text-primary
-            "
-          >
-            {product?.name}
-          </h2>
-        </Link>
+        <h2
+          className="
+            line-clamp-2
+            min-h-10
+            text-sm font-bold leading-5
+            text-foreground
+            transition-colors
+            hover:text-primary
+          "
+        >
+          {product?.name}
+        </h2>
 
         {/* Warranty */}
         {product?.warrantyMonths > 0 && (
@@ -184,24 +185,20 @@ export default function MainProductCard({
         {/* Actions */}
         <div className="mt-3 grid grid-cols-[1fr_auto] gap-2">
           {/* Buy Now */}
-          <Link
-            href={`/products/${product?.slug}`}
-            className="group/buy block min-w-0"
-            aria-label={`Buy ${product?.name} now`}
+          <Button
+            type="button"
+            size="sm"
+            disabled={!isInStock}
+            onClick={handleBuyNow}
+            className="
+              relative h-9 w-full overflow-hidden
+              cursor-pointer
+              rounded-xl
+              text-xs font-bold
+            "
           >
-            <Button
-              size="sm"
-              disabled={!isInStock}
-              className="
-                relative h-9 w-full overflow-hidden
-                cursor-pointer
-                rounded-xl
-                text-xs font-bold
-              "
-            >
-              Buy Now
-            </Button>
-          </Link>
+            Buy Now
+          </Button>
 
           {/* Add to Cart */}
           <Button
@@ -209,7 +206,7 @@ export default function MainProductCard({
             size="sm"
             variant="outline"
             disabled={!isInStock}
-            onClick={onAddToCart}
+            onClick={handleAddToCart}
             aria-label={`Add ${product?.name} to cart`}
             title="Add to cart"
             className="

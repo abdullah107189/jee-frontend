@@ -21,7 +21,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { selectCartCount } from "@/store/selectors";
 import { useAppSelector } from "@/store/hooks";
-import type { CurrentUser } from "@/services/auth.service";
+import type { AuthUser } from "@/lib/types/auth.types";
+import { logoutAction } from "@/actions/auth.actions";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,7 +44,7 @@ import { Badge } from "../ui/Badge";
 import { Input } from "../ui/Input";
 import Image from "next/image";
 
-export function Navbar({ user }: { user: CurrentUser | null }) {
+export function Navbar({ user }: { user: AuthUser | null }) {
   const router = useRouter();
   const pathname = usePathname();
   const totalCartCount = useAppSelector(selectCartCount);
@@ -79,12 +80,12 @@ export function Navbar({ user }: { user: CurrentUser | null }) {
 
   const userLinks = user
     ? [
-        { name: "My Orders", path: "/customer/orders", icon: Truck },
-        { name: "My Warranties", path: "/customer/warranties", icon: Shield },
-        { name: "Wishlist", path: "/customer/wishlist", icon: Heart },
-        { name: "Profile", path: "/customer/profile", icon: User },
-        { name: "Settings", path: "/customer/settings", icon: Settings },
-      ]
+      { name: "My Orders", path: "/customer/orders", icon: Truck },
+      { name: "My Warranties", path: "/customer/warranties", icon: Shield },
+      { name: "Wishlist", path: "/customer/wishlist", icon: Heart },
+      { name: "Profile", path: "/customer/profile", icon: User },
+      { name: "Settings", path: "/customer/settings", icon: Settings },
+    ]
     : [];
 
   const isActiveLink = (path: string) => {
@@ -110,25 +111,22 @@ export function Navbar({ user }: { user: CurrentUser | null }) {
   return (
     <>
       <header
-        className={`sticky top-0 z-50 transition-all duration-300 ${
-          isScrolled
-            ? "bg-background/80 backdrop-blur-xl border-b border-border shadow-lg"
-            : "bg-background/60 backdrop-blur-md border-b border-transparent"
-        }`}
+        className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled
+          ? "bg-background/80 backdrop-blur-xl border-b border-border shadow-lg"
+          : "bg-background/60 backdrop-blur-md border-b border-transparent"
+          }`}
       >
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mxw">
           <div className="flex items-center justify-between h-16 md:h-20 gap-4">
             {/* Logo - Jee */}
-            <Link
-              href="/"
-              className="flex items-center gap-2.5 group shrink-0 p-1"
-            >
+            <Link href="/">
               <Image
                 src="/JEE.png"
                 alt="JEE Logo"
                 width={100}
                 height={200}
-                className="w-25 h-auto"
+                // className={`${isScrolled ? "w-10" : "w-20"} h-auto`}
+                className="w-20 h-auto"
               />
             </Link>
 
@@ -141,11 +139,10 @@ export function Navbar({ user }: { user: CurrentUser | null }) {
                   <Link
                     key={link.path}
                     href={link.path}
-                    className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                      isActive
-                        ? "text-primary bg-primary/10"
-                        : "text-muted-foreground hover:text-foreground bg-accent"
-                    }`}
+                    className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${isActive
+                      ? "text-primary bg-primary/10"
+                      : "text-muted-foreground hover:text-foreground bg-accent"
+                      }`}
                   >
                     <span className="flex items-center gap-2">
                       <Icon className="h-4 w-4" />
@@ -233,10 +230,7 @@ export function Navbar({ user }: { user: CurrentUser | null }) {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       className="text-destructive cursor-pointer"
-                      onClick={() => {
-                        // Handle logout
-                        console.log("Logout clicked");
-                      }}
+                      onClick={() => logoutAction()}
                     >
                       <LogOut className="h-4 w-4 mr-2" />
                       Logout
@@ -310,11 +304,10 @@ export function Navbar({ user }: { user: CurrentUser | null }) {
                             key={link.path}
                             href={link.path}
                             onClick={() => setIsMobileMenuOpen(false)}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                              isActive
-                                ? "bg-primary/10 text-primary"
-                                : "text-foreground hover:bg-accent"
-                            }`}
+                            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive
+                              ? "bg-primary/10 text-primary"
+                              : "text-foreground hover:bg-accent"
+                              }`}
                           >
                             <Icon className="h-5 w-5" />
                             {link.name}
@@ -353,8 +346,8 @@ export function Navbar({ user }: { user: CurrentUser | null }) {
                           variant="destructive"
                           className="w-full rounded-xl"
                           onClick={() => {
-                            // Handle logout
                             setIsMobileMenuOpen(false);
+                            logoutAction();
                           }}
                         >
                           <LogOut className="h-4 w-4 mr-2" />

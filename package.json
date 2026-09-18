@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev --turbo --port 3000",
     "build": "next build",
+    "start": "next start",
     "preview": "next start --port 3000",
     "clean": "rm -rf .next dist server.js",
     "lint": "tsc --noEmit"
@@ -36,6 +37,8 @@
     "react-hook-form": "^7.85.0",
     "react-redux": "^9.3.0",
     "recharts": "^3.10.1",
+    "redux-persist": "^6.0.0",
+    "server-only": "^0.0.1",
     "shadcn": "^4.16.2",
     "sonner": "^2.0.8",
     "tailwind-merge": "^3.6.0",
