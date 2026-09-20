@@ -17,6 +17,7 @@ const API_URL = process.env.API_URL!;
 /* ─────────────────────────────────────────
    Register
    ───────────────────────────────────────── */
+
 export async function registerAction(
   _prevState: AuthActionState | null,
   formData: FormData,
@@ -31,6 +32,7 @@ export async function registerAction(
   };
 
   const parsed = registerSchema.safeParse(raw);
+
   if (!parsed.success) {
     return {
       success: false,
@@ -42,13 +44,21 @@ export async function registerAction(
     };
   }
 
-  const { name, email, phone, password } = parsed.data;
+  const { name, email, phone, password, confirmPassword } = parsed.data;
 
   try {
     const res = await fetch(`${API_URL}/auth/register`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, phone, password }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        phone,
+        password,
+        confirmPassword,
+      }),
     });
 
     const json = await res.json();
@@ -64,7 +74,9 @@ export async function registerAction(
       success: true,
       message: json.message ?? "OTP sent to your email",
     };
-  } catch {
+  } catch (error) {
+    console.error("Register action error:", error);
+
     return {
       success: false,
       message: "Network error. Please try again.",
