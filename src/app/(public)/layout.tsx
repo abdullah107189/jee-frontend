@@ -8,8 +8,7 @@ export default async function PublicLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const user = await auth();  // cached, 0 extra API call
-    console.log("PUBLIC LAYOUT USER:", user);
+    const user = await auth();  
     return (
         <div className="flex min-h-screen flex-col bg-background">
             <Navbar user={user} />

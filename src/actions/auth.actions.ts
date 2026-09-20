@@ -11,7 +11,7 @@ import {
 } from "@/lib/auth/schema";
 import { forwardSetCookies, clearAuthCookies } from "@/lib/auth/cookie";
 import type { AuthActionState, AuthUser } from "@/lib/types/auth.types";
-import { getCurrentUser } from "@/services/auth.service";
+import { auth } from "@/lib/auth/session";
 
 const API_URL = process.env.API_URL!;
 /* ─────────────────────────────────────────
@@ -111,7 +111,6 @@ export async function loginAction(
         message: json.message ?? "Login failed",
       };
     }
-
     await forwardSetCookies(res);
 
     return {
@@ -314,5 +313,5 @@ export async function resetPasswordAction(
    Helper — Already logged in check
    ───────────────────────────────────────── */
 export async function getLoggedInUserAction(): Promise<AuthUser | null> {
-  return getCurrentUser();
+  return auth();
 }

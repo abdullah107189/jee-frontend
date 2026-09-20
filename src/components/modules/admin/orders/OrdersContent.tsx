@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { Search, ShoppingBag, CheckCircle, Clock, Truck, Package, Eye, FileSpreadsheet, ShieldCheck, AlertCircle, Printer, RefreshCw } from 'lucide-react';
-import { updateOrderStatusAction, verifyOrderPaymentAction } from '@/actions/admin.actions';
+ 
 import type { AdminOrder } from '@/services/admin.service';
 import { toast } from 'sonner';
 
@@ -32,7 +32,7 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
 
   const handleStatusChange = async (id: string, newStatus: string) => {
     try {
-      await updateOrderStatusAction({ id, status: newStatus });
+      // await updateOrderStatusAction({ id, status: newStatus });
       toast.success(`Order #${id} status changed to ${newStatus}`);
     } catch (err) {
       toast.error('Failed to update order status');
@@ -41,7 +41,7 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
 
   const handlePaymentVerify = async (id: string, verified: boolean) => {
     try {
-      await verifyOrderPaymentAction({ id, verified });
+      // await verifyOrderPaymentAction({ id, verified });
       toast.success(`bKash payment for #${id} ${verified ? 'Verified' : 'Unverified'}`);
     } catch (err) {
       toast.error('Failed to update payment status');

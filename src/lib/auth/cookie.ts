@@ -39,7 +39,6 @@ export async function forwardSetCookies(res: Response): Promise<void> {
     }
 
     if (!options.path) options.path = "/";
-
     store.set(name, value, options);
   }
 }

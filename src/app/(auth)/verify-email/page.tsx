@@ -1,12 +1,12 @@
 import { Suspense } from "react";
-import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/services/auth.service"; 
+import { redirect } from "next/navigation"; 
 import { VerifyEmailForm } from "@/components/modules/auth/verifyEmailForm/verify-email-form";
+import { auth } from "@/lib/auth/session";
 
 export const metadata = { title: "Verify Email — JEE" };
 
 export default async function VerifyEmailPage() {
-  const user = await getCurrentUser();
+  const user = await auth();
   if (user) redirect("/");
 
   return (

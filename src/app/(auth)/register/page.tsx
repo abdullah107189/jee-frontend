@@ -3,8 +3,8 @@ import Link from "next/link";
 import { ShieldCheck, Sparkles, Truck, BadgeCheck } from "lucide-react";
 import { RegisterForm } from "@/components/modules/auth/register/register-form";
 import Image from "next/image";
-import { getCurrentUser } from "@/services/auth.service";
 import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth/session";
 
 /* ----------------------------- SEO Metadata ----------------------------- */
 export const metadata: Metadata = {
@@ -58,7 +58,7 @@ const features = [
 
 /* ------------------------------- Page ---------------------------------- */
 export default async function RegisterPage() {
-  const user = await getCurrentUser();
+  const user = await auth();
   if (user) redirect("/");
   return (
     <main className="relative min-h-screen w-full overflow-hidden bg-linear-to-br from-background via-background to-primary/5">

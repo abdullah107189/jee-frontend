@@ -16,10 +16,7 @@ export async function DashboardLayout({
   const user = await auth();
 
   if (!user) redirect("/login");
-
-  if (user.role !== allowedRole) {
-    redirect(roleDashboard(user.role));
-  }
+  if (user.role !== allowedRole) redirect(roleDashboard(user.role));
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#eef2f6]">

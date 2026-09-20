@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { CheckoutForm } from "../../../components/modules/checkout/checkout-form";
-import { getCurrentUser } from "@/services/auth.service";
+import { auth } from "@/lib/auth/session";
 
 export const metadata: Metadata = {
   title: "Checkout",
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function CheckoutPage() {
-  const user = await getCurrentUser();
+  const user = await auth();
 
   if (!user) redirect("/login?redirect=/checkout");
 

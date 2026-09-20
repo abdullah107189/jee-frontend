@@ -15,6 +15,7 @@ import {
   LogOut,
   Settings,
   Truck,
+  LayoutDashboard,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -43,6 +44,7 @@ import {
 import { Badge } from "../ui/Badge";
 import { Input } from "../ui/Input";
 import Image from "next/image";
+import { roleDashboard } from "@/lib/auth/role";
 
 export function Navbar({ user }: { user: AuthUser | null }) {
   const router = useRouter();
@@ -80,11 +82,15 @@ export function Navbar({ user }: { user: AuthUser | null }) {
 
   const userLinks = user
     ? [
+      {
+        name: "Dashboard",
+        path: roleDashboard(user.role),
+        icon: LayoutDashboard,
+      },
       { name: "My Orders", path: "/customer/orders", icon: Truck },
       { name: "My Warranties", path: "/customer/warranties", icon: Shield },
       { name: "Wishlist", path: "/customer/wishlist", icon: Heart },
       { name: "Profile", path: "/customer/profile", icon: User },
-      { name: "Settings", path: "/customer/settings", icon: Settings },
     ]
     : [];
 

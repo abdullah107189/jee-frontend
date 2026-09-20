@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ShieldCheck, Truck, BadgeCheck, Sparkles } from "lucide-react";
-import { getCurrentUser } from "@/services/auth.service";
+import { ShieldCheck, Truck, BadgeCheck, Sparkles } from "lucide-react"; 
 import { LoginForm } from "@/components/modules/auth/login/login-form";
 import Image from "next/image";
+import { auth } from "@/lib/auth/session";
 
 /* ----------------------------- SEO Metadata ----------------------------- */
 export const metadata: Metadata = {
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 /* -------------------- Redirect if already logged in -------------------- */
 export default async function LoginPage() {
   // Server-side check — prevents flash of login page for logged-in users
-  const user = await getCurrentUser();
+  const user = await auth();
   if (user) {
     redirect(`/${user.role}`);
   }

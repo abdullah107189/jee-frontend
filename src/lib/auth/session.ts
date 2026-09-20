@@ -1,27 +1,35 @@
 import "server-only";
 import { cache } from "react";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { AuthUser, UserRole } from "@/lib/types/auth.types";
 import { roleDashboard } from "@/lib/auth/role";
 
 const API_URL = process.env.API_URL!;
 
+/**
+ * RSC / Server Action — READ ONLY, never writes cookies.
+ * Auto-refresh happens in proxy.ts (browser request layer), which:
+ *   1. refreshes the tokens via Express,
+ *   2. writes the new cookies onto the real browser response,
+ *   3. injects the fresh access token via the `x-access-token` header.
+ */
 export const auth = cache(async (): Promise<AuthUser | null> => {
   try {
     const cookieStore = await cookies();
+    const headerStore = await headers();
 
-    // ✅ Cookie theke token ber koro
-    const accessToken = cookieStore.get("accessToken")?.value;
+    // Proxy may have just refreshed → prefer the injected fresh token
+    const refreshedToken = headerStore.get("x-access-token");
+    const accessToken =
+      refreshedToken ?? cookieStore.get("accessToken")?.value;
 
     if (!accessToken) return null;
 
-    // ✅ Bearer header diye Express ke call koro
     const res = await fetch(`${API_URL}/auth/me`, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${accessToken}`, // ← Bearer diye pathao
-        // Cookie o pathate chao — duitai de
+        Authorization: `Bearer ${accessToken}`,
         Cookie: `accessToken=${accessToken}`,
       },
       cache: "no-store",
