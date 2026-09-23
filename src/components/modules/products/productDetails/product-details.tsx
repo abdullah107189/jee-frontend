@@ -316,8 +316,8 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       {/* ==================== Tabs + Related ==================== */}
       <div className="mt-8 grid gap-6 lg:mt-12 lg:grid-cols-[1fr_300px] lg:gap-8 xl:grid-cols-[1fr_340px]">
         <div className="min-w-0">
-          <Tabs defaultValue="description" className="w-full">
-            <TabsList className="flex h-auto w-full justify-start gap-0 overflow-x-auto rounded-none border-b border-border bg-transparent p-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <Tabs defaultValue="description" className="w-full mb-6!">
+            <TabsList className="flex mb-4! h-auto w-full justify-start gap-0 overflow-x-auto rounded-none border-b border-border bg-transparent p-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               <TabTrigger value="description" label="Description" />
               <TabTrigger value="specification" label="Specification" />
               <TabTrigger value="reviews" label="Reviews" count={0} />

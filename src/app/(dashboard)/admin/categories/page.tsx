@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import CategoriesContent from "@/components/modules/admin/categories/CategoriesContent";
-import { getAdminCategories } from "@/services/admin.service";
+import { getAllCategories } from "@/services/category.service";
+import { CategoriesList } from "@/components/modules/admin/categories/categories-list";
 
 export const metadata: Metadata = {
   title: "Categories | JEE Admin",
-  description: "Manage product categories.",
+  description: "Manage product categories",
 };
 
 export default async function AdminCategoriesPage() {
-  const categories = await getAdminCategories();
+  const categories = await getAllCategories();
 
-  return <CategoriesContent categories={categories} />;
+  return <CategoriesList categories={categories} />;
 }

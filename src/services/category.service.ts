@@ -1,45 +1,45 @@
-import type { Category } from "@/lib/fixtures/product/types";
+import "server-only";
+import { cookies } from "next/headers";
+import type { AdminCategory } from "@/lib/types/category.types";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const API_URL = process.env.API_URL!;
 
-export interface CategoriesResponse {
-  success: boolean;
-  data: Category[];
-  message?: string;
-}
+/* ─────────── Get all (admin) ─────────── */
 
-const getCategories = async (): Promise<CategoriesResponse> => {
+export async function getAllCategories(): Promise<AdminCategory[]> {
   try {
-    const response = await fetch(`${API_URL}/categories`, {
-      next: {
-        revalidate: 300,
-      },
+    const cookieStore = await cookies();
+    const res = await fetch(`${API_URL}/categories`, {
+      headers: { Cookie: cookieStore.toString() },
+      cache: "no-store",
     });
 
-    if (!response.ok) {
-      throw new Error(`Categories request failed: ${response.status}`);
-    }
+    if (!res.ok) return [];
 
-    const result = await response.json();
-
-    return {
-      success: result.success === true || result.status === "success",
-
-      data: result.data ?? [],
-
-      message: result.message,
-    };
-  } catch (error) {
-    console.error("[categoryServices.getCategories]", error);
-
-    return {
-      success: false,
-      data: [],
-      message: "Failed to fetch categories",
-    };
+    const json = await res.json();
+    return (json?.data as AdminCategory[]) ?? [];
+  } catch {
+    return [];
   }
-};
+}
 
-export const categoryServices = {
-  getCategories,
-};
+/* ─────────── Get single ─────────── */
+
+export async function getCategoryById(
+  id: string,
+): Promise<AdminCategory | null> {
+  try {
+    const cookieStore = await cookies();
+    const res = await fetch(`${API_URL}/categories/id/${id}`, {
+      headers: { Cookie: cookieStore.toString() },
+      cache: "no-store",
+    });
+
+    if (!res.ok) return null;
+
+    const json = await res.json();
+    return (json?.data as AdminCategory) ?? null;
+  } catch {
+    return null;
+  }
+}

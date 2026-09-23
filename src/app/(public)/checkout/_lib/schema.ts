@@ -31,7 +31,7 @@ export const DHAKA_CITIES = [
 export const PAYMENT_GATEWAYS = ["Bkash", "Rocket", "Nagad"] as const;
 export type PaymentGateway = (typeof PAYMENT_GATEWAYS)[number];
 
-export const PAYMENT_PLANS = ["FULL", "ADVANCE", "COD"] as const;
+export const PAYMENT_PLANS = ["FULL", "COD"] as const;
 export type PaymentPlan = (typeof PAYMENT_PLANS)[number];
 
 /* -------------------------------------------------------------------------- */
@@ -61,7 +61,7 @@ export const checkoutSchema = z
     email: z.string().email("Enter a valid email").optional().or(z.literal("")),
     addressLine1: z.string().min(5, "Address is required"),
     addressLine2: z.string().optional(),
-    city: z.string().min(2, "City is required"),
+    // city: z.string().min(2, "City is required"),
     zipCode: z.string().optional(),
 
     // Notes
@@ -80,8 +80,7 @@ export const checkoutSchema = z
     transactionId: z.string().optional().or(z.literal("")),
   })
   .superRefine((data, ctx) => {
-    const needsGateway =
-      data.paymentPlan === "FULL" || data.paymentPlan === "ADVANCE";
+    const needsGateway = data.paymentPlan === "FULL";
 
     if (needsGateway) {
       if (!data.paymentGateway) {
