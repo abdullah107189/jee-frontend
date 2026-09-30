@@ -151,7 +151,6 @@ export default function ProductListingClient({
    * Cart
    * --------------------------------------------------------------------------
    */
-  const handleAddToCart = useAddToCart();
 
   /*
    * --------------------------------------------------------------------------
@@ -229,7 +228,6 @@ export default function ProductListingClient({
             currentPage={page}
             totalPages={totalPages}
             onPageChange={changePage}
-            onAddToCart={handleAddToCart}
             onClearFilters={handleClearFilters}
           />
         </section>

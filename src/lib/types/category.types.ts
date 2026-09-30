@@ -21,6 +21,19 @@ export interface AdminCategory {
   children?: AdminCategory[];
 }
 
+export interface CategoryNavItem {
+  id: string;
+  name: string;
+  slug: string;
+  fullSlug: string;
+  icon: string | null;
+  image: string | null;
+  level: number;
+  sortOrder: number;
+  productCount: number;
+  children: CategoryNavItem[];
+}
+
 export interface CategoryFormValues {
   name: string;
   slug?: string;

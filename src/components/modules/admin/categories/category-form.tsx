@@ -43,8 +43,7 @@ const categorySchema = z.object({
             /^[a-z0-9-]*$/,
             "Only lowercase letters, numbers, hyphens"
         )
-        .optional()
-        .or(z.literal("")),
+        .optional(),
 
     description: z
         .string()
@@ -54,8 +53,7 @@ const categorySchema = z.object({
 
     parentId: z
         .string()
-        .optional()
-        .or(z.literal("")),
+        .nullable(),
 
     icon: z
         .string()
@@ -114,7 +112,7 @@ export function CategoryForm({
             name: category?.name ?? "",
             slug: category?.slug ?? "",
             description: category?.description ?? "",
-            parentId: category?.parentId ?? "",
+            parentId: category?.parentId ?? null,
             icon: category?.icon ?? "",
             image: category?.image ?? "",
             sortOrder: category?.sortOrder ?? 0,
@@ -309,11 +307,11 @@ export function CategoryForm({
                         </Label>
 
                         <Select
-                            value={form.watch("parentId") || "none"}
+                            value={form.watch("parentId") ?? "none"}
                             onValueChange={(value) => {
                                 form.setValue(
                                     "parentId",
-                                    value === "none" ? "" : value
+                                    value === "none" ? null : value
                                 );
                             }}
                         >

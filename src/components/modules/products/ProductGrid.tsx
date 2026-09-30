@@ -24,7 +24,6 @@ export default function ProductGrid({
         <MainProductCard
           key={product.id}
           product={product}
-          onAddToCart={() => onAddToCart(product)}
         />
       ))}
     </div>

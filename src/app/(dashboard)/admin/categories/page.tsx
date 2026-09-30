@@ -9,6 +9,7 @@ export const metadata: Metadata = {
 
 export default async function AdminCategoriesPage() {
   const categories = await getAllCategories();
+  console.log("categories", categories);
 
   return <CategoriesList categories={categories} />;
 }

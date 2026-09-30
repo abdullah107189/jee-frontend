@@ -7,10 +7,10 @@ import { ShoppingCart } from "lucide-react";
 
 import { Button } from "@/components/ui/Button";
 import { ProductCardData } from "@/lib/types/product.types";
+import { useAddToCart } from "@/hooks/useAddToCart";
 
 interface ProductCardProps {
   product: ProductCardData;
-  onAddToCart: () => void;
 }
 
 function formatPrice(value: number) {
@@ -19,9 +19,10 @@ function formatPrice(value: number) {
 
 export default function MainProductCard({
   product,
-  onAddToCart,
+
 }: ProductCardProps) {
   const router = useRouter();
+  const addToCart = useAddToCart();
 
   const image = product?.image;
 
@@ -50,7 +51,7 @@ export default function MainProductCard({
 
   const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    onAddToCart();
+    addToCart(product);
   };
 
   const handleBuyNow = (e: React.MouseEvent<HTMLButtonElement>) => {

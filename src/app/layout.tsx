@@ -50,7 +50,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       >
         <StoreProvider>
           {children}
-          <Toaster position="top-center" richColors closeButton />
+          <Toaster position="bottom-right" richColors closeButton />
         </StoreProvider>
       </body>
     </html>

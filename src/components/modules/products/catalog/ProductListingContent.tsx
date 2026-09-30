@@ -1,12 +1,12 @@
 "use client";
-import { ProductCardData, ViewMode } from "@/lib/types/product.types"; 
+import { ProductCardData, ViewMode } from "@/lib/types/product.types";
 import { ProductListingPending } from "./ProductListingPending";
 import { ProductListingEmpty } from "./ProductListingEmpty";
 import { ProductGrid } from "./ProductGrid";
 import { ProductList } from "./ProductList";
 import { ProductPagination } from "./ProductPagination";
 
- 
+
 
 interface ProductListingContentProps {
   products: ProductCardData[];
@@ -15,7 +15,6 @@ interface ProductListingContentProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
-  onAddToCart: (product: ProductCardData) => void;
   onClearFilters: () => void;
 }
 
@@ -26,7 +25,6 @@ export function ProductListingContent({
   currentPage,
   totalPages,
   onPageChange,
-  onAddToCart,
   onClearFilters,
 }: ProductListingContentProps) {
   return (
@@ -40,12 +38,10 @@ export function ProductListingContent({
           {viewMode === "grid" ? (
             <ProductGrid
               products={products}
-              onAddToCart={onAddToCart}
             />
           ) : (
             <ProductList
               products={products}
-              onAddToCart={onAddToCart}
             />
           )}
 

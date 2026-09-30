@@ -4,15 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { ShoppingCart, ShieldCheck } from "lucide-react";
 import { ProductCardData } from "@/lib/types/product.types";
+import { useAddToCart } from "@/hooks/useAddToCart";
 
 interface HorizontalProductCardProps {
   product: ProductCardData;
-  onAddToCart?: (product: ProductCardData) => void;
 }
 
 export default function HorizontalProductCard({
   product,
-  onAddToCart,
 }: HorizontalProductCardProps) {
   const data = product;
 
@@ -24,7 +23,7 @@ export default function HorizontalProductCard({
   const discountAmount = hasDiscount ? data.comparePrice! - data.price : 0;
 
   const isOutOfStock = data.stockQuantity <= 0;
-
+  const addToCart = useAddToCart();
   return (
     <article
       className="
@@ -199,10 +198,10 @@ export default function HorizontalProductCard({
           </div>
 
           {/* Add Button */}
-          {onAddToCart && !isOutOfStock && (
+          {!isOutOfStock && (
             <button
               type="button"
-              onClick={() => onAddToCart(product)}
+              onClick={() => addToCart(product)}
               aria-label={`Add ${data.name} to cart`}
               className="
                 flex
