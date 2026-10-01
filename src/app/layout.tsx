@@ -41,7 +41,8 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -49,7 +50,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       >
         <StoreProvider>
           {children}
-          <Toaster position="top-center" richColors closeButton />
+          <Toaster position="bottom-right" richColors closeButton />
         </StoreProvider>
       </body>
     </html>

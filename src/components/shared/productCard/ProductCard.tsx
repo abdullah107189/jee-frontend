@@ -20,7 +20,6 @@ export default function ProductCard({ product }: ProductCardProps) {
     : 0;
 
   const isOutOfStock = data.stockQuantity <= 0;
-
   return (
     <article className="group w-full overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all duration-300 active:scale-[0.98] sm:hover:-translate-y-1 sm:hover:shadow-lg">
       <Link href={`/products/${data.slug}`} className="block">
@@ -50,7 +49,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-xs font-bold text-foreground sm:text-lg">
-              ৳{data.price.toLocaleString()}
+              ৳{data?.price?.toLocaleString()}
             </span>
           </div>
           <div>

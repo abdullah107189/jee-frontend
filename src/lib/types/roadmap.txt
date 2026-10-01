@@ -1,0 +1,5 @@
+src/lib/types/
+├── product.types.ts       ← ProductCardData, ProductDetail, filters
+├── cart.types.ts          ← CartItem, CartItemInput, CartState
+├── order.types.ts         ← Checkout, OrderPayload, OrderStatus
+└── common.types.ts        ← Shared enums (from Prisma)

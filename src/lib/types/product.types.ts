@@ -1,5 +1,13 @@
+import type { Brand, Category } from "@/lib/fixtures/product/types";
+
+/* -------------------------------------------------------------------------- */
+/* Card — list page                                                           */
+/* -------------------------------------------------------------------------- */
 export type ProductCardData = {
   id: string;
+  variantId: string;
+  variantSku: string | null;
+
   name: string;
   slug: string;
 
@@ -16,7 +24,22 @@ export type ProductCardData = {
 };
 
 /* -------------------------------------------------------------------------- */
-/* Detail — backend `/products/slug/:slug` response                           */
+/* List filters + pagination                                                  */
+/* -------------------------------------------------------------------------- */
+export type SortOption = "popular" | "price-asc" | "price-desc" | "newest";
+export type ViewMode = "grid" | "list";
+
+export interface InitialFilters {
+  search: string;
+  categoryId: string | null;
+  brandIds: string[];
+  warrantyMonths: number[];
+  priceRange: [number, number];
+  sort: SortOption;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Detail — single product                                                    */
 /* -------------------------------------------------------------------------- */
 export type ProductVariantDetail = {
   id: string;
@@ -82,3 +105,34 @@ export type ProductDetail = {
 
   relatedProducts?: RelatedProduct[];
 };
+
+/* -------------------------------------------------------------------------- */
+/* Component props                                                            */
+/* -------------------------------------------------------------------------- */
+export interface ProductListingClientProps {
+  products: ProductCardData[];
+  categories: Category[];
+  warranties: { months: number; label: string }[];
+  brands: Brand[];
+  total: number;
+  page: number;
+  limit: number;
+  initialFilters: InitialFilters;
+}
+
+/* -------------------------------------------------------------------------- */
+/* API Response — /products list                                              */
+/* -------------------------------------------------------------------------- */
+export interface ProductListResponse {
+  success: boolean;
+  message?: string;
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+  data: ProductCardData[];
+}

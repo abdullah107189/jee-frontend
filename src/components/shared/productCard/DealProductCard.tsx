@@ -1,14 +1,15 @@
-import type { ProductItem } from "@/lib/types/product.types";
+ 
+import { ProductCardData } from "@/lib/types/product.types";
 import Image from "next/image";
 import Link from "next/link";
 
 interface DealProductCardProps {
-  product: ProductItem;
+  product: ProductCardData;
 }
 
 export default function DealProductCard({ product }: DealProductCardProps) {
-  const data = product.product;
-  const image = data.images?.[0] ?? "/images/product-placeholder.png";
+  const data = product;
+  const image = data.image ?? "/images/product-placeholder.png";
 
   const hasDiscount =
     data.comparePrice != null && data.comparePrice > data.price;

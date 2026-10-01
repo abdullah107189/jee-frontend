@@ -1,12 +1,12 @@
 "use client";
 
-import type { ProductItem } from "@/lib/types/product.types";
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, ShoppingCart, X } from "lucide-react";
+import { ProductCardData } from "@/lib/types/product.types";
 
 interface WishlistProductCardProps {
-  product: ProductItem;
+  product: ProductCardData;
   onRemove?: (productId: string) => void;
 }
 
@@ -14,8 +14,8 @@ export default function WishlistProductCard({
   product,
   onRemove,
 }: WishlistProductCardProps) {
-  const data = product.product;
-  const image = data.images?.[0] ?? "/images/product-placeholder.png";
+  const data = product;
+  const image = data.image ?? "/images/product-placeholder.png";
 
   const isOutOfStock = data.stockQuantity <= 0;
 
@@ -34,7 +34,7 @@ export default function WishlistProductCard({
 
         <button
           type="button"
-          onClick={() => onRemove?.(product.product.id)}
+          onClick={() => onRemove?.(product?.id)}
           aria-label={`Remove ${data.name} from wishlist`}
           className="absolute right-2.5 top-2.5 flex h-8 w-8 items-center justify-center rounded-full bg-background/90 text-muted-foreground shadow-sm backdrop-blur transition-colors hover:text-destructive"
         >

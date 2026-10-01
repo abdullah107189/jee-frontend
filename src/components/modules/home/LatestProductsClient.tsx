@@ -5,33 +5,20 @@ import { ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { addToCart } from "@/store/slices/cartSlice";
 import { useAppDispatch } from "@/store/hooks";
-import type { ProductItem } from "@/lib/types/product.types";
 import HorizontalProductCard from "@/components/shared/productCard/HorizontalProductCard";
 import { Button } from "@/components/ui/Button";
+import { ProductCardData } from "@/lib/types/product.types";
+import { CartItemInput } from "@/lib/types/cart.types";
+import { toCartItem } from "@/lib/helpers/productListing.helpers";
+import { useCart } from "@/hooks/useCart";
+import { useAddToCart } from "@/hooks/useAddToCart";
 
 export default function LatestProductsClient({
   products,
 }: {
-  products: ProductItem[];
+  products: ProductCardData[];
 }) {
-  const dispatch = useAppDispatch();
-
-  const handleAddToCart = (item: ProductItem) => {
-    const product = item.product;
-
-    dispatch(
-      addToCart({
-        id: product.id,
-        slug: product.slug,
-        name: product.name,
-        price: product.price,
-        image: product.images?.[0],
-        warrantyMonths: product.warrantyMonths,
-      }),
-    );
-
-    toast.success(`${product.name} added to cart!`);
-  };
+  const handleAddToCart = useAddToCart();
 
   return (
     <section className="w-full">

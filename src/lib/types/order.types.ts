@@ -1,47 +1,31 @@
-// lib/types/order.types.ts
+export type PaymentWay = "COD" | "FULL";
 
-export interface CreateOrderRequest {
-  items: {
-    productItemId: string;
-    quantity: number;
-  }[];
+export interface CreateOrderItem {
+  variantId: string;
+  quantity: number;
+}
+
+export interface CreateOrderInput {
+  items: CreateOrderItem[];
   shippingAddress: {
     fullName: string;
     phone: string;
-    address: string;
-    city: string;
+    email?: string;
+    divisionId?: string;
+    divisionName?: string;
+    districtId?: string;
+    districtName?: string;
+    upazilaId?: string;
+    upazilaName?: string;
+    addressLine1: string;
+    addressLine2?: string;
+    city?: string;
     zipCode?: string;
+    country?: string;
+    fullAddress?: string;
   };
-  paymentMethod: 'BKASH' | 'COD';
-  bKashData?: {
-    bKashNumber: string;
-    transactionId: string;
-  };
+  paymentWay: PaymentWay;
+  shipping: number;
   notes?: string;
-}
-
-export interface OrderResponse {
-  success: boolean;
-  data: {
-    id: string;
-    orderNumber: string;
-    status: string;
-    total: number;
-    createdAt: string;
-    // ... other fields
-  };
-}
-
-export interface VerifyRequest {
-  bKashNumber: string;
-  transactionId: string;
-  amount: number;
-}
-
-export interface VerifyResponse {
-  success: boolean;
-  data: {
-    verified: boolean;
-    message: string;
-  };
+  metadata?: Record<string, unknown>;
 }
