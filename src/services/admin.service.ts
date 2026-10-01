@@ -15,8 +15,7 @@ export type AdminProduct = {
   status: string;
 };
 export type AdminProductItem = Record<string, any>;
-export type AdminCategory = Record<string, any>;
-export type AdminBrand = Record<string, any>;
+export type AdminCategory = Record<string, any>; 
 export type AdminWarrantyClaim = Record<string, any>;
 
 export async function getUsers(): Promise<AdminUser[]> {
@@ -107,13 +106,7 @@ export async function getAdminCategories(): Promise<AdminCategory[]> {
   ];
 }
 
-export async function getAdminBrands(): Promise<AdminBrand[]> {
-  return [
-    { id: '1', name: 'TechPro', slug: 'techpro', status: 'Active' },
-    { id: '2', name: 'ErgoLife', slug: 'ergolife', status: 'Active' },
-    { id: '3', name: 'SoundMax', slug: 'soundmax', status: 'Inactive' },
-  ];
-}
+
 
 export async function getAdminOrders(): Promise<AdminOrder[]> {
   return [
