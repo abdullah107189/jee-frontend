@@ -144,6 +144,7 @@ export function Sidebar({
   const menu = {
     ADMIN: [
       { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+
       {
         name: "Products",
         href: "#",
@@ -153,9 +154,12 @@ export function Sidebar({
           { name: "Add Product", href: "/admin/products/new" },
           { name: "Product Items", href: "/admin/items" },
           { name: "Categories", href: "/admin/categories" },
+          { name: "Filters", href: "/admin/filters" },       // ← NEW
         ],
       },
+
       { name: "Brands", href: "/admin/brands", icon: Tags },
+
       {
         name: "Sellers",
         href: "#",
@@ -165,7 +169,9 @@ export function Sidebar({
           { name: "Pending Approvals", href: "/admin/sellers/pending" },
         ],
       },
+
       { name: "Orders", href: "/admin/orders", icon: ShoppingCart },
+
       {
         name: "Warranties",
         href: "#",
@@ -175,11 +181,13 @@ export function Sidebar({
           { name: "Claims", href: "/admin/warranties/claims" },
         ],
       },
+
       { name: "Analytics", href: "/admin/analytics", icon: BarChart },
       { name: "Audit Logs", href: "/admin/audit-logs", icon: FileText },
       { name: "Users", href: "/admin/users", icon: UserCog },
       { name: "Settings", href: "/admin/settings", icon: Settings },
     ],
+
     SELLER: [
       { name: "Dashboard", href: "/seller", icon: LayoutDashboard },
       {
@@ -192,6 +200,7 @@ export function Sidebar({
       { name: "Warranties", href: "/seller/warranties", icon: ShieldCheck },
       { name: "Profile", href: "/seller/profile", icon: User },
     ],
+
     CUSTOMER: [
       { name: "Dashboard", href: "/customer", icon: LayoutDashboard },
       { name: "My Orders", href: "/customer/orders", icon: ShoppingCart },

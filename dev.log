@@ -1,0 +1,540 @@
+$ next dev --turbo --port 3000
+▲ Next.js 16.3.0 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.104:3000
+- Environments: .env.local
+✓ Ready in 1549ms
+✓ Running next.config.ts took 109ms
+
+ GET / 200 in 5.2s (next.js: 3.6s, application-code: 1582ms)
+ GET /login 200 in 1582ms (next.js: 1462ms, application-code: 120ms)
+[browser] Image with src "/JEE.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ POST /login 200 in 807ms (next.js: 50ms, application-code: 757ms)
+  └─ ƒ loginAction(null, {}) in 543ms src/actions/auth.actions.ts
+ GET /admin 200 in 1955ms (next.js: 1293ms, proxy.ts: 15ms, application-code: 647ms)
+ GET /admin 200 in 2.2s (next.js: 1293ms, proxy.ts: 231ms, application-code: 670ms)
+ GET /admin 200 in 350ms (next.js: 75ms, proxy.ts: 116ms, application-code: 160ms)
+[browser] Image with src "/JEE.png" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+[browser] Image with src "/JEE.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /admin/products 200 in 803ms (next.js: 728ms, proxy.ts: 9ms, application-code: 66ms)
+ GET /admin/products/new 200 in 661ms (next.js: 577ms, proxy.ts: 11ms, application-code: 72ms)
+ GET /admin/items 200 in 596ms (next.js: 525ms, proxy.ts: 8ms, application-code: 63ms)
+categories [
+  {
+    id: 'cmua1dgzn000agovzh2ervck8',
+    name: 'Air Conditioners',
+    slug: 'air-conditioners',
+    fullSlug: 'air-conditioners',
+    description: 'Split, inverter, and non-inverter air conditioners',
+    parentId: null,
+    level: 0,
+    icon: 'air-conditioner',
+    image: null,
+    sortOrder: 0,
+    productCount: 0,
+    isActive: true,
+    createdAt: '2026-09-20T16:34:10.115Z',
+    updatedAt: '2026-09-23T05:58:25.885Z'
+  },
+  {
+    id: 'cmuf38x9g00006wvz11mxdsuw',
+    name: 'Ceiling Fan',
+    slug: 'ceiling-fan',
+    fullSlug: 'fans/ceiling-fan',
+    description: null,
+    parentId: 'cmua1de670009govz3paxpljv',
+    level: 1,
+    icon: 'https://stock.adobe.com/search?k=table+fan',
+    image: 'https://stock.adobe.com/search?k=table+fan',
+    sortOrder: 0,
+    productCount: 0,
+    isActive: true,
+    createdAt: '2026-09-24T05:25:28.036Z',
+    updatedAt: '2026-09-24T06:35:25.583Z'
+  },
+  {
+    id: 'cmua1de670009govz3paxpljv',
+    name: 'Fans',
+    slug: 'fans',
+    fullSlug: 'fans',
+    description: 'Ceiling fans, table fans, and rechargeable fans',
+    parentId: null,
+    level: 0,
+    icon: 'fan',
+    image: null,
+    sortOrder: 0,
+    productCount: 0,
+    isActive: true,
+    createdAt: '2026-09-20T16:34:06.463Z',
+    updatedAt: '2026-09-23T05:58:25.880Z'
+  },
+  {
+    id: 'cmua1d9pp0008govzkc7tfw06',
+    name: 'Lightings',
+    slug: 'lightings',
+    fullSlug: 'lightings',
+    description: 'LED bulbs, lamps, and lighting fixtures',
+    parentId: null,
+    level: 0,
+    icon: 'lightbulb',
+    image: null,
+    sortOrder: 0,
+    productCount: 0,
+    isActive: true,
+    createdAt: '2026-09-20T16:34:00.685Z',
+    updatedAt: '2026-09-23T05:58:25.875Z'
+  },
+  {
+    id: 'cmua1dk4z000bgovzb1xlglxr',
+    name: 'Refrigerators',
+    slug: 'refrigerators',
+    fullSlug: 'refrigerators',
+    description: 'Refrigerators, freezers, and frost-free refrigerators',
+    parentId: null,
+    level: 0,
+    icon: 'refrigerator',
+    image: null,
+    sortOrder: 0,
+    productCount: 0,
+    isActive: true,
+    createdAt: '2026-09-20T16:34:14.195Z',
+    updatedAt: '2026-09-23T05:58:25.890Z'
+  },
+  {
+    id: 'cmua1dplt000cgovzuaudqesq',
+    name: 'Televisions',
+    slug: 'televisions',
+    fullSlug: 'televisions',
+    description: 'Smart TVs, LED TVs, and Android TVs',
+    parentId: null,
+    level: 0,
+    icon: 'tv',
+    image: null,
+    sortOrder: 0,
+    productCount: 2,
+    isActive: true,
+    createdAt: '2026-09-20T16:34:21.281Z',
+    updatedAt: '2026-09-23T05:58:25.895Z'
+  },
+  {
+    id: 'cmuf3imec00016wvzymtly490',
+    name: 'Electronics',
+    slug: 'electronics',
+    fullSlug: 'electronics',
+    description: 'Electronic devices, gadgets and accessories',
+    parentId: null,
+    level: 0,
+    icon: 'smartphone',
+    image: 'https://example.com/images/electronics.jpg',
+    sortOrder: 1,
+    productCount: 0,
+    isActive: true,
+    createdAt: '2026-09-24T05:33:00.516Z',
+    updatedAt: '2026-09-24T05:33:00.516Z'
+  },
+  {
+    id: 'cmuf3j84l00026wvzjo2ue43o',
+    name: 'Smartphones',
+    slug: 'smartphones',
+    fullSlug: 'electronics/smartphones',
+    description: 'Latest smartphones from popular brands',
+    parentId: 'cmuf3imec00016wvzymtly490',
+    level: 1,
+    icon: 'smartphone',
+    image: 'https://example.com/images/smartphones.jpg',
+    sortOrder: 1,
+    productCount: 0,
+    isActive: true,
+    createdAt: '2026-09-24T05:33:28.677Z',
+    updatedAt: '2026-09-24T05:33:28.677Z'
+  },
+  {
+    id: 'cmuf3ju7400036wvzu1audzd9',
+    name: 'Laptops',
+    slug: 'laptops',
+    fullSlug: 'electronics/laptops',
+    description: 'Laptops for work, study, gaming and everyday use',
+    parentId: 'cmuf3imec00016wvzymtly490',
+    level: 1,
+    icon: 'laptop',
+    image: 'https://example.com/images/laptops.jpg',
+    sortOrder: 2,
+    productCount: 0,
+    isActive: true,
+    createdAt: '2026-09-24T05:33:57.281Z',
+    updatedAt: '2026-09-24T05:33:57.281Z'
+  },
+  {
+    id: 'cmuf3jyg900046wvzzh88xxs9',
+    name: 'Tablets',
+    slug: 'tablets',
+    fullSlug: 'electronics/tablets',
+    description: 'Tablets for entertainment, work and productivity',
+    parentId: 'cmuf3imec00016wvzymtly490',
+    level: 1,
+    icon: 'tablet',
+    image: 'https://example.com/images/tablets.jpg',
+    sortOrder: 3,
+    productCount: 0,
+    isActive: true,
+    createdAt: '2026-09-24T05:34:02.793Z',
+    updatedAt: '2026-09-24T05:34:02.793Z'
+  },
+  {
+    id: 'cmuf3k2hi00056wvzl91irlqh',
+    name: 'Headphones',
+    slug: 'headphones',
+    fullSlug: 'electronics/headphones',
+    description: 'Wireless headphones, earbuds and audio accessories',
+    parentId: 'cmuf3imec00016wvzymtly490',
+    level: 1,
+    icon: 'headphones',
+    image: 'https://example.com/images/headphones.jpg',
+    sortOrder: 4,
+    productCount: 0,
+    isActive: true,
+    createdAt: '2026-09-24T05:34:08.022Z',
+    updatedAt: '2026-09-24T05:34:08.022Z'
+  },
+  {
+    id: 'cmuf3k6nq00066wvzyu45t5rv',
+    name: 'Smart Watches',
+    slug: 'smart-watches',
+    fullSlug: 'electronics/smart-watches',
+    description: 'Smart watches and wearable technology',
+    parentId: 'cmuf3imec00016wvzymtly490',
+    level: 1,
+    icon: 'watch',
+    image: 'https://example.com/images/smart-watches.jpg',
+    sortOrder: 5,
+    productCount: 0,
+    isActive: true,
+    createdAt: '2026-09-24T05:34:13.430Z',
+    updatedAt: '2026-09-24T05:34:13.430Z'
+  }
+]
+ GET /admin/categories 200 in 1174ms (next.js: 802ms, proxy.ts: 7ms, application-code: 365ms)
+ GET /admin/brands 200 in 1020ms (next.js: 927ms, proxy.ts: 10ms, application-code: 84ms)
+⨯ ./src/components/modules/admin/sellers/SellersContent.tsx:8:1
+Error: Export updateSellerStatusAction doesn't exist in target module
+  [90m 6 |[0m [36mimport[0m { [33mBadge[0m } [36mfrom[0m [32m'@/components/ui/Badge'[0m;
+  [90m 7 |[0m [36mimport[0m { [33mSearch[0m, [33mUsers[0m, [33mShieldAlert[0m, [33mCheckCircle[0m, [33mClock[0m, [33mEye[0m, [33mBan[0m, [33mUserCheck[0m, [33mShieldOff[0m, [33mF...[0m
+[31m[1m>[0m [90m 8 |[0m [36mimport[0m { updateSellerStatusAction } [36mfrom[0m [32m'@/actions/admin.actions'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 9 |[0m [36mimport[0m [36mtype[0m { [33mAdminSeller[0m } [36mfrom[0m [32m'@/services/admin.service'[0m;
+  [90m10 |[0m [36mimport[0m { toast } [36mfrom[0m [32m'sonner'[0m;
+  [90m11 |[0m
+
+The export updateSellerStatusAction was not found in module [project]/src/actions/admin.actions.ts [app-client] (ecmascript).
+Did you mean to import resendOtpAction?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/modules/admin/sellers/SellersContent.tsx
+    ./src/app/(dashboard)/admin/sellers/page.tsx
+
+
+
+./src/components/modules/admin/sellers/SellersContent.tsx:8:1
+Error: Export updateSellerStatusAction doesn't exist in target module
+  [90m 6 |[0m [36mimport[0m { [33mBadge[0m } [36mfrom[0m [32m'@/components/ui/Badge'[0m;
+  [90m 7 |[0m [36mimport[0m { [33mSearch[0m, [33mUsers[0m, [33mShieldAlert[0m, [33mCheckCircle[0m, [33mClock[0m, [33mEye[0m, [33mBan[0m, [33mUserCheck[0m, [33mShieldOff[0m, [33mF...[0m
+[31m[1m>[0m [90m 8 |[0m [36mimport[0m { updateSellerStatusAction } [36mfrom[0m [32m'@/actions/admin.actions'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 9 |[0m [36mimport[0m [36mtype[0m { [33mAdminSeller[0m } [36mfrom[0m [32m'@/services/admin.service'[0m;
+  [90m10 |[0m [36mimport[0m { toast } [36mfrom[0m [32m'sonner'[0m;
+  [90m11 |[0m
+
+The export updateSellerStatusAction was not found in module [project]/src/actions/admin.actions.ts [app-ssr] (ecmascript).
+Did you mean to import resendOtpAction?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/modules/admin/sellers/SellersContent.tsx
+    ./src/app/(dashboard)/admin/sellers/page.tsx
+
+
+[browser] ./src/components/modules/admin/sellers/SellersContent.tsx:8:1
+Error: Export updateSellerStatusAction doesn't exist in target module
+   6 | import { Badge } from '@/components/ui/Badge';
+   7 | import { Search, Users, ShieldAlert, CheckCircle, Clock, Eye, Ban, UserCheck, ShieldOff, F...
+>  8 | import { updateSellerStatusAction } from '@/actions/admin.actions';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   9 | import type { AdminSeller } from '@/services/admin.service';
+  10 | import { toast } from 'sonner';
+  11 |
+
+The export updateSellerStatusAction was not found in module [project]/src/actions/admin.actions.ts [app-client] (ecmascript).
+Did you mean to import resendOtpAction?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/modules/admin/sellers/SellersContent.tsx
+    ./src/app/(dashboard)/admin/sellers/page.tsx 
+[browser] ./src/components/modules/admin/sellers/SellersContent.tsx:8:1
+Error: Export updateSellerStatusAction doesn't exist in target module
+   6 | import { Badge } from '@/components/ui/Badge';
+   7 | import { Search, Users, ShieldAlert, CheckCircle, Clock, Eye, Ban, UserCheck, ShieldOff, F...
+>  8 | import { updateSellerStatusAction } from '@/actions/admin.actions';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   9 | import type { AdminSeller } from '@/services/admin.service';
+  10 | import { toast } from 'sonner';
+  11 |
+
+The export updateSellerStatusAction was not found in module [project]/src/actions/admin.actions.ts [app-ssr] (ecmascript).
+Did you mean to import resendOtpAction?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/modules/admin/sellers/SellersContent.tsx
+    ./src/app/(dashboard)/admin/sellers/page.tsx 
+ GET /admin/sellers 500 in 4.8s (next.js: 4.5s, proxy.ts: 8ms, application-code: 329ms)
+[browser] ./src/components/modules/admin/sellers/SellersContent.tsx:8:1
+Error: Export updateSellerStatusAction doesn't exist in target module
+   6 | import { Badge } from '@/components/ui/Badge';
+   7 | import { Search, Users, ShieldAlert, CheckCircle, Clock, Eye, Ban, UserCheck, ShieldOff, F...
+>  8 | import { updateSellerStatusAction } from '@/actions/admin.actions';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   9 | import type { AdminSeller } from '@/services/admin.service';
+  10 | import { toast } from 'sonner';
+  11 |
+
+The export updateSellerStatusAction was not found in module [project]/src/actions/admin.actions.ts [app-client] (ecmascript).
+Did you mean to import resendOtpAction?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/modules/admin/sellers/SellersContent.tsx
+    ./src/app/(dashboard)/admin/sellers/page.tsx 
+[browser] ./src/components/modules/admin/sellers/SellersContent.tsx:8:1
+Error: Export updateSellerStatusAction doesn't exist in target module
+   6 | import { Badge } from '@/components/ui/Badge';
+   7 | import { Search, Users, ShieldAlert, CheckCircle, Clock, Eye, Ban, UserCheck, ShieldOff, F...
+>  8 | import { updateSellerStatusAction } from '@/actions/admin.actions';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   9 | import type { AdminSeller } from '@/services/admin.service';
+  10 | import { toast } from 'sonner';
+  11 |
+
+The export updateSellerStatusAction was not found in module [project]/src/actions/admin.actions.ts [app-ssr] (ecmascript).
+Did you mean to import resendOtpAction?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/modules/admin/sellers/SellersContent.tsx
+    ./src/app/(dashboard)/admin/sellers/page.tsx 
+⨯ ./src/components/modules/admin/sellers/SellersContent.tsx:8:1
+Error: Export updateSellerStatusAction doesn't exist in target module
+  [90m 6 |[0m [36mimport[0m { [33mBadge[0m } [36mfrom[0m [32m'@/components/ui/Badge'[0m;
+  [90m 7 |[0m [36mimport[0m { [33mSearch[0m, [33mUsers[0m, [33mShieldAlert[0m, [33mCheckCircle[0m, [33mClock[0m, [33mEye[0m, [33mBan[0m, [33mUserCheck[0m, [33mShieldOff[0m, [33mF...[0m
+[31m[1m>[0m [90m 8 |[0m [36mimport[0m { updateSellerStatusAction } [36mfrom[0m [32m'@/actions/admin.actions'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 9 |[0m [36mimport[0m [36mtype[0m { [33mAdminSeller[0m } [36mfrom[0m [32m'@/services/admin.service'[0m;
+  [90m10 |[0m [36mimport[0m { toast } [36mfrom[0m [32m'sonner'[0m;
+  [90m11 |[0m
+
+The export updateSellerStatusAction was not found in module [project]/src/actions/admin.actions.ts [app-client] (ecmascript).
+Did you mean to import resendOtpAction?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/modules/admin/sellers/SellersContent.tsx
+    ./src/app/(dashboard)/admin/sellers/page.tsx
+
+
+
+./src/components/modules/admin/sellers/SellersContent.tsx:8:1
+Error: Export updateSellerStatusAction doesn't exist in target module
+  [90m 6 |[0m [36mimport[0m { [33mBadge[0m } [36mfrom[0m [32m'@/components/ui/Badge'[0m;
+  [90m 7 |[0m [36mimport[0m { [33mSearch[0m, [33mUsers[0m, [33mShieldAlert[0m, [33mCheckCircle[0m, [33mClock[0m, [33mEye[0m, [33mBan[0m, [33mUserCheck[0m, [33mShieldOff[0m, [33mF...[0m
+[31m[1m>[0m [90m 8 |[0m [36mimport[0m { updateSellerStatusAction } [36mfrom[0m [32m'@/actions/admin.actions'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 9 |[0m [36mimport[0m [36mtype[0m { [33mAdminSeller[0m } [36mfrom[0m [32m'@/services/admin.service'[0m;
+  [90m10 |[0m [36mimport[0m { toast } [36mfrom[0m [32m'sonner'[0m;
+  [90m11 |[0m
+
+The export updateSellerStatusAction was not found in module [project]/src/actions/admin.actions.ts [app-ssr] (ecmascript).
+Did you mean to import resendOtpAction?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/modules/admin/sellers/SellersContent.tsx
+    ./src/app/(dashboard)/admin/sellers/page.tsx
+
+
+ GET /admin/sellers 500 in 98ms (next.js: 49ms, proxy.ts: 14ms, application-code: 35ms)
+[browser] ./src/components/modules/admin/sellers/SellersContent.tsx:8:1
+Error: Export updateSellerStatusAction doesn't exist in target module
+   6 | import { Badge } from '@/components/ui/Badge';
+   7 | import { Search, Users, ShieldAlert, CheckCircle, Clock, Eye, Ban, UserCheck, ShieldOff, F...
+>  8 | import { updateSellerStatusAction } from '@/actions/admin.actions';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   9 | import type { AdminSeller } from '@/services/admin.service';
+  10 | import { toast } from 'sonner';
+  11 |
+
+The export updateSellerStatusAction was not found in module [project]/src/actions/admin.actions.ts [app-client] (ecmascript).
+Did you mean to import resendOtpAction?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/modules/admin/sellers/SellersContent.tsx
+    ./src/app/(dashboard)/admin/sellers/page.tsx 
+[browser] ./src/components/modules/admin/sellers/SellersContent.tsx:8:1
+Error: Export updateSellerStatusAction doesn't exist in target module
+   6 | import { Badge } from '@/components/ui/Badge';
+   7 | import { Search, Users, ShieldAlert, CheckCircle, Clock, Eye, Ban, UserCheck, ShieldOff, F...
+>  8 | import { updateSellerStatusAction } from '@/actions/admin.actions';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   9 | import type { AdminSeller } from '@/services/admin.service';
+  10 | import { toast } from 'sonner';
+  11 |
+
+The export updateSellerStatusAction was not found in module [project]/src/actions/admin.actions.ts [app-ssr] (ecmascript).
+Did you mean to import resendOtpAction?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/modules/admin/sellers/SellersContent.tsx
+    ./src/app/(dashboard)/admin/sellers/page.tsx 
+[browser] ./src/components/modules/admin/sellers/SellersContent.tsx:8:1
+Error: Export updateSellerStatusAction doesn't exist in target module
+   6 | import { Badge } from '@/components/ui/Badge';
+   7 | import { Search, Users, ShieldAlert, CheckCircle, Clock, Eye, Ban, UserCheck, ShieldOff, F...
+>  8 | import { updateSellerStatusAction } from '@/actions/admin.actions';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   9 | import type { AdminSeller } from '@/services/admin.service';
+  10 | import { toast } from 'sonner';
+  11 |
+
+The export updateSellerStatusAction was not found in module [project]/src/actions/admin.actions.ts [app-client] (ecmascript).
+Did you mean to import resendOtpAction?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/modules/admin/sellers/SellersContent.tsx
+    ./src/app/(dashboard)/admin/sellers/page.tsx 
+[browser] ./src/components/modules/admin/sellers/SellersContent.tsx:8:1
+Error: Export updateSellerStatusAction doesn't exist in target module
+   6 | import { Badge } from '@/components/ui/Badge';
+   7 | import { Search, Users, ShieldAlert, CheckCircle, Clock, Eye, Ban, UserCheck, ShieldOff, F...
+>  8 | import { updateSellerStatusAction } from '@/actions/admin.actions';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   9 | import type { AdminSeller } from '@/services/admin.service';
+  10 | import { toast } from 'sonner';
+  11 |
+
+The export updateSellerStatusAction was not found in module [project]/src/actions/admin.actions.ts [app-ssr] (ecmascript).
+Did you mean to import resendOtpAction?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/modules/admin/sellers/SellersContent.tsx
+    ./src/app/(dashboard)/admin/sellers/page.tsx 
+[browser] Uncaught Error: ./src/components/modules/admin/sellers/SellersContent.tsx:8:1
+Error: Export updateSellerStatusAction doesn't exist in target module
+   6 | import { Badge } from '@/components/ui/Badge';
+   7 | import { Search, Users, ShieldAlert, CheckCircle, Clock, Eye, Ban, UserCheck, ShieldOff, F...
+>  8 | import { updateSellerStatusAction } from '@/actions/admin.actions';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   9 | import type { AdminSeller } from '@/services/admin.service';
+  10 | import { toast } from 'sonner';
+  11 |
+
+The export updateSellerStatusAction was not found in module [project]/src/actions/admin.actions.ts [app-client] (ecmascript).
+Did you mean to import resendOtpAction?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/modules/admin/sellers/SellersContent.tsx
+    ./src/app/(dashboard)/admin/sellers/page.tsx
+
+
+    at <unknown> (Error: ./src/components/modules/admin/sellers/SellersContent.tsx:8:1)
+    at <unknown> (Error: (./src/components/modules/admin/sellers/SellersContent.tsx:8:1)
+[browser] ./src/components/modules/admin/sellers/SellersContent.tsx:8:1
+Error: Export updateSellerStatusAction doesn't exist in target module
+   6 | import { Badge } from '@/components/ui/Badge';
+   7 | import { Search, Users, ShieldAlert, CheckCircle, Clock, Eye, Ban, UserCheck, ShieldOff, F...
+>  8 | import { updateSellerStatusAction } from '@/actions/admin.actions';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   9 | import type { AdminSeller } from '@/services/admin.service';
+  10 | import { toast } from 'sonner';
+  11 |
+
+The export updateSellerStatusAction was not found in module [project]/src/actions/admin.actions.ts [app-client] (ecmascript).
+Did you mean to import resendOtpAction?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/modules/admin/sellers/SellersContent.tsx
+    ./src/app/(dashboard)/admin/sellers/page.tsx 
+[browser] ./src/components/modules/admin/sellers/SellersContent.tsx:8:1
+Error: Export updateSellerStatusAction doesn't exist in target module
+   6 | import { Badge } from '@/components/ui/Badge';
+   7 | import { Search, Users, ShieldAlert, CheckCircle, Clock, Eye, Ban, UserCheck, ShieldOff, F...
+>  8 | import { updateSellerStatusAction } from '@/actions/admin.actions';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   9 | import type { AdminSeller } from '@/services/admin.service';
+  10 | import { toast } from 'sonner';
+  11 |
+
+The export updateSellerStatusAction was not found in module [project]/src/actions/admin.actions.ts [app-ssr] (ecmascript).
+Did you mean to import resendOtpAction?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/modules/admin/sellers/SellersContent.tsx
+    ./src/app/(dashboard)/admin/sellers/page.tsx 
+[browser] ./src/components/modules/admin/sellers/SellersContent.tsx:8:1
+Error: Export updateSellerStatusAction doesn't exist in target module
+   6 | import { Badge } from '@/components/ui/Badge';
+   7 | import { Search, Users, ShieldAlert, CheckCircle, Clock, Eye, Ban, UserCheck, ShieldOff, F...
+>  8 | import { updateSellerStatusAction } from '@/actions/admin.actions';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   9 | import type { AdminSeller } from '@/services/admin.service';
+  10 | import { toast } from 'sonner';
+  11 |
+
+The export updateSellerStatusAction was not found in module [project]/src/actions/admin.actions.ts [app-client] (ecmascript).
+Did you mean to import resendOtpAction?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/modules/admin/sellers/SellersContent.tsx
+    ./src/app/(dashboard)/admin/sellers/page.tsx 
+[browser] ./src/components/modules/admin/sellers/SellersContent.tsx:8:1
+Error: Export updateSellerStatusAction doesn't exist in target module
+   6 | import { Badge } from '@/components/ui/Badge';
+   7 | import { Search, Users, ShieldAlert, CheckCircle, Clock, Eye, Ban, UserCheck, ShieldOff, F...
+>  8 | import { updateSellerStatusAction } from '@/actions/admin.actions';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   9 | import type { AdminSeller } from '@/services/admin.service';
+  10 | import { toast } from 'sonner';
+  11 |
+
+The export updateSellerStatusAction was not found in module [project]/src/actions/admin.actions.ts [app-ssr] (ecmascript).
+Did you mean to import resendOtpAction?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/modules/admin/sellers/SellersContent.tsx
+    ./src/app/(dashboard)/admin/sellers/page.tsx 
