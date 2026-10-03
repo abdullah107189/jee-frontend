@@ -53,7 +53,7 @@ export function DashboardLayoutClient({
         className={cn(
           "fixed inset-y-0 left-0 z-40 w-64 transform border-r border-border bg-background transition-transform duration-300 ease-in-out",
           "lg:static lg:z-auto lg:translate-x-0",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full",
+          sidebarOpen ? "translate-x-0" : "-translate-x-full -left-10",
         )}
       >
         <Button
@@ -97,7 +97,7 @@ export function DashboardLayoutClient({
             user.role === "SELLER" && "pb-24 lg:pb-8",  // ← uppercase
           )}
         >
-          <div className="mx-auto w-full max-w-6xl">{children}</div>
+          <div className="mx-auto w-full p-4 md:p-6 xl:p-8">{children}</div>
         </main>
       </div>
 

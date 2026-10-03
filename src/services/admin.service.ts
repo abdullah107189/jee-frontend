@@ -5,15 +5,7 @@ export type AdminAnalytics = Record<string, any>;
 
 export type AdminOrder = Record<string, any>;
 export type AdminWarranty = Record<string, any>;
-export type AdminProduct = {
-  id: string;
-  name: string;
-  sku: string;
-  category: string;
-  price: number;
-  stock: number;
-  status: string;
-};
+ 
 export type AdminProductItem = Record<string, any>;
 export type AdminCategory = Record<string, any>; 
 export type AdminWarrantyClaim = Record<string, any>;
@@ -81,13 +73,7 @@ export async function getAnalytics(_period = 'MONTH'): Promise<AdminAnalytics> {
   };
 }
 
-export async function getAdminProducts(): Promise<AdminProduct[]> {
-  return [
-    { id: '1', name: 'Premium Standing Desk', sku: 'DESK-001', category: 'Furniture', price: 499.99, stock: 15, status: 'PUBLISHED' },
-    { id: '2', name: 'Ergonomic Chair', sku: 'CHAIR-002', category: 'Furniture', price: 249.99, stock: 8, status: 'PUBLISHED' },
-    { id: '3', name: 'Wireless Mechanical Keyboard', sku: 'KEY-003', category: 'Electronics', price: 129.99, stock: 0, status: 'UNPUBLISHED' },
-  ];
-}
+ 
 
 export async function getAdminProductItems(): Promise<AdminProductItem[]> {
   return [
