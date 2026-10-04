@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useEffect, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,14 +36,6 @@ const categorySchema = z.object({
     name: z
         .string()
         .min(2, "Name must be at least 2 characters"),
-
-    slug: z
-        .string()
-        .regex(
-            /^[a-z0-9-]*$/,
-            "Only lowercase letters, numbers, hyphens"
-        )
-        .optional(),
 
     description: z
         .string()
@@ -89,6 +81,19 @@ interface CategoryFormProps {
 }
 
 /* ─────────────────────────────
+   Slug Generator
+───────────────────────────── */
+
+function generateSlug(value: string) {
+    return value
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-");
+}
+
+/* ─────────────────────────────
    Component
 ───────────────────────────── */
 
@@ -101,6 +106,24 @@ export function CategoryForm({
 
     const [isPending, startTransition] = useTransition();
 
+    /*
+     * Track whether the user manually edited the slug.
+     *
+     * This prevents:
+     *
+     * Name: Ceiling Fan
+     * Slug: ceiling-fan
+     *
+     * User manually changes slug to:
+     * ceiling-fan-2025
+     *
+     * Then changes name:
+     * Premium Ceiling Fan
+     *
+     * The manually entered slug will NOT be overwritten.
+     */
+    const slugManuallyEdited = useRef(false);
+
     const form = useForm<
         CategoryFormInput,
         unknown,
@@ -110,7 +133,6 @@ export function CategoryForm({
 
         defaultValues: {
             name: category?.name ?? "",
-            slug: category?.slug ?? "",
             description: category?.description ?? "",
             parentId: category?.parentId ?? null,
             icon: category?.icon ?? "",
@@ -118,8 +140,35 @@ export function CategoryForm({
             sortOrder: category?.sortOrder ?? 0,
             isActive: category?.isActive ?? true,
         },
-
     });
+
+    const name = form.watch("name");
+
+    /* ─────────────────────────────
+       Auto Generate Slug
+    ───────────────────────────── */
+
+    useEffect(() => {
+        /*
+         * Only auto-generate slug while creating.
+         *
+         * Existing category slug should remain unchanged
+         * when editing a category.
+         */
+        if (mode !== "create") {
+            return;
+        }
+
+        /*
+         * Don't overwrite a slug that the user manually edited.
+         */
+        if (slugManuallyEdited.current) {
+            return;
+        }
+
+        const generatedSlug = generateSlug(name);
+
+    }, [name, mode, form]);
 
     /* ─────────────────────────────
        Submit
@@ -133,21 +182,8 @@ export function CategoryForm({
                 /* Name */
                 fd.set("name", data.name);
 
-                /* Slug */
-                if (data.slug) {
-                    fd.set("slug", data.slug);
-                }
-
-                /* Description */
-                if (data.description) {
-                    fd.set(
-                        "description",
-                        data.description
-                    );
-                }
 
                 /* Parent */
-                // Never pass null to FormData.set.
                 if (
                     data.parentId !== undefined &&
                     data.parentId !== null &&
@@ -166,7 +202,7 @@ export function CategoryForm({
                     fd.set("image", data.image);
                 }
 
-                /* Sort order */
+                /* Sort Order */
                 if (data.sortOrder !== undefined) {
                     fd.set(
                         "sortOrder",
@@ -175,7 +211,6 @@ export function CategoryForm({
                 }
 
                 /* Active */
-                // Send explicit value so false is also handled.
                 fd.set(
                     "isActive",
                     data.isActive ? "on" : "off"
@@ -246,34 +281,6 @@ export function CategoryForm({
                             </p>
                         )}
                     </div>
-
-                    {/* ───────────────── Slug ───────────────── */}
-
-                    <div className="space-y-2">
-                        <Label htmlFor="slug">
-                            Slug{" "}
-                            <span className="text-slate-400">
-                                (auto from name)
-                            </span>
-                        </Label>
-
-                        <Input
-                            id="slug"
-                            {...form.register("slug")}
-                            placeholder="ceiling-fan"
-                            className="h-12 rounded-xl font-mono"
-                        />
-
-                        {form.formState.errors.slug && (
-                            <p className="text-xs text-red-500">
-                                {
-                                    form.formState.errors
-                                        .slug.message
-                                }
-                            </p>
-                        )}
-                    </div>
-
                     {/* ───────────────── Description ───────────────── */}
 
                     <div className="space-y-2">
@@ -307,11 +314,16 @@ export function CategoryForm({
                         </Label>
 
                         <Select
-                            value={form.watch("parentId") ?? "none"}
+                            value={
+                                form.watch("parentId") ??
+                                "none"
+                            }
                             onValueChange={(value) => {
                                 form.setValue(
                                     "parentId",
-                                    value === "none" ? null : value
+                                    value === "none"
+                                        ? null
+                                        : value
                                 );
                             }}
                         >
@@ -497,6 +509,7 @@ export function CategoryForm({
                             )}
                         </Button>
                     </div>
+
                 </CardContent>
             </Card>
         </form>

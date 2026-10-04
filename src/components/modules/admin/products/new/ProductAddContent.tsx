@@ -45,8 +45,6 @@ export default function ProductAddContent({
 
   /* basic */
   const [name, setName] = useState("");
-  const [slug, setSlug] = useState("");
-  const [slugEdited, setSlugEdited] = useState(false);
   const [description, setDescription] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [brandId, setBrandId] = useState("");
@@ -65,10 +63,9 @@ export default function ProductAddContent({
   /* variants */
   const [variants, setVariants] = useState([emptyVariant()]);
 
-  /* auto slug */
+  /* name */
   const handleNameChange = (v: string) => {
     setName(v);
-    if (!slugEdited) setSlug(slugify(v));
   };
 
   /* ─────────── submit ─────────── */
@@ -92,7 +89,6 @@ export default function ProductAddContent({
     /* build payload */
     const payload = {
       name: name.trim(),
-      slug: slug.trim() || undefined,
       description: description.trim() || undefined,
       specifications: Object.fromEntries(
         specs.filter((s) => s.key && s.value).map((s) => [s.key, s.value]),
@@ -179,20 +175,7 @@ export default function ProductAddContent({
                 className="h-11 rounded-xl bg-slate-50"
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700">
-                Slug
-              </label>
-              <Input
-                value={slug}
-                onChange={(e) => {
-                  setSlug(e.target.value);
-                  setSlugEdited(true);
-                }}
-                placeholder="auto-generated"
-                className="h-11 rounded-xl bg-slate-50 font-mono text-xs"
-              />
-            </div>
+
           </div>
 
           <div className="space-y-2">
@@ -513,20 +496,27 @@ export default function ProductAddContent({
                   <label className="text-xs font-semibold uppercase text-slate-500">
                     Image URLs
                   </label>
+
                   <Button
                     type="button"
                     variant="ghost"
-                    size="sm"
                     onClick={() => {
                       const next = [...variants];
-                      next[vi].images.push("");
+
+                      next[vi] = {
+                        ...next[vi],
+                        images: [...next[vi].images, ""],
+                      };
+
                       setVariants(next);
                     }}
-                    className="h-7 rounded-lg text-xs text-blue-600 hover:bg-blue-50"
+                    className="h-7 rounded-lg px-2 text-xs text-blue-600 hover:bg-blue-50"
                   >
-                    <Plus className="mr-1 h-3 w-3" /> Add
+                    <Plus className="mr-1 h-3 w-3" />
+                    Add
                   </Button>
                 </div>
+
                 <div className="space-y-2">
                   {v.images.map((img, ii) => (
                     <div key={ii} className="flex gap-2">

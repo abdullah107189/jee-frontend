@@ -8,7 +8,7 @@ export type AdminProductListItem = {
   id: string;
   name: string;
   slug: string;
-  variantId: string;
+  variantId: string | null;
   variantSku: string | null;
   price: number;
   comparePrice: number | null;
@@ -17,6 +17,13 @@ export type AdminProductListItem = {
   stockQuantity: number;
   brandName: string | null;
   categoryName: string | null;
+  isPublished: boolean;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  variantCount: number;
+  totalStock: number;
+  totalItems: number;
 };
 
 export type AdminProductListResponse = {
@@ -32,7 +39,6 @@ export type AdminProductListResponse = {
   };
   data: AdminProductListItem[];
 };
-
 /* -------------------------------------------------------------------------- */
 /* Admin Product Detail (variants + items)                                    */
 /* -------------------------------------------------------------------------- */

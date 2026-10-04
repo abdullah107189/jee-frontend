@@ -20,8 +20,8 @@ const ADMIN_PAGE_SIZE = 20;
 /* ─────────── Auth header (BFF cookie forward) ─────────── */
 async function getAuthHeaders(): Promise<HeadersInit> {
   const store = await cookies();
-  const token = store.get("access_token")?.value;
-  return token ? { Cookie: `access_token=${token}` } : {};
+  const token = store.get("accessToken")?.value;
+  return token ? { Cookie: `accessToken=${token}` } : {};
 }
 
 /* ─────────── List ─────────── */
@@ -31,14 +31,17 @@ type AdminListOptions = {
   search?: string;
   categoryId?: string;
   brandId?: string;
-  isPublished?: boolean;
+  status?: string; // published | draft
+  active?: string; // active | inactive
+  stock?: string; // in | low | out
+  sort?: string; // newest | oldest | price-asc | price-desc | name-asc | name-desc
 };
 
 async function getAdminProducts(
   options: AdminListOptions = {},
 ): Promise<AdminProductListResponse> {
   const page = options.page ?? 1;
-  const limit = options.limit ?? ADMIN_PAGE_SIZE;
+  const limit = options.limit ?? 20;
 
   const fallback: AdminProductListResponse = {
     success: false,
@@ -60,10 +63,12 @@ async function getAdminProducts(
     if (options.search) params.set("search", options.search);
     if (options.categoryId) params.set("categoryId", options.categoryId);
     if (options.brandId) params.set("brandId", options.brandId);
-    if (options.isPublished !== undefined)
-      params.set("isPublished", String(options.isPublished));
+    if (options.status) params.set("status", options.status);
+    if (options.active) params.set("active", options.active);
+    if (options.stock) params.set("stock", options.stock);
+    if (options.sort) params.set("sort", options.sort);
 
-    const res = await fetch(`${SERVER_API}/products?${params}`, {
+    const res = await fetch(`${SERVER_API}/products/admin?${params}`, {
       headers: await getAuthHeaders(),
       cache: "no-store",
     });
@@ -147,7 +152,7 @@ async function deleteProduct(id: string): Promise<boolean> {
   }
 }
 
- async function getVariantById(
+async function getVariantById(
   variantId: string,
 ): Promise<AdminVariantDetail | null> {
   if (!variantId) return null;
@@ -165,7 +170,7 @@ async function deleteProduct(id: string): Promise<boolean> {
   }
 }
 
-/* ─────────── Categories (flat) ─────────── */ 
+/* ─────────── Categories (flat) ─────────── */
 async function getCategoriesFlat(): Promise<CategoryFlat[]> {
   try {
     const res = await fetch(`${SERVER_API}/categories/flat`, {
@@ -182,7 +187,7 @@ async function getCategoriesFlat(): Promise<CategoryFlat[]> {
 }
 
 /* ─────────── Brands ─────────── */
- async function getBrands(): Promise<BrandOption[]> {
+async function getBrands(): Promise<BrandOption[]> {
   try {
     const res = await fetch(`${SERVER_API}/brands`, {
       headers: await getAuthHeaders(),
@@ -198,7 +203,7 @@ async function getCategoriesFlat(): Promise<CategoryFlat[]> {
 }
 
 /* ─────────── Create ─────────── */
- async function createProduct(input: CreateProductInput): Promise<{
+async function createProduct(input: CreateProductInput): Promise<{
   success: boolean;
   message: string;
   data?: { id: string };

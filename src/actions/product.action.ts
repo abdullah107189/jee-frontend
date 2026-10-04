@@ -147,3 +147,42 @@ export async function createProductAction(input: CreateProductInput) {
     return { success: false, message: "Network error" };
   }
 }
+
+/* ─────────── Update product ─────────── */
+
+export async function updateProductAction(
+  id: string,
+  input: Partial<CreateProductInput>,
+) {
+  const store = await cookies();
+  const token = store.get("accessToken")?.value;
+  if (!token) return { success: false, message: "Unauthorized" };
+
+  try {
+    const res = await fetch(`${process.env.API_URL}/products/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: `accessToken=${token}`,
+      },
+      body: JSON.stringify(input),
+    });
+
+    const json = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: json.message ?? "Update failed",
+        errors: json.errors,
+      };
+    }
+
+    revalidatePath("/admin/products");
+    revalidatePath(`/admin/products/${id}`);
+    return { success: true, message: json.message ?? "Product updated" };
+  } catch (error) {
+    console.error("[updateProductAction]", error);
+    return { success: false, message: "Network error" };
+  }
+}

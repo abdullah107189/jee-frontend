@@ -3,6 +3,7 @@ import { HeroSlider } from "./HeroSlider";
 import QuickWarrantyCheck from "./QuickWarrantyCheck";
 import { TrustBadgeStrip } from "./TrustBadgeStrip";
 import { heroSlides, trustBadges } from "@/dammyData/HeroSlide";
+import TrustBadges from "./TrustBadges";
 
 export function HeroSection() {
   return (
@@ -45,7 +46,9 @@ export function HeroSection() {
         </div>
       </div>
 
-      <TrustBadgeStrip items={trustBadges} />
+      {/* <TrustBadgeStrip items={trustBadges} /> */}
+
+      <TrustBadges />
     </section>
   );
 }

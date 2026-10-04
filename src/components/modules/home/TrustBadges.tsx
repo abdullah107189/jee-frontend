@@ -9,8 +9,8 @@ const badges = [
 
 export default function TrustBadges() {
   return (
-    <section aria-label="Why shop with us" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div className="grid grid-cols-2 gap-4 rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm lg:grid-cols-4">
+    <section aria-label="Why shop with us" className="mt-3">
+      <div className="grid grid-cols-2 gap-4 rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm lg:grid-cols-4">
         {badges.map(({ icon: Icon, title, desc, color }) => (
           <div key={title} className="flex items-center gap-3">
             <div className={`rounded-2xl p-3 ${color}`}>

@@ -36,6 +36,7 @@ export interface InitialFilters {
   warrantyMonths: number[];
   priceRange: [number, number];
   sort: SortOption;
+  filter?: Record<string, string>;  
 }
 
 /* -------------------------------------------------------------------------- */
