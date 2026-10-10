@@ -138,40 +138,22 @@ const customerWarranties: CustomerWarranty[] = [
   },
 ];
 
-export async function getCustomerOrders(): Promise<CustomerOrder[]> {
-  return customerOrders;
+export async function getCustomerOrders(params?: {
+  status?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+}): Promise<any> {
+  const { getCustomerOrders: fetchOrders } = await import("./order.service");
+  const res = await fetchOrders(params);
+  return res.orders;
 }
 
-export async function getCustomerOrderDetails(orderId: string): Promise<CustomerOrderDetails> {
-  return {
-    id: orderId || 'ORD-001',
-    date: '15 Aug 2026',
-    status: 'Delivered',
-    timeline: [
-      { title: 'Placed', date: '15 Aug 2026, 10:30 AM', completed: true },
-      { title: 'Confirmed', date: '16 Aug 2026, 11:15 AM', completed: true },
-      { title: 'Shipped', date: '17 Aug 2026, 02:45 PM', completed: true },
-      { title: 'Delivered', date: '18 Aug 2026, 04:20 PM', completed: true },
-    ],
-    paymentMethod: 'bKash (Verified)',
-    bkashTrxId: 'BKASH12345678',
-    advancePaid: 70,
-    subtotal: 15000,
-    deliveryFee: 100,
-    totalAmount: 15100,
-    dueAtDelivery: 15030,
-    shippingAddress: {
-      name: 'Md. Rahman', phone: '01712345678', address: 'House #12, Road #5, Block B, Banani', city: 'Dhaka',
-    },
-    items: [
-      {
-        id: 'i1', name: 'Vision 56" High Speed Ceiling Fan', uniqueId: 'FAN-001928', price: 15000, quantity: 1,
-        image: 'https://images.unsplash.com/photo-1570114681640-1090333fa965?auto=format&fit=crop&w=300&q=80',
-        warrantyStatus: 'Active (729 days left)', warrantyMonths: 24,
-      },
-    ],
-  };
+export async function getCustomerOrderDetails(orderId: string): Promise<any> {
+  const { getCustomerOrderDetails: fetchDetail } = await import("./order.service");
+  return fetchDetail(orderId);
 }
+
 
 export async function getCustomerWarranties(filters?: { status?: string; search?: string }): Promise<CustomerWarranty[]> {
   let result = [...customerWarranties];
