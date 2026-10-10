@@ -93,15 +93,13 @@ export function CheckoutForm({ user, savedAddress }: CheckoutFormProps) {
     const paymentPlan = form.watch("paymentPlan");
     const paymentGateway = form.watch("paymentGateway");
 
-    const deliveryFee = useMemo(() => {
-        const cityForFee = bdAddress.districtName || bdAddress.upazilaName;
-        return getDeliveryFee(cityForFee ?? "");
-    }, [bdAddress.districtName, bdAddress.upazilaName]);
-
     const insideDhaka = useMemo(() => {
-        const cityForFee = bdAddress.districtName || bdAddress.upazilaName;
-        return isInsideDhaka(cityForFee ?? "");
-    }, [bdAddress.districtName, bdAddress.upazilaName]);
+        return isInsideDhaka(bdAddress);
+    }, [bdAddress]);
+
+    const deliveryFee = useMemo(() => {
+        return getDeliveryFee(bdAddress, subtotal);
+    }, [bdAddress, subtotal]);
 
     const total = useMemo(() => subtotal + deliveryFee, [subtotal, deliveryFee]);
     const advanceAmount = paymentPlan === "FULL" ? total : 0;

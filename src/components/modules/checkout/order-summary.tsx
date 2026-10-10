@@ -111,8 +111,8 @@ export function OrderSummary({
                                 </Badge>
                             )}
                         </span>
-                        <span className="font-medium tabular-nums">
-                            ৳{deliveryFee.toLocaleString()}
+                        <span className={cn("font-medium tabular-nums", deliveryFee === 0 && "text-emerald-600 font-bold")}>
+                            {deliveryFee === 0 ? "FREE" : `৳${deliveryFee.toLocaleString()}`}
                         </span>
                     </div>
 

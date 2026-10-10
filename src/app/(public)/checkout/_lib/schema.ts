@@ -5,8 +5,10 @@ import { z } from "zod";
 /* -------------------------------------------------------------------------- */
 export const DELIVERY_FEE_INSIDE_DHAKA = 70;
 export const DELIVERY_FEE_OUTSIDE_DHAKA = 130;
+export const FREE_DELIVERY_THRESHOLD = 5000;
+export const DHAKA_DISTRICT_ID = "47";
 
-/** Cities considered inside Dhaka */
+/** Cities and Upazilas considered inside Dhaka */
 export const DHAKA_CITIES = [
   "dhaka",
   "dhanmondi",
@@ -23,6 +25,8 @@ export const DHAKA_CITIES = [
   "khilgaon",
   "jatrabari",
   "savar",
+  "keraniganj",
+  "dhamrai",
 ] as const;
 
 /* -------------------------------------------------------------------------- */
@@ -37,13 +41,49 @@ export type PaymentPlan = (typeof PAYMENT_PLANS)[number];
 /* -------------------------------------------------------------------------- */
 /* Helpers                                                                    */
 /* -------------------------------------------------------------------------- */
-export function isInsideDhaka(city: string): boolean {
-  if (!city) return false;
-  return DHAKA_CITIES.includes(city.trim().toLowerCase() as any);
+export function isInsideDhaka(
+  location?: { districtId?: string; districtName?: string; upazilaName?: string } | string,
+): boolean {
+  if (!location) return true; // Default inside Dhaka if not selected yet
+
+  if (typeof location === "string") {
+    const loc = location.trim().toLowerCase();
+    if (!loc) return true;
+    if (loc === "47" || loc.includes("dhaka")) return true;
+    return DHAKA_CITIES.includes(loc as any);
+  }
+
+  if (location.districtId === DHAKA_DISTRICT_ID) return true;
+  if (location.districtName?.trim().toLowerCase().includes("dhaka")) return true;
+  if (location.upazilaName) {
+    const upazila = location.upazilaName.trim().toLowerCase();
+    return DHAKA_CITIES.includes(upazila as any);
+  }
+
+  // If districtId is present and not Dhaka
+  if (location.districtId && location.districtId !== DHAKA_DISTRICT_ID) {
+    return false;
+  }
+
+  return true;
 }
 
-export function getDeliveryFee(city: string): number {
-  return isInsideDhaka(city)
+export function getDeliveryFee(
+  location?: { districtId?: string; districtName?: string; upazilaName?: string } | string,
+  subtotal = 0,
+): number {
+  if (subtotal >= FREE_DELIVERY_THRESHOLD && subtotal > 0) {
+    return 0;
+  }
+
+  // If location object passed with districtId
+  if (location && typeof location === "object" && location.districtId) {
+    return location.districtId === DHAKA_DISTRICT_ID || isInsideDhaka(location)
+      ? DELIVERY_FEE_INSIDE_DHAKA
+      : DELIVERY_FEE_OUTSIDE_DHAKA;
+  }
+
+  return isInsideDhaka(location)
     ? DELIVERY_FEE_INSIDE_DHAKA
     : DELIVERY_FEE_OUTSIDE_DHAKA;
 }

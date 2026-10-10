@@ -8,8 +8,12 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Separator } from "@/components/ui/separator";
 
-const DELIVERY_FEE = 100;
-const FREE_DELIVERY_THRESHOLD = 5000;
+import {
+  DELIVERY_FEE_INSIDE_DHAKA,
+  FREE_DELIVERY_THRESHOLD,
+} from "@/app/(public)/checkout/_lib/schema";
+
+const DEFAULT_DELIVERY_FEE = DELIVERY_FEE_INSIDE_DHAKA;
 
 interface CartSummaryProps {
   subtotal: number;
@@ -20,7 +24,7 @@ export function CartSummary({ subtotal, itemCount }: CartSummaryProps) {
   const router = useRouter();
 
   const isFreeDelivery = subtotal >= FREE_DELIVERY_THRESHOLD;
-  const delivery = isFreeDelivery ? 0 : DELIVERY_FEE;
+  const delivery = isFreeDelivery ? 0 : DEFAULT_DELIVERY_FEE;
   const total = subtotal + delivery;
   const remainingForFree = Math.max(0, FREE_DELIVERY_THRESHOLD - subtotal);
 
@@ -72,7 +76,7 @@ export function CartSummary({ subtotal, itemCount }: CartSummaryProps) {
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Delivery</span>
+              <span className="text-muted-foreground">Estimated Delivery</span>
               {delivery === 0 ? (
                 <span className="font-semibold text-emerald-600">FREE</span>
               ) : (
