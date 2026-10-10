@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Edit, Package, Boxes, ChevronRight } from "lucide-react";
+import { ArrowLeft, Edit, Package, Boxes, ChevronRight, Plus } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -104,11 +104,19 @@ export default function ProductDetailsContent({
 
             {/* Variants */}
             <Card className="rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-[2rem]">
-                <div className="flex items-center gap-2 border-b border-slate-100 p-6 sm:p-8">
-                    <Boxes className="h-5 w-5 text-slate-600" />
-                    <h2 className="text-lg font-bold text-slate-800">
-                        Variants ({product.variants.length})
-                    </h2>
+                <div className="flex items-center justify-between border-b border-slate-100 p-6 sm:p-8">
+                    <div className="flex items-center gap-2">
+                        <Boxes className="h-5 w-5 text-slate-600" />
+                        <h2 className="text-lg font-bold text-slate-800">
+                            Variants ({product.variants.length})
+                        </h2>
+                    </div>
+                    <Link href={`/admin/products/${product.id}/variants/new`}>
+                        <Button size="sm" className="rounded-xl shadow-md shadow-blue-500/10">
+                            <Plus className="mr-1.5 h-4 w-4" />
+                            Add Variant
+                        </Button>
+                    </Link>
                 </div>
 
                 <div className="space-y-3 p-4 sm:p-6">
