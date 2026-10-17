@@ -117,17 +117,6 @@ export interface OrderCustomer {
   email?: string;
 }
 
-export interface OrderPayment {
-  id: string;
-  method: string;
-  amount: number;
-  transactionId?: string;
-  status: PaymentStatus;
-  proofImage?: string;
-  rejectionReason?: string;
-  createdAt?: string;
-}
-
 export interface OrderTimelineEvent {
   status: OrderStatus | string;
   date: string;
@@ -151,7 +140,6 @@ export interface Order {
   paymentWay: PaymentWay;
   shippingAddress: ShippingAddress;
   items: OrderItem[];
-  payments?: OrderPayment[];
   subtotal: number;
   discount: number;
   tax?: number;

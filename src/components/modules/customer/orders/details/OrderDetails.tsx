@@ -517,7 +517,7 @@ export function OrderDetails({ order }: OrderDetailsProps) {
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Method:</span>
                 <span className="font-bold text-foreground">
-                  {order.paymentWay === "FULL" ? "Online Payment (bKash/Nagad)" : "Cash On Delivery"}
+                  Cash On Delivery
                 </span>
               </div>
               <div className="flex items-center justify-between">
@@ -526,14 +526,9 @@ export function OrderDetails({ order }: OrderDetailsProps) {
                   {order.paymentStatus}
                 </Badge>
               </div>
-              {order.payments?.[0]?.transactionId && (
-                <div className="flex items-center justify-between pt-2 border-t border-border/40">
-                  <span className="text-muted-foreground">Transaction ID:</span>
-                  <span className="font-mono text-xs font-bold text-foreground">
-                    {order.payments[0].transactionId}
-                  </span>
-                </div>
-              )}
+              <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-2.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                পণ্য হাতে পেয়ে টাকা দিন
+              </div>
             </CardContent>
           </Card>
 

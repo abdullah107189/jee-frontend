@@ -49,8 +49,6 @@ export type CustomerOrderDetails = {
   status: string;
   timeline: Array<Record<string, unknown>>;
   paymentMethod: string;
-  bkashTrxId: string;
-  advancePaid: number;
   subtotal: number;
   deliveryFee: number;
   totalAmount: number;
@@ -90,7 +88,7 @@ const customerOrders: CustomerOrder[] = [
     status: 'Delivered',
     totalAmount: 15000,
     itemsCount: 1,
-    paymentMethod: 'bKash (Verified)',
+    paymentMethod: 'Cash on Delivery',
     items: [
       { id: 'i1', name: 'Vision 56" Ceiling Fan', price: 15000, quantity: 1, uniqueId: 'FAN-001928', warrantyDaysLeft: 729 },
     ],
@@ -101,7 +99,7 @@ const customerOrders: CustomerOrder[] = [
     status: 'Shipped',
     totalAmount: 35000,
     itemsCount: 1,
-    paymentMethod: 'bKash (Verified)',
+    paymentMethod: 'Cash on Delivery',
     items: [
       { id: 'i2', name: 'Vision AC 1.5 Ton Inverter', price: 35000, quantity: 1, uniqueId: 'AC-003456', warrantyDaysLeft: 1080 },
     ],
@@ -112,7 +110,7 @@ const customerOrders: CustomerOrder[] = [
     status: 'Pending',
     totalAmount: 8000,
     itemsCount: 2,
-    paymentMethod: 'bKash (Pending Verification)',
+    paymentMethod: 'Cash on Delivery',
     items: [
       { id: 'i3', name: 'Vision Commercial Blender', price: 3800, quantity: 1, uniqueId: 'BLENDER-331', warrantyDaysLeft: 720 },
       { id: 'i4', name: 'Vision LED Bulb 15W Pack', price: 4200, quantity: 1, uniqueId: 'BULB-99120', warrantyDaysLeft: 360 },
@@ -209,10 +207,6 @@ export async function getCustomerStats(): Promise<CustomerStats> {
 export async function createCustomerOrder(orderData: Record<string, unknown>) {
   const orderNumber = `ORD-${Math.floor(100 + Math.random() * 900)}`;
   return { success: true, data: { id: orderNumber, orderNumber, status: 'Pending', total: 15000, createdAt: new Date().toISOString() }, orderData };
-}
-
-export async function verifyCustomerBkash(bkashNumber: string, transactionId: string, amount: number) {
-  return { success: true, data: { verified: true, message: `bKash advance payment of ${amount} BDT verified successfully!`, bkashNumber, transactionId } };
 }
 
 export async function updateCustomerProfile(data: Record<string, string>) {

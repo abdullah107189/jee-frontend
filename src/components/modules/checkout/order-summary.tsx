@@ -16,7 +16,7 @@ interface OrderSummaryProps {
     subtotal: number;
     deliveryFee: number;
     total: number;
-    paymentPlan: "COD" | "FULL";
+    paymentPlan?: "COD";
     insideDhaka: boolean;
     addressSelected: boolean;
 }
@@ -125,11 +125,9 @@ export function OrderSummary({
                         </span>
                     </div>
 
-                    {paymentPlan === "FULL" && (
-                        <p className="text-right text-xs text-muted-foreground">
-                            Full payment — no cash on delivery.
-                        </p>
-                    )}
+                    <p className="text-right text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                        পণ্য হাতে পেয়ে টাকা দিন
+                    </p>
                 </div>
             </CardContent>
         </Card>

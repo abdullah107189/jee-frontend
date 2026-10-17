@@ -286,7 +286,7 @@ export default function AdminSellersPage({ sellers }: { sellers: AdminSeller[] }
                       <table className="w-full text-sm text-left">
                         <thead className="bg-slate-50 text-xs font-semibold text-slate-500 uppercase">
                           <tr>
-                            <th className="p-3">TRX ID</th>
+                            <th className="p-3">Invoice No</th>
                             <th className="p-3">Product</th>
                             <th className="p-3">Price</th>
                             <th className="p-3">Date</th>
@@ -294,13 +294,13 @@ export default function AdminSellersPage({ sellers }: { sellers: AdminSeller[] }
                         </thead>
                         <tbody className="divide-y divide-slate-100">
                           <tr className="hover:bg-slate-50">
-                            <td className="p-3 font-mono text-xs">TRX-001928</td>
+                            <td className="p-3 font-mono text-xs">INV-001928</td>
                             <td className="p-3 font-medium">Vision 56" Ceiling Fan</td>
                             <td className="p-3 font-bold">৳3,500</td>
                             <td className="p-3 text-xs text-slate-500">2026-08-09</td>
                           </tr>
                           <tr className="hover:bg-slate-50">
-                            <td className="p-3 font-mono text-xs">TRX-001929</td>
+                            <td className="p-3 font-mono text-xs">INV-001929</td>
                             <td className="p-3 font-medium">Dry Iron 1000W Heavy</td>
                             <td className="p-3 font-bold">৳1,500</td>
                             <td className="p-3 text-xs text-slate-500">2026-08-07</td>

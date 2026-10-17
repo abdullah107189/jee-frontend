@@ -32,10 +32,7 @@ export const DHAKA_CITIES = [
 /* -------------------------------------------------------------------------- */
 /* Enums                                                                      */
 /* -------------------------------------------------------------------------- */
-export const PAYMENT_GATEWAYS = ["Bkash", "Rocket", "Nagad"] as const;
-export type PaymentGateway = (typeof PAYMENT_GATEWAYS)[number];
-
-export const PAYMENT_PLANS = ["FULL", "COD"] as const;
+export const PAYMENT_PLANS = ["COD"] as const;
 export type PaymentPlan = (typeof PAYMENT_PLANS)[number];
 
 /* -------------------------------------------------------------------------- */
@@ -107,44 +104,8 @@ export const checkoutSchema = z
     // Notes
     notes: z.string().max(500, "Notes too long").optional(),
 
-    // Payment
+    // Payment - MVP COD only
     paymentPlan: z.enum(PAYMENT_PLANS),
-    paymentGateway: z.enum(PAYMENT_GATEWAYS).optional(),
-
-    // Gateway fields
-    senderNumber: z
-      .string()
-      .regex(bdPhoneRegex, "Enter a valid sender number")
-      .optional()
-      .or(z.literal("")),
-    transactionId: z.string().optional().or(z.literal("")),
-  })
-  .superRefine((data, ctx) => {
-    const needsGateway = data.paymentPlan === "FULL";
-
-    if (needsGateway) {
-      if (!data.paymentGateway) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["paymentGateway"],
-          message: "Select a payment gateway",
-        });
-      }
-      if (!data.senderNumber) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["senderNumber"],
-          message: "Sender number is required",
-        });
-      }
-      if (!data.transactionId || data.transactionId.length < 5) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["transactionId"],
-          message: "Transaction ID is required",
-        });
-      }
-    }
   });
 
 export type CheckoutFormValues = z.infer<typeof checkoutSchema>;
