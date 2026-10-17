@@ -171,6 +171,7 @@ export async function cancelOrderAction(
 export async function updateOrderStatusAction(
   orderId: string,
   status: string,
+  reason?: string,
 ): Promise<{ success: boolean; message: string }> {
   try {
     if (!orderId || !status) {
@@ -184,13 +185,20 @@ export async function updateOrderStatusAction(
       return { success: false, message: "Authentication required" };
     }
 
+    const payload: { status: string; reason?: string } = {
+      status: status.toUpperCase(),
+    };
+    if (reason && reason.trim()) {
+      payload.reason = reason.trim();
+    }
+
     const res = await fetch(`${API_URL}/orders/${orderId}/status`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         Cookie: cookieHeader,
       },
-      body: JSON.stringify({ status: status.toUpperCase() }),
+      body: JSON.stringify(payload),
       cache: "no-store",
     });
 

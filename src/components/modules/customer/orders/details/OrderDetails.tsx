@@ -113,8 +113,7 @@ export function OrderDetails({ order }: OrderDetailsProps) {
   }
 
   const isCancelled = order.status === "CANCELLED" || order.status === "RETURNED";
-  const canCancel =
-    order.status === "PENDING" || order.status === "CONFIRMED";
+  const canCancel = order.status === "PENDING";
 
   const getMilestoneIndex = (status: OrderStatus | string) => {
     switch (status?.toUpperCase()) {
@@ -202,7 +201,7 @@ export function OrderDetails({ order }: OrderDetailsProps) {
                 #{order.orderNumber}
               </h1>
               <Badge variant={statusBadgeVariant(order.status)} className="text-xs px-3 py-1">
-                {order.status}
+                {order.status === "RETURNED" ? "ডেলিভারি ব্যর্থ/ফেরত" : order.status}
               </Badge>
               {order.paymentStatus && (
                 <Badge variant={paymentBadgeVariant(order.paymentStatus)} className="text-xs px-3 py-1">
@@ -240,10 +239,12 @@ export function OrderDetails({ order }: OrderDetailsProps) {
               <XCircle className="h-6 w-6 shrink-0" />
               <div>
                 <p className="font-semibold text-sm">
-                  Order was {order.status.toLowerCase()}
+                  Order is {order.status === "RETURNED" ? "ডেলিভারি ব্যর্থ/ফেরত (RETURNED)" : order.status}
                 </p>
                 <p className="text-xs text-destructive/80 mt-0.5">
-                  {order.cancelledAt
+                  {order.status === "RETURNED"
+                    ? "অর্ডারটির ডেলিভারি সম্পন্ন হয়নি অথবা ফেরত দেওয়া হয়েছে।"
+                    : order.cancelledAt
                     ? `Cancelled on ${new Date(order.cancelledAt).toLocaleDateString("en-GB")}`
                     : "This order is no longer in progress."}
                 </p>

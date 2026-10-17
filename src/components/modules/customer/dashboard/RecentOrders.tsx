@@ -12,6 +12,7 @@ const statusColors: Record<string, string> = {
   SHIPPED: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
   DELIVERED: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
   CANCELLED: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+  RETURNED: 'bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-400',
 };
 
 export function RecentOrders({ orders }: { orders: CustomerOrder[] }) {
@@ -56,8 +57,8 @@ export function RecentOrders({ orders }: { orders: CustomerOrder[] }) {
                       <span>•</span>
                       <span>৳{order?.total?.toLocaleString()}</span>
                     </div>
-                    <Badge className={`mt-1 ${statusColors[order.status]}`}>
-                      {order.status}
+                    <Badge className={`mt-1 ${statusColors[order.status] ?? 'bg-muted text-muted-foreground'}`}>
+                      {order.status === 'RETURNED' ? 'ডেলিভারি ব্যর্থ/ফেরত' : order.status}
                     </Badge>
                   </div>
                 </div>
