@@ -77,3 +77,11 @@ src/
 - ❌ `useState`/`useEffect` in Server Components
 - ❌ Mock data
 - ❌ `any` types
+
+
+## ফ্রন্টএন্ড নিয়ম
+- শুধু Next.js App Router। পেজ: src/app/**/page.tsx (Server Component)। UI: src/components/modules/**।
+  src/pages, _app.tsx, Vite ফাইল কখনো বানাবে না।
+- Build ফেল করলে architecture বদলাবে না, কারণ রিপোর্ট করে থামবে।
+- git checkout -- . / reset --hard / clean: জিজ্ঞেস না করে চালাবে না।
+- Auth/role চেক সরাবে না। scope এর বাইরের ফাইলে হাত দেবে না।
