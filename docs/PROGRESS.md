@@ -47,6 +47,7 @@ SSLCommerz, analytics, audit log UI
 - seller account কে বানাবে? (সুপারিশ: admin বানাবে/approve করবে, APPROVED ছাড়া বিক্রি নেই)
 
 ## Done log
+- 2026-10-25: প্রডাক্ট আইটেম সেভের পর অটো QR স্টিকার জেনারেশন ও প্রিন্ট ডায়ালগ (QrStickerModal, box packaging label, single ও batch print) এবং JEE backend AGENTS.md এ strict validation রুল সংযোজন সম্পন্ন (bun run build পাস, ৩৯ রুট জেনারেটেড)
 - 2026-10-25: Multi-courier (Steadfast, Pathao, Sundarban) ট্র্যাকিং ও PROCESSING এ QR/সিরিয়াল অ্যাসাইন ডায়ালগ এবং README.md ডকুমেন্টেশন সম্পন্ন (bun run build পাস, ৩৯ রুট জেনারেটেড)
 - 2026-10-24: Customer order details এ item serial number, copy বাটন ও সরাসরি /warranty?serial=... গভীর লিংক এবং auto-lookup সম্পন্ন (bun run build পাস, ৩৯ রুট জেনারেটেড)
 - 2026-10-24: Public warranty check /warranty real API ইন্টিগ্রেশন সম্পন্ন (mock বাদ, bun run build পাস)

@@ -2,13 +2,14 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { ArrowLeft, Plus, Trash2, Save, Package } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Save, Package, Printer, QrCode } from "lucide-react";
 import { toast } from "sonner";
 
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { QrStickerModal, type QrStickerItem } from "@/components/modules/admin/items/QrStickerModal";
 
 import type { VariantItem } from "@/lib/types/admin.types";
 import { bulkAddVariantItemsAction } from "@/actions/product.action";
@@ -40,6 +41,11 @@ export default function ProductItemsContent({
 }) {
   const [rows, setRows] = useState<Row[]>([emptyRow()]);
   const [isPending, startTransition] = useTransition();
+
+  /* QR Sticker Print Modal state */
+  const [qrModalOpen, setQrModalOpen] = useState(false);
+  const [qrItems, setQrItems] = useState<QrStickerItem[]>([]);
+  const [qrModalTitle, setQrModalTitle] = useState("Product Item QR Stickers");
 
   const addRow = () => setRows((r) => [...r, emptyRow()]);
 
@@ -79,7 +85,17 @@ export default function ProductItemsContent({
         return;
       }
 
-      toast.success(res.message);
+      // Automatically prepare stickers for the newly saved items
+      const newStickers: QrStickerItem[] = valid.map((r) => ({
+        serialNumber: r.serialNumber.toUpperCase(),
+        variantSku,
+        status: r.status,
+      }));
+
+      setQrItems(newStickers);
+      setQrModalTitle(`New Stickers for ${variantSku}`);
+      setQrModalOpen(true);
+      toast.success(`${res.message} — QR Stickers generated!`);
       setRows([emptyRow()]);
     });
   };
@@ -225,11 +241,35 @@ export default function ProductItemsContent({
 
       {/* Existing items */}
       <Card className="overflow-hidden rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-        <div className="flex items-center gap-2 border-b border-slate-100 p-6">
-          <Package className="h-5 w-5 text-slate-600" />
-          <h2 className="text-lg font-bold text-slate-800">
-            Existing Items ({initialItems.length})
-          </h2>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 p-6">
+          <div className="flex items-center gap-2">
+            <Package className="h-5 w-5 text-slate-600" />
+            <h2 className="text-lg font-bold text-slate-800">
+              Existing Items ({initialItems.length})
+            </h2>
+          </div>
+
+          {initialItems.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setQrItems(
+                  initialItems.map((it) => ({
+                    serialNumber: it.serialNumber,
+                    variantSku,
+                    status: it.status,
+                  }))
+                );
+                setQrModalTitle(`All Stickers (${initialItems.length}) — SKU: ${variantSku}`);
+                setQrModalOpen(true);
+              }}
+              className="h-9 gap-1.5 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold"
+            >
+              <Printer className="h-4 w-4 text-blue-600" />
+              Print All Stickers ({initialItems.length})
+            </Button>
+          )}
         </div>
 
         <div className="overflow-x-auto">
@@ -244,13 +284,16 @@ export default function ProductItemsContent({
                   Manufactured
                 </th>
                 <th className="px-6 py-4 font-medium text-slate-500">Added</th>
+                <th className="px-6 py-4 font-medium text-slate-500 text-right">
+                  QR Sticker
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
               {initialItems.length === 0 && (
                 <tr>
                   <td
-                    colSpan={4}
+                    colSpan={5}
                     className="px-6 py-10 text-center text-slate-500"
                   >
                     No items yet.
@@ -280,12 +323,41 @@ export default function ProductItemsContent({
                   <td className="px-6 py-4 text-slate-500">
                     {new Date(item.createdAt).toLocaleDateString()}
                   </td>
+                  <td className="px-6 py-4 text-right">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setQrItems([
+                          {
+                            serialNumber: item.serialNumber,
+                            variantSku,
+                            status: item.status,
+                          },
+                        ]);
+                        setQrModalTitle(`Box Sticker — SN: ${item.serialNumber}`);
+                        setQrModalOpen(true);
+                      }}
+                      className="h-8 gap-1 rounded-lg text-xs font-bold text-blue-600 hover:bg-blue-50"
+                    >
+                      <QrCode className="h-3.5 w-3.5" />
+                      Sticker
+                    </Button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </Card>
+
+      {/* QR Sticker Modal */}
+      <QrStickerModal
+        isOpen={qrModalOpen}
+        onClose={() => setQrModalOpen(false)}
+        items={qrItems}
+        title={qrModalTitle}
+      />
     </div>
   );
 }

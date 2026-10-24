@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -7,10 +8,13 @@ import {
     Edit,
     Package,
     Image as ImageIcon,
+    QrCode,
+    Printer,
 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { QrStickerModal, type QrStickerItem } from "@/components/modules/admin/items/QrStickerModal";
 import type { AdminVariantDetail } from "@/lib/types/admin.types";
 
 export default function VariantDetailsContent({
@@ -20,6 +24,10 @@ export default function VariantDetailsContent({
     productId: string;
     variant: AdminVariantDetail;
 }) {
+    const [qrModalOpen, setQrModalOpen] = useState(false);
+    const [qrItems, setQrItems] = useState<QrStickerItem[]>([]);
+    const [qrModalTitle, setQrModalTitle] = useState("Product Item QR Stickers");
+
     const price = Number(variant.price);
     const compare = variant.comparePrice ? Number(variant.comparePrice) : null;
 
@@ -134,17 +142,39 @@ export default function VariantDetailsContent({
 
             {/* Items */}
             <Card className="overflow-hidden rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-[2rem]">
-                <div className="flex items-center justify-between border-b border-slate-100 p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 p-6">
                     <h2 className="flex items-center gap-2 text-lg font-bold text-slate-800">
                         <Package className="h-5 w-5" />
                         Items ({variant.productItems.length})
                     </h2>
-                    <Link href={`/admin/products/${productId}/variants/${variant.id}/items`}>
-                        <Button variant="outline" className="rounded-xl">
-                            <Package className="mr-2 h-4 w-4" />
-                            Manage Items
-                        </Button>
-                    </Link>
+                    <div className="flex items-center gap-2">
+                        {variant.productItems.length > 0 && (
+                            <Button
+                                variant="outline"
+                                onClick={() => {
+                                    setQrItems(
+                                        variant.productItems.map((it) => ({
+                                            serialNumber: it.serialNumber,
+                                            variantSku: variant.sku,
+                                            status: it.status,
+                                        }))
+                                    );
+                                    setQrModalTitle(`All Stickers (${variant.productItems.length}) — SKU: ${variant.sku}`);
+                                    setQrModalOpen(true);
+                                }}
+                                className="rounded-xl gap-1.5 border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold"
+                            >
+                                <Printer className="h-4 w-4 text-blue-600" />
+                                Print Stickers
+                            </Button>
+                        )}
+                        <Link href={`/admin/products/${productId}/variants/${variant.id}/items`}>
+                            <Button variant="outline" className="rounded-xl">
+                                <Package className="mr-2 h-4 w-4" />
+                                Manage Items
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
 
                 <div className="overflow-x-auto">
@@ -156,13 +186,14 @@ export default function VariantDetailsContent({
                                 </th>
                                 <th className="px-6 py-4 font-medium text-slate-500">Status</th>
                                 <th className="px-6 py-4 font-medium text-slate-500">Added</th>
+                                <th className="px-6 py-4 font-medium text-slate-500 text-right">QR Sticker</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
                             {variant.productItems.length === 0 && (
                                 <tr>
                                     <td
-                                        colSpan={3}
+                                        colSpan={4}
                                         className="px-6 py-10 text-center text-slate-500"
                                     >
                                         No items yet.
@@ -186,12 +217,40 @@ export default function VariantDetailsContent({
                                     <td className="px-6 py-4 text-slate-500">
                                         {new Date(item.createdAt).toLocaleDateString()}
                                     </td>
+                                    <td className="px-6 py-4 text-right">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => {
+                                                setQrItems([
+                                                    {
+                                                        serialNumber: item.serialNumber,
+                                                        variantSku: variant.sku,
+                                                        status: item.status,
+                                                    },
+                                                ]);
+                                                setQrModalTitle(`Box Sticker — SN: ${item.serialNumber}`);
+                                                setQrModalOpen(true);
+                                            }}
+                                            className="h-8 gap-1 rounded-lg text-xs font-bold text-blue-600 hover:bg-blue-50"
+                                        >
+                                            <QrCode className="h-3.5 w-3.5" />
+                                            Sticker
+                                        </Button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
             </Card>
+
+            <QrStickerModal
+                isOpen={qrModalOpen}
+                onClose={() => setQrModalOpen(false)}
+                items={qrItems}
+                title={qrModalTitle}
+            />
         </div>
     );
 }

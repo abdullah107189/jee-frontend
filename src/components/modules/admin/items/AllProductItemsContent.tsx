@@ -1,11 +1,13 @@
 "use client";
+
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
-import { Search, Edit, Trash2, Filter } from 'lucide-react';
+import { Search, Edit, Trash2, Filter, QrCode, Printer } from 'lucide-react';
 import { ConfirmDeleteModal } from '@/components/ui/ConfirmDeleteModal';
+import { QrStickerModal, type QrStickerItem } from '@/components/modules/admin/items/QrStickerModal';
 import { toast } from 'sonner';
 
 import type { AdminProductItem } from '@/services/admin.service';
@@ -13,6 +15,11 @@ import type { AdminProductItem } from '@/services/admin.service';
 export default function AdminAllProductItemsPage({ items }: { items: AdminProductItem[] }) {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<{id: string, name: string} | null>(null);
+
+  /* QR Sticker Print Modal state */
+  const [qrModalOpen, setQrModalOpen] = useState(false);
+  const [qrItems, setQrItems] = useState<QrStickerItem[]>([]);
+  const [qrModalTitle, setQrModalTitle] = useState("Product Item QR Stickers");
 
   const handleDeleteClick = (id: string, name: string) => {
     setItemToDelete({ id, name });
@@ -33,6 +40,29 @@ export default function AdminAllProductItemsPage({ items }: { items: AdminProduc
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">All Product Items</h1>
             <p className="text-sm sm:text-base text-slate-500 mt-1 font-medium">Global view of all physical units across products.</p>
           </div>
+
+          {items.length > 0 && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                const validItems = items
+                  .filter((it) => it.serialNumber || it.uniqueId)
+                  .map((it) => ({
+                    serialNumber: it.serialNumber || it.uniqueId,
+                    productName: it.productName,
+                    variantSku: it.sku || it.productItemId,
+                    status: it.status,
+                  }));
+                setQrItems(validItems);
+                setQrModalTitle(`All Product Items (${validItems.length})`);
+                setQrModalOpen(true);
+              }}
+              className="h-10 gap-2 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 font-bold shadow-sm"
+            >
+              <Printer className="h-4 w-4 text-blue-600" />
+              Print All QR Stickers ({items.length})
+            </Button>
+          )}
         </div>
 
         <Card className="rounded-2xl sm:rounded-[2rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
@@ -93,6 +123,26 @@ export default function AdminAllProductItemsPage({ items }: { items: AdminProduc
                       </Badge>
                     </td>
                     <td className="px-4 sm:px-6 py-4 text-right space-x-2 whitespace-nowrap">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setQrItems([
+                            {
+                              serialNumber: item.serialNumber || item.uniqueId,
+                              productName: item.productName,
+                              variantSku: item.sku || item.productItemId,
+                              status: item.status,
+                            },
+                          ]);
+                          setQrModalTitle(`Box Sticker — SN: ${item.serialNumber || item.uniqueId}`);
+                          setQrModalOpen(true);
+                        }}
+                        className="h-8 gap-1 rounded-lg text-xs font-bold text-blue-600 hover:bg-blue-50"
+                      >
+                        <QrCode className="h-3.5 w-3.5" />
+                        Sticker
+                      </Button>
                       <Button variant="ghost" size="sm" className="h-8 w-8 sm:h-10 sm:w-10 p-0 rounded-lg sm:rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100">
                         <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
                       </Button>
@@ -119,6 +169,13 @@ export default function AdminAllProductItemsPage({ items }: { items: AdminProduc
           title="Delete Product Item"
           description="Are you sure you want to delete this specific item? This action cannot be undone."
           itemName={itemToDelete?.name}
+        />
+
+        <QrStickerModal
+          isOpen={qrModalOpen}
+          onClose={() => setQrModalOpen(false)}
+          items={qrItems}
+          title={qrModalTitle}
         />
       </div>
     );
