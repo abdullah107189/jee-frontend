@@ -147,6 +147,10 @@ export interface Order {
   total: number;
   notes?: string;
   trackingNumber?: string;
+  courierName?: string;
+  consignmentId?: string;
+  trackingUrl?: string;
+  courierStatus?: string;
   orderedAt?: string;
   deliveredAt?: string;
   cancelledAt?: string;

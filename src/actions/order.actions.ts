@@ -168,10 +168,19 @@ export async function cancelOrderAction(
 
 /* ─────────── Admin: Update Order Status ─────────── */
 
+export interface UpdateOrderStatusOptions {
+  reason?: string;
+  courierName?: string;
+  trackingNumber?: string;
+  trackingUrl?: string;
+  consignmentId?: string;
+  serialNumbers?: Record<string, string>;
+}
+
 export async function updateOrderStatusAction(
   orderId: string,
   status: string,
-  reason?: string,
+  optionsOrReason?: string | UpdateOrderStatusOptions,
 ): Promise<{ success: boolean; message: string }> {
   try {
     if (!orderId || !status) {
@@ -185,11 +194,23 @@ export async function updateOrderStatusAction(
       return { success: false, message: "Authentication required" };
     }
 
-    const payload: { status: string; reason?: string } = {
+    const payload: Record<string, any> = {
       status: status.toUpperCase(),
     };
-    if (reason && reason.trim()) {
-      payload.reason = reason.trim();
+
+    if (typeof optionsOrReason === "string") {
+      if (optionsOrReason.trim()) {
+        payload.reason = optionsOrReason.trim();
+      }
+    } else if (optionsOrReason && typeof optionsOrReason === "object") {
+      if (optionsOrReason.reason?.trim()) payload.reason = optionsOrReason.reason.trim();
+      if (optionsOrReason.courierName?.trim()) payload.courierName = optionsOrReason.courierName.trim();
+      if (optionsOrReason.trackingNumber?.trim()) payload.trackingNumber = optionsOrReason.trackingNumber.trim();
+      if (optionsOrReason.trackingUrl?.trim()) payload.trackingUrl = optionsOrReason.trackingUrl.trim();
+      if (optionsOrReason.consignmentId?.trim()) payload.consignmentId = optionsOrReason.consignmentId.trim();
+      if (optionsOrReason.serialNumbers && Object.keys(optionsOrReason.serialNumbers).length > 0) {
+        payload.serialNumbers = optionsOrReason.serialNumbers;
+      }
     }
 
     const res = await fetch(`${API_URL}/orders/${orderId}/status`, {

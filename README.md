@@ -891,3 +891,68 @@ Browser user dekhay।
 **Ei README ta tomar auth system er "Bible" — kono problem hole ei document follow koro.**
 
 **Future e jodi kono layer bhangte chao, age ei document ta poro — karon tumi ei design keno korecho seta mone rakha important।**
+
+---
+
+# 📦 Order Fulfillment, QR Serial & Multi-Courier Architecture
+
+A production-grade logistics, serial tracking, and multi-courier workflow for Jee.store.
+
+---
+
+## 🎯 1. Multi-Courier Adapter Pattern
+
+Different courier companies operate differently in Bangladesh. Rather than hard-coding one courier, Jee uses a pluggable **Courier Adapter Architecture**:
+
+```text
+                        ┌──► Steadfast Adapter (অটোমেটিক Webhook & Auto Delivery Sync)
+Order (Fulfillment) ────┼──► Pathao Adapter (অটোমেটিক Webhook & Auto Delivery Sync)
+                        └──► Sundarban / Manual Adapter (হাতে চালান / বুকিং স্লিপ নাম্বার এন্ট্রি)
+```
+
+### Supported Channels:
+1. **Steadfast Courier (Modern D2C):**
+   - API parcel creation + Webhook callback.
+   - When rider marks "Delivered" on mobile app, Steadfast sends an instant Webhook to Jee backend.
+   - Order automatically moves to `DELIVERED` and activates warranty.
+2. **Pathao Courier (Modern D2C):**
+   - API booking + Webhook status synchronization.
+3. **Sundarban / Local Courier (Offline/Manual):**
+   - Admin enters the physical Consignment Slip (CN) number.
+   - Admin marks `DELIVERED` manually upon parcel delivery confirmation.
+
+---
+
+## 🏷️ 2. QR Code & Unit Serial Number Lifecycle
+
+Every physical product unit in the warehouse has a unique barcode / QR code identity (`ProductItem`).
+
+```text
+[1. Inventory Intake]
+     └── Admin/Seller creates stock → System generates unique Serial Number & QR Code (e.g. JEE-FAN-001)
+     └── Printed QR sticker is placed onto physical product cartoon/box (Status: AVAILABLE)
+
+[2. Online Checkout & Order]
+     └── Customer places order (Status: PENDING)
+     └── Backend locks required stock units (Status: RESERVED)
+
+[3. Admin Confirmation]
+     └── Admin calls customer & confirms address (Status: CONFIRMED)
+
+[4. Warehouse Packaging & QR Scan]
+     └── Admin/Packer moves order to PROCESSING
+     └── Packer scans the physical QR Code / Serial Number from the box into the order dialog
+     └── The exact physical unit is now irreversibly linked to this customer's order package
+
+[5. Courier Dispatch]
+     └── Order moves to SHIPPED
+     └── Admin selects Courier (Steadfast, Pathao, Sundarban) and inputs Tracking / Consignment ID
+     └── Customer receives live tracking information
+
+[6. Delivery & Auto Warranty Activation]
+     └── Order moves to DELIVERED (via Courier Webhook or Admin confirmation)
+     └── Physical unit status switches to SOLD
+     └── COD Payment status switches to PAID
+     └── System automatically creates & activates ACTIVE Warranty with startDate = deliveryDate
+     └── Customer can click "Check Warranty" or look up serial on /warranty tracker
+```

@@ -550,6 +550,51 @@ export function OrderDetails({ order }: OrderDetailsProps) {
             </CardContent>
           </Card>
 
+          {/* Courier Delivery Tracking */}
+          {(order.courierName || order.trackingNumber) && (
+            <Card className="border border-border bg-card shadow-sm overflow-hidden">
+              <CardHeader className="bg-blue-50/50 border-b border-border/60 pb-3">
+                <CardTitle className="text-base font-bold flex items-center gap-2 text-blue-900">
+                  <Truck className="h-4 w-4 text-primary" />
+                  Courier Tracking
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-5 space-y-2.5 text-xs sm:text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Courier:</span>
+                  <span className="font-bold text-foreground">
+                    {order.courierName || "Standard Delivery"}
+                  </span>
+                </div>
+                {order.trackingNumber && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Tracking Code:</span>
+                    <span className="font-mono font-bold text-foreground bg-muted px-2 py-0.5 rounded">
+                      {order.trackingNumber}
+                    </span>
+                  </div>
+                )}
+                {order.trackingUrl ? (
+                  <div className="pt-2">
+                    <a
+                      href={order.trackingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      Track Parcel on Courier Website
+                    </a>
+                  </div>
+                ) : (
+                  <p className="text-[11px] text-muted-foreground pt-1">
+                    Your package is with the courier service. You will receive an SMS or call before delivery.
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
           {/* 3. Payment Method */}
           <Card className="border border-border bg-card shadow-sm overflow-hidden">
             <CardHeader className="bg-muted/30 border-b border-border/60 pb-3">

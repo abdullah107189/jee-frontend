@@ -43,6 +43,7 @@ import {
   XCircle,
   Hash,
   Calendar,
+  ExternalLink,
 } from "lucide-react";
 import { updateOrderStatusAction } from "@/actions/order.actions";
 import { OrderStatusConfirmDialog } from "@/components/modules/admin/orders/OrderStatusConfirmDialog";
@@ -161,37 +162,18 @@ export function AdminOrderDetails({ order }: AdminOrderDetailsProps) {
   };
 
   const handleSelectStatus = async (target: OrderStatus) => {
-    if (["DELIVERED", "RETURNED", "CANCELLED"].includes(target)) {
-      setPendingTargetStatus(target);
-      setConfirmDialogOpen(true);
-      return;
-    }
-
-    setIsUpdating(true);
-    try {
-      const res = await updateOrderStatusAction(order.id, target);
-      if (res.success) {
-        toast.success(res.message);
-        setStatusModalOpen(false);
-        router.refresh();
-      } else {
-        toast.error(res.message);
-      }
-    } catch {
-      toast.error("Failed to update order status. Please try again.");
-    } finally {
-      setIsUpdating(false);
-    }
+    setPendingTargetStatus(target);
+    setConfirmDialogOpen(true);
   };
 
-  const handleConfirmStatusChange = async (reason?: string) => {
+  const handleConfirmStatusChange = async (optionsOrReason?: any) => {
     if (!pendingTargetStatus || !order.id) return;
     setIsUpdating(true);
     try {
       const res = await updateOrderStatusAction(
         order.id,
         pendingTargetStatus,
-        reason,
+        optionsOrReason,
       );
       if (res.success) {
         toast.success(res.message);
@@ -634,6 +616,47 @@ export function AdminOrderDetails({ order }: AdminOrderDetailsProps) {
             </CardContent>
           </Card>
 
+          {/* Courier & Dispatch Information */}
+          {(order.courierName || order.trackingNumber) && (
+            <Card className="border border-border bg-card shadow-sm overflow-hidden">
+              <CardHeader className="bg-blue-50/50 border-b border-border/60 pb-3">
+                <CardTitle className="text-base font-bold flex items-center gap-2 text-blue-900">
+                  <Truck className="h-4 w-4 text-primary" />
+                  Courier & Dispatch
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-5 space-y-2.5 text-xs sm:text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Courier Service:</span>
+                  <span className="font-bold text-foreground">
+                    {order.courierName || "Standard Courier"}
+                  </span>
+                </div>
+                {order.trackingNumber && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Tracking / CN #:</span>
+                    <span className="font-mono font-bold text-foreground bg-muted px-2 py-0.5 rounded">
+                      {order.trackingNumber}
+                    </span>
+                  </div>
+                )}
+                {order.trackingUrl && (
+                  <div className="pt-2">
+                    <a
+                      href={order.trackingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      Live Courier Tracking
+                    </a>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
           {/* 4. Payment Information */}
           <Card className="border border-border bg-card shadow-sm overflow-hidden">
             <CardHeader className="bg-muted/30 border-b border-border/60 pb-3">
@@ -728,6 +751,7 @@ export function AdminOrderDetails({ order }: AdminOrderDetailsProps) {
         onOpenChange={setConfirmDialogOpen}
         orderNumber={order.orderNumber}
         targetStatus={pendingTargetStatus}
+        items={order.items}
         onConfirm={handleConfirmStatusChange}
         isLoading={isUpdating}
       />
