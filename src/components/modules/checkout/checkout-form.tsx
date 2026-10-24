@@ -58,9 +58,7 @@ export function CheckoutForm({ user, savedAddress }: CheckoutFormProps) {
     const { items, subtotal, count, isHydrated } = useCart();
 
     const [isMounted, setIsMounted] = useState(false);
-    const [isVerifying, setIsVerifying] = useState(false);
     const [isOrdering, setIsOrdering] = useState(false);
-    const [gatewayVerified, setGatewayVerified] = useState(false);
 
     const [bdAddress, setBdAddress] = useState<Partial<BDAddress>>({
         divisionId: savedAddress?.divisionId ?? "",
@@ -84,52 +82,20 @@ export function CheckoutForm({ user, savedAddress }: CheckoutFormProps) {
             zipCode: savedAddress?.zipCode ?? "",
             notes: "",
             paymentPlan: "COD",
-            paymentGateway: undefined,
-            senderNumber: "",
-            transactionId: "",
         },
     });
 
     const paymentPlan = form.watch("paymentPlan");
-    const paymentGateway = form.watch("paymentGateway");
-
-    const deliveryFee = useMemo(() => {
-        const cityForFee = bdAddress.districtName || bdAddress.upazilaName;
-        return getDeliveryFee(cityForFee ?? "");
-    }, [bdAddress.districtName, bdAddress.upazilaName]);
 
     const insideDhaka = useMemo(() => {
-        const cityForFee = bdAddress.districtName || bdAddress.upazilaName;
-        return isInsideDhaka(cityForFee ?? "");
-    }, [bdAddress.districtName, bdAddress.upazilaName]);
+        return isInsideDhaka(bdAddress);
+    }, [bdAddress]);
+
+    const deliveryFee = useMemo(() => {
+        return getDeliveryFee(bdAddress, subtotal);
+    }, [bdAddress, subtotal]);
 
     const total = useMemo(() => subtotal + deliveryFee, [subtotal, deliveryFee]);
-    const advanceAmount = paymentPlan === "FULL" ? total : 0;
-
-    useEffect(() => {
-        setGatewayVerified(false);
-    }, [paymentPlan, paymentGateway]);
-
-    const handleVerify = async () => {
-        const senderNumber = form.getValues("senderNumber");
-        const transactionId = form.getValues("transactionId");
-
-        if (!senderNumber || !transactionId) {
-            toast.error("Fill sender number and transaction ID first");
-            return;
-        }
-
-        setIsVerifying(true);
-        try {
-            await new Promise((r) => setTimeout(r, 800));
-            setGatewayVerified(true);
-            toast.success(`${paymentGateway} payment verified`);
-        } catch {
-            toast.error("Verification failed");
-        } finally {
-            setIsVerifying(false);
-        }
-    };
 
     const onSubmit = async (data: CheckoutFormValues) => {
         // Address validation
@@ -139,12 +105,6 @@ export function CheckoutForm({ user, savedAddress }: CheckoutFormProps) {
             !bdAddress.upazilaId
         ) {
             toast.error("Please select division, district and upazila");
-            return;
-        }
-
-        // Payment verification (FULL only)
-        if (data.paymentPlan === "FULL" && !gatewayVerified) {
-            toast.error("Please verify your payment first");
             return;
         }
 
@@ -159,16 +119,6 @@ export function CheckoutForm({ user, savedAddress }: CheckoutFormProps) {
         try {
             const fullAddress = `${data.addressLine1}${data.addressLine2 ? `, ${data.addressLine2}` : ""
                 }, ${formatBDAddress(bdAddress)}`;
-
-            const metadata =
-                data.paymentPlan === "FULL"
-                    ? {
-                        gateway: data.paymentGateway,
-                        senderNumber: data.senderNumber,
-                        transactionId: data.transactionId,
-                        verified: gatewayVerified,
-                    }
-                    : undefined;
 
             const fd = new FormData();
             fd.set(
@@ -194,10 +144,9 @@ export function CheckoutForm({ user, savedAddress }: CheckoutFormProps) {
                     zipCode: data.zipCode || undefined,
                 }),
             );
-            fd.set("paymentWay", data.paymentPlan);
+            fd.set("paymentWay", "COD");
             fd.set("shipping", String(deliveryFee));
             fd.set("notes", data.notes ?? "");
-            if (metadata) fd.set("metadata", JSON.stringify(metadata));
 
             const result = await createOrderAction(null, fd);
             console.log("[ORDER RESULT]", result);  // ← ADD
@@ -238,8 +187,7 @@ export function CheckoutForm({ user, savedAddress }: CheckoutFormProps) {
         );
     }
 
-    const submitDisabled =
-        isOrdering || (paymentPlan === "FULL" && !gatewayVerified);
+    const submitDisabled = isOrdering;
 
     return (
         <>
@@ -278,12 +226,7 @@ export function CheckoutForm({ user, savedAddress }: CheckoutFormProps) {
                         <PaymentSection
                             form={form}
                             paymentPlan={paymentPlan}
-                            paymentGateway={paymentGateway}
                             total={total}
-                            advanceAmount={advanceAmount}
-                            isVerifying={isVerifying}
-                            gatewayVerified={gatewayVerified}
-                            onVerify={handleVerify}
                         />
 
                         <NotesSection form={form} />

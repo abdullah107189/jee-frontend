@@ -1,28 +1,22 @@
-// app/(dashboard)/customer/orders/[id]/page.tsx
-// Server Component - SEO Friendly
-
-import { Metadata } from "next";
-import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { OrderDetails } from "@/components/modules/customer/orders/details/OrderDetails";
-import { getCustomerOrderDetails } from "@/services/customer.service"; 
+import { getCustomerOrderDetails } from "@/services/order.service";
 
-type Props = {
-  params: { id: string };
-};
+interface Props {
+  params: Promise<{ id: string }>;
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
   return {
-    title: `Order Details | TechStore`,
-    description: `View order details and tracking information`,
+    title: `Order #${id} | JEE Store`,
+    description: "View order tracking, serial numbers and delivery details",
   };
 }
 
 export default async function OrderDetailsPage({ params }: Props) {
-  const order = await getCustomerOrderDetails(params.id);
+  const { id } = await params;
+  const order = await getCustomerOrderDetails(id);
 
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <OrderDetails order={order} />
-    </div>
-  );
+  return <OrderDetails order={order} />;
 }

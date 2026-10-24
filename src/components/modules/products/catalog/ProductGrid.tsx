@@ -1,4 +1,4 @@
-import MainProductCard from "../MainProductCard";
+import MainProductCard from "../../../shared/productCard/MainProductCard";
 import type { ProductCardData } from "@/lib/types/product.types";
 
 interface ProductGridProps {

@@ -18,8 +18,7 @@ const Footer = () => {
             </div>
             <p className="text-sm text-slate-400 font-medium leading-relaxed">
               Bangladesh&apos;s premier online & offline electronics ecosystem
-              with verifiable digital QR warranty tracking and instant bKash
-              advance checkout.
+              with verifiable digital QR warranty tracking and Cash on Delivery.
             </p>
             <div className="pt-2 text-xs font-semibold text-slate-400 flex items-center gap-2">
               <Phone className="h-4 w-4 text-blue-400" /> Helpline: +880
@@ -88,8 +87,8 @@ const Footer = () => {
                 Purchases
               </li>
               <li className="flex items-center gap-2">
-                <CreditCard className="h-4 w-4 text-amber-400" /> 70 BDT Advance
-                bKash Option
+                <CreditCard className="h-4 w-4 text-emerald-400" /> Cash on
+                Delivery
               </li>
             </ul>
           </div>
@@ -100,15 +99,6 @@ const Footer = () => {
               Accepted Payments
             </h4>
             <div className="flex flex-wrap gap-2 text-xs font-extrabold">
-              <span className="px-3 py-1.5 rounded-lg bg-pink-600/20 text-pink-400 border border-pink-500/30">
-                bKash
-              </span>
-              <span className="px-3 py-1.5 rounded-lg bg-orange-600/20 text-orange-400 border border-orange-500/30">
-                Nagad
-              </span>
-              <span className="px-3 py-1.5 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30">
-                Visa / Mastercard
-              </span>
               <span className="px-3 py-1.5 rounded-lg bg-emerald-600/20 text-emerald-400 border border-emerald-500/30">
                 Cash on Delivery
               </span>

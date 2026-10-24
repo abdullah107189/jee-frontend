@@ -16,8 +16,6 @@ export default function AdminSettingsPage() {
   const [supportPhone, setSupportPhone] = useState('+880 1700-000000');
   const [currency, setCurrency] = useState('BDT (৳)');
 
-  const [bkashMerchant, setBkashMerchant] = useState('01700112233');
-  const [bkashAppKey, setBkashAppKey] = useState('bk_app_key_88921093128');
   const [codEnabled, setCodEnabled] = useState(true);
 
   const [defaultWarrantyMonths, setDefaultWarrantyMonths] = useState(12);
@@ -118,24 +116,11 @@ export default function AdminSettingsPage() {
 
               {activeTab === 'payment' && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-bold text-slate-900 border-b pb-3">bKash & Payment Settings</h3>
+                  <h3 className="text-lg font-bold text-slate-900 border-b pb-3">Payment Settings</h3>
                   <div className="space-y-4">
-                    <div>
-                      <label className="block text-xs font-bold uppercase text-slate-500 mb-1">bKash Merchant Account Number</label>
-                      <Input 
-                        value={bkashMerchant} 
-                        onChange={(e) => setBkashMerchant(e.target.value)} 
-                        className="rounded-xl font-mono"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold uppercase text-slate-500 mb-1">bKash App API Key</label>
-                      <Input 
-                        type="password"
-                        value={bkashAppKey} 
-                        onChange={(e) => setBkashAppKey(e.target.value)} 
-                        className="rounded-xl font-mono"
-                      />
+                    <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50/50 text-emerald-800 text-sm">
+                      <p className="font-bold">MVP: Cash on Delivery Only</p>
+                      <p className="text-xs text-emerald-700 mt-1">Online payment gateway integration will be configured in future releases.</p>
                     </div>
                     <div className="pt-2">
                       <label className="flex items-center space-x-3 cursor-pointer">

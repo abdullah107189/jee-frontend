@@ -1,7 +1,6 @@
 // app/page.tsx — Home (SLIM NOW!)
 import type { Metadata } from "next"; 
-import { HeroSection } from "@/components/modules/home/HeroSection";
-import TrustBadges from "@/components/modules/home/TrustBadges";
+import { HeroSection } from "@/components/modules/home/HeroSection"; 
 import CategoriesSection from "@/components/modules/home/CategoriesSection";
 import FeaturedProducts from "@/components/modules/home/FeaturedProducts";
 import LatestProducts from "@/components/modules/home/LatestProducts";
@@ -36,7 +35,6 @@ export default function HomePage() {
       />
       <div className="space-y-12 pb-16 sm:space-y-16">
         <HeroSection />
-        <TrustBadges />
         <CategoriesSection />
         <FeaturedProducts />
         <LatestProducts />

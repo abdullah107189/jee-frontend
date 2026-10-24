@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getCategoryProducts } from "@/services/category.service";
+import {
+    getCategoryProducts,
+    getCategoryFilters,
+} from "@/services/category.service";
 import { buildCategoryMetadata } from "../_lib/metadata";
 import { parseCategorySearchParams } from "../_lib/params";
 import { CategoryBreadcrumb } from "@/components/modules/(public)/categories/breadcrumb";
 import { CategoryHeader } from "@/components/modules/(public)/categories/category-header";
 import { EmptyCategory } from "@/components/modules/(public)/categories/empty-category";
-import { ProductListing } from "@/components/modules/(public)/categories/product-listing";
+import { ProductListingClient } from "@/components/modules/(public)/categories/product-listing-client";
 
 interface CategoryPageProps {
     params: Promise<{ slug: string[] }>;
@@ -38,51 +41,65 @@ export default async function CategoryPage({
     const { slug } = await params;
     const parsed = await parseCategorySearchParams(slug, searchParams);
 
-    const data = await getCategoryProducts(parsed.slug, {
-        brand: parsed.brand,
+    const queryFilters: Record<string, string | undefined> = {
+        brandId: parsed.brand,
         minPrice: parsed.minPrice,
         maxPrice: parsed.maxPrice,
         warrantyMonths: parsed.warrantyMonths,
-        sort: parsed.sort,
+        sortBy: parsed.sort, // ← sort → sortBy
         page: parsed.page.toString(),
-    });
+        ...parsed.filter,
+    };
 
-    if (!data?.category) {
-        notFound();
-    }
+    const [data, filtersData] = await Promise.all([
+        getCategoryProducts(parsed.slug, queryFilters),
+        getCategoryFilters(parsed.slug),
+    ]);
+    if (!data?.category) notFound();
+    console.log("data", data);
 
     const hasActiveFilters = !!(
         parsed.brand ||
         parsed.minPrice ||
         parsed.maxPrice ||
         parsed.warrantyMonths ||
-        parsed.sort
+        parsed.sort ||
+        Object.keys(parsed.filter).length > 0
     );
 
-    const isEmpty = data.products.length === 0 && !hasActiveFilters; 
+    const isEmpty = data.products.length === 0 && !hasActiveFilters;
+
     return (
-        <main className="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <main className="mxw py-5!">
             <CategoryBreadcrumb breadcrumb={data.breadcrumb} />
 
-            <CategoryHeader
+            {/* <CategoryHeader
                 name={data.category.name}
                 description={data.category.description}
                 productCount={data.total}
-            />
+            /> */}
 
             {isEmpty ? (
-                <EmptyCategory
-                    category={data.category}
-                    siblings={data.siblings}
-                />
+                <EmptyCategory category={data.category} siblings={data.siblings} />
             ) : (
-                <ProductListing
+                <ProductListingClient
                     products={data.products}
                     total={data.total}
                     page={data.page}
                     limit={data.limit}
                     totalPages={data.totalPages}
                     categorySlug={parsed.slug}
+                    filters={filtersData?.filters ?? []}
+                    lowestPrice={filtersData?.lowestPrice ?? 0}
+                    highestPrice={filtersData?.highestPrice ?? 0}
+                    initialFilters={{
+                        brand: parsed.brand,
+                        minPrice: parsed.minPrice,
+                        maxPrice: parsed.maxPrice,
+                        warrantyMonths: parsed.warrantyMonths,
+                        sort: parsed.sort,
+                        filter: parsed.filter,
+                    }}
                 />
             )}
         </main>

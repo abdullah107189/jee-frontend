@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Home, Search, ShieldCheck } from "lucide-react";
-import { PublicLayout } from "@/components/layout/PublicLayout";
 
 export const metadata: Metadata = {
   title: "Product Not Found",

@@ -284,8 +284,8 @@ export default function SellerNewSalePage() {
                   >
                     <option value="CASH">Cash</option>
                     <option value="CARD">Credit / Debit Card</option>
-                    <option value="MOBILE">Mobile Banking (bKash / Nagad)</option>
-                    <option value="BANK">Bank Wire Transfer</option>
+                    <option value="BANK_TRANSFER">Bank Wire Transfer</option>
+                    <option value="OTHER">Other</option>
                   </select>
                 </div>
 

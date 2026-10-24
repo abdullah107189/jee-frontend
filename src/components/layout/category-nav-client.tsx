@@ -1,68 +1,132 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, ChevronDown } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import type { CategoryNavItem } from "@/lib/types/category.types";
-import { MegaMenu } from "./mega-menu";
 import { MobileCategoryDrawer } from "./mobile-category-drawer";
+import { MegaMenu } from "./mega-menu";
 
 interface CategoryNavClientProps {
     categories: CategoryNavItem[];
 }
 
-export function CategoryNavClient({ categories }: CategoryNavClientProps) {
+export function CategoryNavClient({
+    categories,
+}: CategoryNavClientProps) {
     const pathname = usePathname();
+
     const [activeId, setActiveId] = useState<string | null>(null);
     const [mobileOpen, setMobileOpen] = useState(false);
-    const navRef = useRef<HTMLElement>(null);
-    const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
 
-    const handleMouseEnter = (id: string) => {
-        if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+    const navRef = useRef<HTMLElement>(null);
+    const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    /* ---------------------------------------------------------------------- */
+    /* Clear hover timeout                                                    */
+    /* ---------------------------------------------------------------------- */
+
+    const clearHoverTimeout = () => {
+        if (hoverTimeout.current) {
+            clearTimeout(hoverTimeout.current);
+            hoverTimeout.current = null;
+        }
+    };
+
+    /* ---------------------------------------------------------------------- */
+    /* Open menu                                                              */
+    /* ---------------------------------------------------------------------- */
+
+    const openMenu = (id: string) => {
+        clearHoverTimeout();
         setActiveId(id);
     };
 
-    const handleMouseLeave = () => {
-        if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+    /* ---------------------------------------------------------------------- */
+    /* Close menu with small delay                                            */
+    /* ---------------------------------------------------------------------- */
+
+    const closeMenu = () => {
+        clearHoverTimeout();
+
         hoverTimeout.current = setTimeout(() => {
             setActiveId(null);
-        }, 200);
+        }, 300);
     };
+
+    /* ---------------------------------------------------------------------- */
+    /* Route change                                                           */
+    /* ---------------------------------------------------------------------- */
 
     useEffect(() => {
         setActiveId(null);
         setMobileOpen(false);
     }, [pathname]);
 
+    /* ---------------------------------------------------------------------- */
+    /* Outside click                                                          */
+    /* ---------------------------------------------------------------------- */
+
     useEffect(() => {
         const handler = (e: MouseEvent) => {
-            if (navRef.current && !navRef.current.contains(e.target as Node)) {
+            if (
+                navRef.current &&
+                !navRef.current.contains(e.target as Node)
+            ) {
+                clearHoverTimeout();
                 setActiveId(null);
             }
         };
+
         document.addEventListener("mousedown", handler);
-        return () => document.removeEventListener("mousedown", handler);
+
+        return () => {
+            document.removeEventListener("mousedown", handler);
+        };
     }, []);
+
+    /* ---------------------------------------------------------------------- */
+    /* Escape                                                                 */
+    /* ---------------------------------------------------------------------- */
 
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
-            if (e.key === "Escape") setActiveId(null);
+            if (e.key === "Escape") {
+                clearHoverTimeout();
+                setActiveId(null);
+            }
         };
+
         document.addEventListener("keydown", handler);
-        return () => document.removeEventListener("keydown", handler);
+
+        return () => {
+            document.removeEventListener("keydown", handler);
+        };
+    }, []);
+
+    /* ---------------------------------------------------------------------- */
+    /* Cleanup                                                                */
+    /* ---------------------------------------------------------------------- */
+
+    useEffect(() => {
+        return () => {
+            clearHoverTimeout();
+        };
     }, []);
 
     return (
         <nav
             ref={navRef}
             className="relative bg-[#1e2a5a] text-white shadow-md"
-            onMouseLeave={handleMouseLeave}
         >
-            <div className="mxw flex h-12 items-center ">
-                {/* Mobile toggle */}
+            <div className="mxw flex h-12 items-center">
+                {/* ========================================================== */}
+                {/* Mobile toggle                                               */}
+                {/* ========================================================== */}
+
                 <button
                     type="button"
                     onClick={() => setMobileOpen(true)}
@@ -73,9 +137,15 @@ export function CategoryNavClient({ categories }: CategoryNavClientProps) {
                     <span>Categories</span>
                 </button>
 
-                {/* Desktop list */}
+                {/* ========================================================== */}
+                {/* Desktop list                                                */}
+                {/* ========================================================== */}
+
                 <ul className="hidden flex-1 items-center gap-0.5 lg:flex">
-                    {/* Featured */}
+                    {/* ------------------------------------------------------ */}
+                    {/* Featured                                                */}
+                    {/* ------------------------------------------------------ */}
+
                     <li>
                         <Link
                             href="/products?featured=true"
@@ -85,16 +155,37 @@ export function CategoryNavClient({ categories }: CategoryNavClientProps) {
                         </Link>
                     </li>
 
+                    {/* ------------------------------------------------------ */}
+                    {/* Categories                                               */}
+                    {/* ------------------------------------------------------ */}
+
                     {categories.map((cat) => {
                         const isActive = activeId === cat.id;
-                        const hasKids = (cat.children?.length ?? 0) > 0;
+                        const hasKids =
+                            (cat.children?.length ?? 0) > 0;
 
                         return (
                             <li
                                 key={cat.id}
-                                onMouseEnter={() => hasKids && handleMouseEnter(cat.id)}
                                 className="relative"
+                                onMouseEnter={() => {
+                                    if (hasKids) {
+                                        openMenu(cat.id);
+                                    } else {
+                                        clearHoverTimeout();
+                                        setActiveId(null);
+                                    }
+                                }}
+                                onMouseLeave={() => {
+                                    if (hasKids) {
+                                        closeMenu();
+                                    }
+                                }}
                             >
+                                {/* ================================================== */}
+                                {/* Parent button / link                                */}
+                                {/* ================================================== */}
+
                                 <Link
                                     href={`/categories/${cat.fullSlug}`}
                                     className={cn(
@@ -105,6 +196,7 @@ export function CategoryNavClient({ categories }: CategoryNavClientProps) {
                                     )}
                                 >
                                     {cat.name}
+
                                     {hasKids && (
                                         <ChevronDown
                                             className={cn(
@@ -115,16 +207,30 @@ export function CategoryNavClient({ categories }: CategoryNavClientProps) {
                                     )}
                                 </Link>
 
-                                {/* ✅ Dropdown — ei <li> er niche absolute */}
+                                {/* ================================================== */}
+                                {/* Dropdown                                            */}
+                                {/* ================================================== */}
+
                                 {isActive && hasKids && (
-                                    <MegaMenu
-                                        category={cat}
+                                    <div
+                                        className="absolute left-0 top-full z-50 pt-1"
                                         onMouseEnter={() => {
-                                            if (hoverTimeout.current)
-                                                clearTimeout(hoverTimeout.current);
+                                            /*
+                                             * VERY IMPORTANT:
+                                             * Mouse entered the dropdown,
+                                             * so cancel closing.
+                                             */
+                                            clearHoverTimeout();
+                                            setActiveId(cat.id);
                                         }}
-                                        onMouseLeave={handleMouseLeave}
-                                    />
+                                        onMouseLeave={() => {
+                                            closeMenu();
+                                        }}
+                                    >
+                                        <MegaMenu
+                                            category={cat}
+                                        />
+                                    </div>
                                 )}
                             </li>
                         );
@@ -132,7 +238,10 @@ export function CategoryNavClient({ categories }: CategoryNavClientProps) {
                 </ul>
             </div>
 
-            {/* Mobile Drawer */}
+            {/* ================================================================ */}
+            {/* Mobile Drawer                                                    */}
+            {/* ================================================================ */}
+
             <MobileCategoryDrawer
                 open={mobileOpen}
                 onClose={() => setMobileOpen(false)}

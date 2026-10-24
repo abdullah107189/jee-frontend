@@ -13,7 +13,7 @@ interface CategoryBreadcrumbProps {
 
 export function CategoryBreadcrumb({ breadcrumb }: CategoryBreadcrumbProps) {
   return (
-    <nav className="mb-5 flex flex-wrap items-center gap-1.5 text-sm text-slate-500">
+    <nav className=" flex flex-wrap items-center gap-1.5 text-sm text-slate-500">
       <Link href="/" className="flex items-center gap-1 hover:text-blue-600">
         <Home className="h-3.5 w-3.5" />
         Home

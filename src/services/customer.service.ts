@@ -49,8 +49,6 @@ export type CustomerOrderDetails = {
   status: string;
   timeline: Array<Record<string, unknown>>;
   paymentMethod: string;
-  bkashTrxId: string;
-  advancePaid: number;
   subtotal: number;
   deliveryFee: number;
   totalAmount: number;
@@ -90,7 +88,7 @@ const customerOrders: CustomerOrder[] = [
     status: 'Delivered',
     totalAmount: 15000,
     itemsCount: 1,
-    paymentMethod: 'bKash (Verified)',
+    paymentMethod: 'Cash on Delivery',
     items: [
       { id: 'i1', name: 'Vision 56" Ceiling Fan', price: 15000, quantity: 1, uniqueId: 'FAN-001928', warrantyDaysLeft: 729 },
     ],
@@ -101,7 +99,7 @@ const customerOrders: CustomerOrder[] = [
     status: 'Shipped',
     totalAmount: 35000,
     itemsCount: 1,
-    paymentMethod: 'bKash (Verified)',
+    paymentMethod: 'Cash on Delivery',
     items: [
       { id: 'i2', name: 'Vision AC 1.5 Ton Inverter', price: 35000, quantity: 1, uniqueId: 'AC-003456', warrantyDaysLeft: 1080 },
     ],
@@ -112,7 +110,7 @@ const customerOrders: CustomerOrder[] = [
     status: 'Pending',
     totalAmount: 8000,
     itemsCount: 2,
-    paymentMethod: 'bKash (Pending Verification)',
+    paymentMethod: 'Cash on Delivery',
     items: [
       { id: 'i3', name: 'Vision Commercial Blender', price: 3800, quantity: 1, uniqueId: 'BLENDER-331', warrantyDaysLeft: 720 },
       { id: 'i4', name: 'Vision LED Bulb 15W Pack', price: 4200, quantity: 1, uniqueId: 'BULB-99120', warrantyDaysLeft: 360 },
@@ -138,40 +136,22 @@ const customerWarranties: CustomerWarranty[] = [
   },
 ];
 
-export async function getCustomerOrders(): Promise<CustomerOrder[]> {
-  return customerOrders;
+export async function getCustomerOrders(params?: {
+  status?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+}): Promise<any> {
+  const { getCustomerOrders: fetchOrders } = await import("./order.service");
+  const res = await fetchOrders(params);
+  return res.orders;
 }
 
-export async function getCustomerOrderDetails(orderId: string): Promise<CustomerOrderDetails> {
-  return {
-    id: orderId || 'ORD-001',
-    date: '15 Aug 2026',
-    status: 'Delivered',
-    timeline: [
-      { title: 'Placed', date: '15 Aug 2026, 10:30 AM', completed: true },
-      { title: 'Confirmed', date: '16 Aug 2026, 11:15 AM', completed: true },
-      { title: 'Shipped', date: '17 Aug 2026, 02:45 PM', completed: true },
-      { title: 'Delivered', date: '18 Aug 2026, 04:20 PM', completed: true },
-    ],
-    paymentMethod: 'bKash (Verified)',
-    bkashTrxId: 'BKASH12345678',
-    advancePaid: 70,
-    subtotal: 15000,
-    deliveryFee: 100,
-    totalAmount: 15100,
-    dueAtDelivery: 15030,
-    shippingAddress: {
-      name: 'Md. Rahman', phone: '01712345678', address: 'House #12, Road #5, Block B, Banani', city: 'Dhaka',
-    },
-    items: [
-      {
-        id: 'i1', name: 'Vision 56" High Speed Ceiling Fan', uniqueId: 'FAN-001928', price: 15000, quantity: 1,
-        image: 'https://images.unsplash.com/photo-1570114681640-1090333fa965?auto=format&fit=crop&w=300&q=80',
-        warrantyStatus: 'Active (729 days left)', warrantyMonths: 24,
-      },
-    ],
-  };
+export async function getCustomerOrderDetails(orderId: string): Promise<any> {
+  const { getCustomerOrderDetails: fetchDetail } = await import("./order.service");
+  return fetchDetail(orderId);
 }
+
 
 export async function getCustomerWarranties(filters?: { status?: string; search?: string }): Promise<CustomerWarranty[]> {
   let result = [...customerWarranties];
@@ -227,10 +207,6 @@ export async function getCustomerStats(): Promise<CustomerStats> {
 export async function createCustomerOrder(orderData: Record<string, unknown>) {
   const orderNumber = `ORD-${Math.floor(100 + Math.random() * 900)}`;
   return { success: true, data: { id: orderNumber, orderNumber, status: 'Pending', total: 15000, createdAt: new Date().toISOString() }, orderData };
-}
-
-export async function verifyCustomerBkash(bkashNumber: string, transactionId: string, amount: number) {
-  return { success: true, data: { verified: true, message: `bKash advance payment of ${amount} BDT verified successfully!`, bkashNumber, transactionId } };
 }
 
 export async function updateCustomerProfile(data: Record<string, string>) {

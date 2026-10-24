@@ -20,7 +20,7 @@ export type PaymentStatus =
   | "REFUNDED"
   | "PARTIAL";
 
-export type PaymentMethod = "Bkash" | "Nagad" | "Rocket";
+export type PaymentMethod = "COD" | "CASH" | "CARD" | "BANK_TRANSFER" | "OTHER";
 
 export type PaymentVerificationStatus =
   | "PENDING"

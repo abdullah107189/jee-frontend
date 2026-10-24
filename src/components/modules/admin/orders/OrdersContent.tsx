@@ -39,15 +39,6 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
     }
   };
 
-  const handlePaymentVerify = async (id: string, verified: boolean) => {
-    try {
-      // await verifyOrderPaymentAction({ id, verified });
-      toast.success(`bKash payment for #${id} ${verified ? 'Verified' : 'Unverified'}`);
-    } catch (err) {
-      toast.error('Failed to update payment status');
-    }
-  };
-
   const getOrderStatusBadge = (status: string) => {
     switch (status.toUpperCase()) {
       case 'DELIVERED':
@@ -85,7 +76,7 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">Order Management</h1>
-            <p className="text-sm sm:text-base text-slate-500 mt-1 font-medium">Track customer orders, verify bKash payments, and manage fulfillment.</p>
+            <p className="text-sm sm:text-base text-slate-500 mt-1 font-medium">Track customer orders and manage fulfillment.</p>
           </div>
         </div>
 
@@ -292,32 +283,16 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
                   </div>
                 </div>
 
-                {/* bKash Payment Verification Box */}
-                {orderDetails.paymentMethod === 'bKash' && (
-                  <div className="p-4 rounded-2xl bg-slate-900 text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <div>
-                      <span className="text-xs font-bold text-pink-400 uppercase tracking-wider">bKash Mobile Banking</span>
-                      <p className="font-mono text-sm font-extrabold mt-1">TRX ID: {orderDetails.bkashTrxId}</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button 
-                        size="sm" 
-                        onClick={() => handlePaymentVerify(orderDetails.id, true)} 
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl"
-                      >
-                        <ShieldCheck className="h-4 w-4 mr-1.5" /> Verify Payment
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={() => handlePaymentVerify(orderDetails.id, false)} 
-                        className="border-slate-700 text-slate-300 hover:bg-slate-800 rounded-xl"
-                      >
-                        Flag Issue
-                      </Button>
-                    </div>
+                {/* Cash on Delivery Notice */}
+                <div className="p-4 rounded-2xl bg-slate-900 text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div>
+                    <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Payment Mode: Cash on Delivery</span>
+                    <p className="text-sm font-semibold mt-1 text-slate-200">পণ্য হাতে পেয়ে টাকা দিন</p>
                   </div>
-                )}
+                  <div className="px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold">
+                    COD Active
+                  </div>
+                </div>
 
                 {/* Products Breakdown Table */}
                 <div>

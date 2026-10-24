@@ -33,7 +33,7 @@ const quickStats = [
 
 export default function AdminDashboardPage() {
   return (
-    <div className="space-y-6">
+    <div className="">
       <div>
         <h1 className="text-2xl font-bold sm:text-3xl">Admin Dashboard</h1>
         <p className="mt-1 text-sm text-muted-foreground">

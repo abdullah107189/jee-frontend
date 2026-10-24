@@ -17,6 +17,7 @@ import {
   ChevronDown,
   User,
   Plus,
+  PackageSearch,
 } from "lucide-react";
 import { logoutAction } from "@/actions/auth.actions";
 import Link from "next/link";
@@ -152,12 +153,10 @@ export function Sidebar({
         subItems: [
           { name: "All Products", href: "/admin/products" },
           { name: "Add Product", href: "/admin/products/new" },
-          { name: "Product Items", href: "/admin/items" },
-          { name: "Categories", href: "/admin/categories" },
-          { name: "Filters", href: "/admin/filters" },       // ← NEW
+          { name: "Product Items", href: "/admin/items" }
         ],
       },
-
+      { name: "Categories", href: "/admin/categories", icon: PackageSearch },
       { name: "Brands", href: "/admin/brands", icon: Tags },
 
       {

@@ -2,12 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/Input";
-import { Slider } from "@/components/ui/slider";
-import { cn } from "@/lib/utils";
 
-/* -------------------------------------------------------------------------- */
-/* Types                                                                      */
-/* -------------------------------------------------------------------------- */
 interface PriceRangeSectionProps {
   priceRange: [number, number];
   maxPrice: number;
@@ -15,193 +10,256 @@ interface PriceRangeSectionProps {
   debounceMs?: number;
 }
 
-/* -------------------------------------------------------------------------- */
-/* Debounce hook                                                              */
-/* -------------------------------------------------------------------------- */
-function useDebounce<T>(value: T, delay: number): T {
-  const [debounced, setDebounced] = useState(value);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(timer);
-  }, [value, delay]);
-
-  return debounced;
-}
-
-/* -------------------------------------------------------------------------- */
-/* Component                                                                  */
-/* -------------------------------------------------------------------------- */
 export function PriceRangeSection({
   priceRange,
   maxPrice,
   onPriceChange,
-  debounceMs = 500,
+  debounceMs = 1000,
 }: PriceRangeSectionProps) {
-  /* ---------------- Local state (UI) ---------------- */
-  /** Inputs stored as STRING so user can clear `0` */
-  const [minInput, setMinInput] = useState(String(priceRange[0]));
-  const [maxInput, setMaxInput] = useState(String(priceRange[1]));
-  const [sliderValue, setSliderValue] = useState<number[]>(priceRange);
+  const [minInput, setMinInput] = useState(
+    String(priceRange[0]),
+  );
 
-  /** Track if user is currently typing in an input */
+  const [maxInput, setMaxInput] = useState(
+    String(priceRange[1]),
+  );
+
   const isTypingRef = useRef(false);
 
-  /* ---------------- Debounced values ---------------- */
-  const debouncedMin = useDebounce(minInput, debounceMs);
-  const debouncedMax = useDebounce(maxInput, debounceMs);
+  /* ------------------------------------------------------------------------ */
+  /* Sync URL / external price → inputs                                      */
+  /* ------------------------------------------------------------------------ */
 
-  /* ---------------- Sync external → local (skip while typing) ---------------- */
   useEffect(() => {
     if (isTypingRef.current) return;
 
     setMinInput(String(priceRange[0]));
     setMaxInput(String(priceRange[1]));
-    setSliderValue(priceRange);
-  }, [priceRange[0], priceRange[1]]);
+  }, [priceRange]);
 
-  /* ---------------- Commit debounced input ---------------- */
+  /* ------------------------------------------------------------------------ */
+  /* Debounce                                                                 */
+  /* ------------------------------------------------------------------------ */
+
   useEffect(() => {
-    const minVal = debouncedMin === "" ? 0 : Number(debouncedMin);
-    const maxVal = debouncedMax === "" ? maxPrice : Number(debouncedMax);
+    if (!isTypingRef.current) return;
 
-    if (Number.isNaN(minVal) || Number.isNaN(maxVal)) return;
+    const timer = setTimeout(() => {
+      const min =
+        minInput === ""
+          ? 0
+          : Number(minInput);
 
-    // Clamp
-    const safeMin = Math.max(0, Math.min(minVal, maxVal));
-    const safeMax = Math.min(maxPrice, Math.max(maxVal, safeMin));
+      const max =
+        maxInput === ""
+          ? maxPrice
+          : Number(maxInput);
 
-    // No change → skip
-    if (safeMin === priceRange[0] && safeMax === priceRange[1]) return;
+      if (
+        Number.isNaN(min) ||
+        Number.isNaN(max)
+      ) {
+        return;
+      }
 
-    onPriceChange([safeMin, safeMax]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedMin, debouncedMax]);
+      /*
+       * Don't allow min > max.
+       */
+      const safeMin = Math.max(
+        0,
+        Math.min(min, max),
+      );
 
-  /* ---------------- Input handlers ---------------- */
-  const handleMinChange = (value: string) => {
+      const safeMax = Math.min(
+        maxPrice,
+        Math.max(max, safeMin),
+      );
+
+      /*
+       * Don't query if nothing changed.
+       */
+      if (
+        safeMin === priceRange[0] &&
+        safeMax === priceRange[1]
+      ) {
+        return;
+      }
+
+      onPriceChange([
+        safeMin,
+        safeMax,
+      ]);
+
+      isTypingRef.current = false;
+    }, debounceMs);
+
+    return () => clearTimeout(timer);
+  }, [
+    minInput,
+    maxInput,
+    maxPrice,
+    priceRange,
+    onPriceChange,
+    debounceMs,
+  ]);
+
+  /* ------------------------------------------------------------------------ */
+  /* Min                                                                       */
+  /* ------------------------------------------------------------------------ */
+
+  const handleMinChange = (
+    value: string,
+  ) => {
+    // Digits only
+    if (
+      value !== "" &&
+      !/^\d+$/.test(value)
+    ) {
+      return;
+    }
+
     isTypingRef.current = true;
-
-    // Only digits allowed
-    if (value !== "" && !/^\d+$/.test(value)) return;
 
     setMinInput(value);
   };
 
-  const handleMaxChange = (value: string) => {
-    isTypingRef.current = true;
+  /* ------------------------------------------------------------------------ */
+  /* Max                                                                       */
+  /* ------------------------------------------------------------------------ */
 
-    if (value !== "" && !/^\d+$/.test(value)) return;
+  const handleMaxChange = (
+    value: string,
+  ) => {
+    // Digits only
+    if (
+      value !== "" &&
+      !/^\d+$/.test(value)
+    ) {
+      return;
+    }
+
+    isTypingRef.current = true;
 
     setMaxInput(value);
   };
 
+  /* ------------------------------------------------------------------------ */
+  /* Min blur                                                                  */
+  /* ------------------------------------------------------------------------ */
+
   const handleMinBlur = () => {
-    isTypingRef.current = false;
+    const value =
+      minInput === ""
+        ? 0
+        : Number(minInput);
 
-    const value = minInput === "" ? 0 : Number(minInput);
-    const clamped = Math.max(0, Math.min(value, priceRange[1]));
+    const max =
+      maxInput === ""
+        ? maxPrice
+        : Number(maxInput);
 
-    setMinInput(String(clamped));
+    const safeValue = Math.max(
+      0,
+      Math.min(value, max),
+    );
+
+    setMinInput(String(safeValue));
   };
+
+  /* ------------------------------------------------------------------------ */
+  /* Max blur                                                                  */
+  /* ------------------------------------------------------------------------ */
 
   const handleMaxBlur = () => {
-    isTypingRef.current = false;
+    const value =
+      maxInput === ""
+        ? maxPrice
+        : Number(maxInput);
 
-    const value = maxInput === "" ? maxPrice : Number(maxInput);
-    const clamped = Math.min(maxPrice, Math.max(value, priceRange[0]));
+    const min =
+      minInput === ""
+        ? 0
+        : Number(minInput);
 
-    setMaxInput(String(clamped));
+    const safeValue = Math.min(
+      maxPrice,
+      Math.max(value, min),
+    );
+
+    setMaxInput(String(safeValue));
   };
 
-  /* ---------------- Slider handlers ---------------- */
-  const handleSliderChange = (value: number[]) => {
-    isTypingRef.current = false;
-    setSliderValue(value);
-  };
+  /* ------------------------------------------------------------------------ */
+  /* Render                                                                    */
+  /* ------------------------------------------------------------------------ */
 
-  const handleSliderCommit = (value: number[]) => {
-    if (value.length !== 2) return;
-
-    const [min, max] = value;
-    setMinInput(String(min));
-    setMaxInput(String(max));
-    onPriceChange([min, max]);
-  };
-
-  /* ---------------- Render ---------------- */
   return (
-    <>
-      {/* ==================== Slider ==================== */}
-      <div className="px-1 pt-1">
-        <Slider
-          value={sliderValue}
-          min={0}
-          max={maxPrice}
-          step={500}
-          onValueChange={handleSliderChange}
-          onValueCommitted={handleSliderCommit}
-          className={cn(
-            // Thumb cursor
-            "**:[[role=slider]]:h-4 **:[[role=slider]]:w-4",
-            "**:[[role=slider]]:cursor-grab **:[[role=slider]]:active:cursor-grabbing",
-            // Smooth transitions
-            "**:[[role=slider]]:transition-shadow **:[[role=slider]]:duration-150",
-          )}
-        />
+    <div className="grid grid-cols-2 gap-3">
+      {/* Min */}
 
-        {/* Live range display under slider */}
-        <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
-          <span>৳ {(sliderValue[0] ?? 0).toLocaleString("en-US")}</span>
-          <span className="text-muted-foreground/60">—</span>
-          <span>৳ {(sliderValue[1] ?? maxPrice).toLocaleString("en-US")}</span>
-        </div>
-      </div>
+      <div className="space-y-1.5">
+        <label
+          htmlFor="min-price"
+          className="text-xs font-medium text-muted-foreground"
+        >
+          Min price
+        </label>
 
-      {/* ==================== Min / Max Inputs ==================== */}
-      <div className="mt-4 grid grid-cols-2 gap-2">
-        <div>
-          <label
-            htmlFor="min-price"
-            className="mb-1.5 block text-[10px] font-medium uppercase tracking-wide text-muted-foreground"
-          >
-            Min
-          </label>
+        <div className="relative">
+          <span className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-xs text-muted-foreground">
+            ৳
+          </span>
 
           <Input
             id="min-price"
             type="text"
             inputMode="numeric"
-            pattern="\d*"
+            pattern="[0-9]*"
             value={minInput}
-            onChange={(e) => handleMinChange(e.target.value)}
+            onChange={(e) =>
+              handleMinChange(
+                e.target.value,
+              )
+            }
             onBlur={handleMinBlur}
             placeholder="0"
-            className="h-9 text-xs"
+            className="h-9 pl-7 text-sm"
           />
         </div>
+      </div>
 
-        <div>
-          <label
-            htmlFor="max-price"
-            className="mb-1.5 block text-[10px] font-medium uppercase tracking-wide text-muted-foreground"
-          >
-            Max
-          </label>
+      {/* Max */}
+
+      <div className="space-y-1.5">
+        <label
+          htmlFor="max-price"
+          className="text-xs font-medium text-muted-foreground"
+        >
+          Max price
+        </label>
+
+        <div className="relative">
+          <span className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-xs text-muted-foreground">
+            ৳
+          </span>
 
           <Input
             id="max-price"
             type="text"
             inputMode="numeric"
-            pattern="\d*"
+            pattern="[0-9]*"
             value={maxInput}
-            onChange={(e) => handleMaxChange(e.target.value)}
+            onChange={(e) =>
+              handleMaxChange(
+                e.target.value,
+              )
+            }
             onBlur={handleMaxBlur}
             placeholder={String(maxPrice)}
-            className="h-9 text-xs"
+            className="h-9 pl-7 text-sm"
           />
         </div>
       </div>
-    </>
+    </div>
   );
 }

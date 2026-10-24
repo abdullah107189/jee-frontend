@@ -116,3 +116,103 @@ export async function createOrderAction(
     };
   }
 }
+
+/* ─────────── Cancel Order ─────────── */
+
+export async function cancelOrderAction(
+  orderId: string,
+  reason?: string,
+): Promise<{ success: boolean; message: string }> {
+  try {
+    if (!orderId) {
+      return { success: false, message: "Order ID is required" };
+    }
+
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore.toString();
+
+    if (!cookieHeader) {
+      return { success: false, message: "Authentication required" };
+    }
+
+    const res = await fetch(`${API_URL}/orders/${orderId}/cancel`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: cookieHeader,
+      },
+      body: JSON.stringify({ reason: reason || "Cancelled by customer" }),
+      cache: "no-store",
+    });
+
+    const json = await res.json().catch(() => null);
+    if (!res.ok || (json && json.success === false)) {
+      return {
+        success: false,
+        message: json?.message ?? "Failed to cancel order",
+      };
+    }
+
+    return {
+      success: true,
+      message: json?.message ?? "Order cancelled successfully",
+    };
+  } catch (error) {
+    console.error("[CANCEL_ORDER_ERROR]", error);
+    return {
+      success: false,
+      message: "Network error while cancelling order.",
+    };
+  }
+}
+
+/* ─────────── Admin: Update Order Status ─────────── */
+
+export async function updateOrderStatusAction(
+  orderId: string,
+  status: string,
+): Promise<{ success: boolean; message: string }> {
+  try {
+    if (!orderId || !status) {
+      return { success: false, message: "Order ID and status are required" };
+    }
+
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore.toString();
+
+    if (!cookieHeader) {
+      return { success: false, message: "Authentication required" };
+    }
+
+    const res = await fetch(`${API_URL}/orders/${orderId}/status`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: cookieHeader,
+      },
+      body: JSON.stringify({ status: status.toUpperCase() }),
+      cache: "no-store",
+    });
+
+    const json = await res.json().catch(() => null);
+    if (!res.ok || (json && json.success === false)) {
+      return {
+        success: false,
+        message: json?.message ?? "Failed to update order status",
+      };
+    }
+
+    return {
+      success: true,
+      message: json?.message ?? `Order status updated to ${status}`,
+    };
+  } catch (error) {
+    console.error("[UPDATE_ORDER_STATUS_ERROR]", error);
+    return {
+      success: false,
+      message: "Network error while updating order status.",
+    };
+  }
+}
+
+

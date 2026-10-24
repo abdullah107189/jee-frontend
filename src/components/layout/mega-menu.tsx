@@ -6,8 +6,8 @@ import type { CategoryNavItem } from "@/lib/types/category.types";
 
 interface MegaMenuProps {
   category: CategoryNavItem;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
+  onMouseEnter?: () => void;    // ← optional
+  onMouseLeave?: () => void;    // ← optional
 }
 
 export function MegaMenu({
@@ -21,13 +21,10 @@ export function MegaMenu({
     <div
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      className="absolute  top-full z-40 animate-in fade-in slide-in-from-top-1 duration-150"
-      style={{
-        animation: "fadeSlideIn 150ms ease-out",
-      }}
+      className="..."
     >
       {/* Dropdown panel */}
-      <div className="min-w-[240px] max-w-[280px] overflow-hidden rounded-b-xl border-x border-b border-slate-200 bg-white shadow-2xl">
+      <div className="min-w-60 max-w-70 overflow-hidden rounded-b-xl border-x border-b border-slate-200 bg-white shadow-2xl">
         {/* Arrow indicator */}
         <div className="absolute -top-1.5 left-6 h-3 w-3 rotate-45 border-l border-t border-slate-200 bg-white" />
 

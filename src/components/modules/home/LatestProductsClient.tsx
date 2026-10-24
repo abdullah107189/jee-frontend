@@ -49,7 +49,6 @@ export default function LatestProductsClient({
             <HorizontalProductCard
               key={product.id}
               product={product}
-              onAddToCart={handleAddToCart}
             />
           ))}
         </div>

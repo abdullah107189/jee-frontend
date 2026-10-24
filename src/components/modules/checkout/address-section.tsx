@@ -66,8 +66,14 @@ export function AddressSection({
                     >
                         <Truck className="h-3.5 w-3.5 shrink-0" />
                         <span>
-                            {insideDhaka ? "Inside Dhaka" : "Outside Dhaka District"} —{" "}
-                            <span className="font-semibold">৳{deliveryFee}</span> delivery
+                            {deliveryFee === 0 ? (
+                                <span className="font-bold text-emerald-600">FREE Delivery</span>
+                            ) : (
+                                <>
+                                    {insideDhaka ? "Inside Dhaka" : "Outside Dhaka District"} —{" "}
+                                    <span className="font-semibold">৳{deliveryFee}</span> delivery
+                                </>
+                            )}
                         </span>
                     </div>
                 )}

@@ -6,7 +6,6 @@ import {
   createCustomerOrder,
   submitCustomerWarrantyClaim,
   updateCustomerProfile,
-  verifyCustomerBkash,
 } from '@/services/customer.service';
 
 function text(value: unknown, field: string, max = 200) {
@@ -26,16 +25,7 @@ export async function createOrderAction(input: Record<string, any>) {
   const shippingAddress = {
     fullName: text(address?.fullName, 'full name'), phone: text(address?.phone, 'phone'), address: text(address?.address, 'address'), city: text(address?.city, 'city'), zipCode: address?.zipCode ? text(address.zipCode, 'zip code', 20) : undefined,
   };
-  if (!['BKASH', 'COD'].includes(input.paymentMethod)) throw new Error('Invalid payment method');
-  return createCustomerOrder({ ...input, items, shippingAddress, paymentMethod: input.paymentMethod });
-}
-
-export async function verifyBkashAction(input: { bKashNumber: string; transactionId: string; amount: number }) {
-  await requireRole('CUSTOMER');
-  const bKashNumber = text(input?.bKashNumber, 'bKash number');
-  const transactionId = text(input?.transactionId, 'transaction id', 100);
-  if (!/^01[3-9]\d{8}$/.test(bKashNumber) || transactionId.length < 5 || input.amount !== 70) throw new Error('Invalid payment data');
-  return verifyCustomerBkash(bKashNumber, transactionId, 70);
+  return createCustomerOrder({ ...input, items, shippingAddress, paymentMethod: 'COD' });
 }
 
 export async function updateCustomerProfileAction(input: Record<string, string>) {

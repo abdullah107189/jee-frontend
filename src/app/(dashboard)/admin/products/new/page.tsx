@@ -1,12 +1,11 @@
-import type { Metadata } from "next";
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import ProductAddContent from "@/components/modules/admin/products/new/ProductAddContent";
+import { adminProductService } from "@/services/admin/product.service";
 
-export const metadata: Metadata = {
-  title: "Add Product | JEE Admin",
-  description: "Create a new product in the catalog.",
-};
+export default async function Page() {
+  const [categories, brands] = await Promise.all([
+    adminProductService.getCategoriesFlat(),
+    adminProductService.getBrands(),
+  ]);
 
-export default function AdminProductAddPage() {
-  return <ProductAddContent />;
+  return <ProductAddContent categories={categories} brands={brands} />;
 }
