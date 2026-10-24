@@ -213,6 +213,26 @@ export async function updateOrderStatusAction(
       }
     }
 
+    // Strict validation: Reject PROCESSING without serial numbers
+    if (payload.status === "PROCESSING") {
+      if (!payload.serialNumbers || Object.keys(payload.serialNumbers).length === 0) {
+        return {
+          success: false,
+          message: "প্যাকিং নিশ্চিত করতে অর্ডারের আইটেমগুলোর সিরিয়াল নম্বর স্ক্যান/ইনপুট করা বাধ্যতামূলক।",
+        };
+      }
+    }
+
+    // Strict validation: Reject SHIPPED without courier and tracking number
+    if (payload.status === "SHIPPED") {
+      if (!payload.trackingNumber || !payload.courierName) {
+        return {
+          success: false,
+          message: "অর্ডার শিপমেন্ট নিশ্চিত করতে কুরিয়ার সার্ভিস ও ট্র্যাকিং নম্বর বাধ্যতামূলক।",
+        };
+      }
+    }
+
     const res = await fetch(`${API_URL}/orders/${orderId}/status`, {
       method: "PATCH",
       headers: {

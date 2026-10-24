@@ -229,7 +229,16 @@ export async function getAdminOrderDetails(
     }
 
     const json = await res.json();
-    return (json?.data as Order) ?? null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const orderData = json?.data as any;
+    if (orderData && !orderData.items && Array.isArray(orderData.orderItems)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      orderData.items = orderData.orderItems.map((it: any) => ({
+        ...it,
+        serialNumber: it.serialNumber || it.productItem?.serialNumber,
+      }));
+    }
+    return (orderData as Order) ?? null;
   } catch (error) {
     console.error("[GET_ADMIN_ORDER_DETAILS_ERROR]", error);
     return null;

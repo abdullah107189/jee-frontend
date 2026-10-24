@@ -127,6 +127,18 @@ export function AdminOrdersList({
     order: Order,
     nextStatus: OrderStatus,
   ) => {
+    if (nextStatus === "PROCESSING") {
+      toast.info("অর্ডার প্যাকিং ও পণ্যের সিরিয়াল নম্বর স্ক্যান করতে অর্ডার ডিটেইলসে প্রবেশ করুন।");
+      router.push(`/admin/orders/${order.id}`);
+      return;
+    }
+
+    if (nextStatus === "SHIPPED") {
+      toast.info("কুরিয়ার সার্ভিস ও ট্র্যাকিং নম্বর ইনপুট করতে অর্ডার ডিটেইলসে প্রবেশ করুন।");
+      router.push(`/admin/orders/${order.id}`);
+      return;
+    }
+
     if (["DELIVERED", "RETURNED", "CANCELLED"].includes(nextStatus)) {
       setConfirmDialogState({
         open: true,

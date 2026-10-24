@@ -751,7 +751,7 @@ export function AdminOrderDetails({ order }: AdminOrderDetailsProps) {
         onOpenChange={setConfirmDialogOpen}
         orderNumber={order.orderNumber}
         targetStatus={pendingTargetStatus}
-        items={order.items}
+        items={order.items || (order as any).orderItems || []}
         onConfirm={handleConfirmStatusChange}
         isLoading={isUpdating}
       />

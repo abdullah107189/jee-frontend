@@ -112,6 +112,16 @@ export function OrderStatusConfirmDialog({
     }
   };
 
+  const missingSerialsCount =
+    targetStatus === "PROCESSING"
+      ? items.filter((it) => !itemSerials[it.id]?.trim()).length
+      : 0;
+
+  const isSubmitDisabled =
+    isLoading ||
+    (targetStatus === "PROCESSING" && (items.length === 0 || missingSerialsCount > 0)) ||
+    (targetStatus === "SHIPPED" && (!trackingNumber.trim() || !courierName.trim()));
+
   const handleConfirm = async () => {
     const options: StatusConfirmOptions = {};
 
@@ -119,14 +129,16 @@ export function OrderStatusConfirmDialog({
 
     // Strict Validation for PROCESSING: All items must have serials
     if (targetStatus === "PROCESSING") {
-      if (items.length > 0) {
-        const missing = items.filter((it) => !itemSerials[it.id]?.trim());
-        if (missing.length > 0) {
-          toast.error(
-            `প্যাকিং নিশ্চিত করতে অর্ডারের সব (${items.length}টি) আইটেমের সিরিয়াল স্ক্যান/ইনপুট করুন।`,
-          );
-          return;
-        }
+      if (!items || items.length === 0) {
+        toast.error("অর্ডারের আইটেম লোড হয়নি অথবা অর্ডারে কোনো পণ্য নেই।");
+        return;
+      }
+      const missing = items.filter((it) => !itemSerials[it.id]?.trim());
+      if (missing.length > 0) {
+        toast.error(
+          `প্যাকিং নিশ্চিত করতে অর্ডারের সব (${items.length}টি) আইটেমের সিরিয়াল স্ক্যান/ইনপুট করুন।`,
+        );
+        return;
       }
       options.serialNumbers = itemSerials;
     }
@@ -235,12 +247,30 @@ export function OrderStatusConfirmDialog({
             {details.description}
           </p>
 
+          {/* PROCESSING: When items is empty */}
+          {targetStatus === "PROCESSING" && items.length === 0 && (
+            <div className="mb-5 rounded-xl border border-destructive/20 bg-destructive/10 p-3.5 text-xs font-semibold text-destructive">
+              ⚠️ অর্ডারের আইটেম পাওয়া যায়নি। আইটেম ছাড়া অর্ডার প্রসেস করা সম্ভব নয়।
+            </div>
+          )}
+
           {/* PROCESSING: Serial Numbers Assignment with Camera Button */}
           {targetStatus === "PROCESSING" && items.length > 0 && (
             <div className="space-y-3 mb-5 rounded-xl border border-border bg-muted/30 p-3.5">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-                <Barcode className="h-4 w-4 text-primary" />
-                <span>Physical Serial / QR Code per Item (স্ক্যান বা ক্যামেরা দিয়ে ইনপুট করুন):</span>
+              <div className="flex items-center justify-between text-xs font-semibold text-foreground">
+                <div className="flex items-center gap-1.5">
+                  <Barcode className="h-4 w-4 text-primary" />
+                  <span>Physical Serial / QR per Item:</span>
+                </div>
+                {missingSerialsCount > 0 ? (
+                  <span className="text-[10px] text-destructive bg-destructive/10 px-2 py-0.5 rounded-full font-bold">
+                    {missingSerialsCount}টি সিরিয়াল বাকি
+                  </span>
+                ) : (
+                  <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-bold">
+                    সব সম্পন্ন ✓
+                  </span>
+                )}
               </div>
 
               <div className="space-y-2.5">
@@ -373,7 +403,7 @@ export function OrderStatusConfirmDialog({
               type="button"
               variant={details.confirmVariant}
               onClick={handleConfirm}
-              disabled={isLoading}
+              disabled={isSubmitDisabled}
             >
               {isLoading ? "Updating..." : details.confirmText}
             </Button>
