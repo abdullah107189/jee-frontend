@@ -79,9 +79,14 @@ src/
 - ❌ `any` types
 
 
-## ফ্রন্টএন্ড নিয়ম
-- শুধু Next.js App Router। পেজ: src/app/**/page.tsx (Server Component)। UI: src/components/modules/**।
-  src/pages, _app.tsx, Vite ফাইল কখনো বানাবে না।
-- Build ফেল করলে architecture বদলাবে না, কারণ রিপোর্ট করে থামবে।
-- git checkout -- . / reset --hard / clean: জিজ্ঞেস না করে চালাবে না।
-- Auth/role চেক সরাবে না। scope এর বাইরের ফাইলে হাত দেবে না।
+## কাজের নিয়ম
+- কাজ main এ। নিজে branch বানাবে না, commit বা push করবে না (user করবে)।
+- প্রতি session এর শুরুতে AGENTS.md ও docs/PROGRESS.md পড়ো। git status ফাঁকা না থাকলে থেমে জানাও।
+- কাজ শেষে PROGRESS.md আপডেট করো: লাইন টিক, প্রমাণ (ফাইল + build/test ফল), Done log এ এক লাইন, "এখন কোন কাজ চলছে" বদলাও। ফাইল ১২০ লাইনের মধ্যে রাখো।
+- নতুন কাজ শুরুর আগে বর্তমান milestone এর প্রথম TODO নাও।
+- কাজ শুরুর আগে কোন ফাইলে কী বদলাবে তার তালিকা দিয়ে অনুমতি নাও। scope এর বাইরে হাত দেবে না।
+- Build/test ফেল করলে architecture বদলে সমাধান করবে না, কারণ রিপোর্ট করে থামবে।
+- git checkout -- . / reset --hard / clean জিজ্ঞেস না করে চালাবে না।
+- শুধু Next.js App Router (পেজ src/app/**/page.tsx Server Component, UI src/components/modules/**)। src/pages, _app.tsx, Vite ফাইল কখনো বানাবে না। Auth/role চেক সরাবে না।
+
+
