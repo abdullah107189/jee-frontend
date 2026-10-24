@@ -29,6 +29,14 @@ import {
   User,
   Calendar,
 } from "lucide-react";
+import { toast } from "sonner";
+import { updateOrderStatusAction } from "@/actions/order.actions";
+import { OrderStatusConfirmDialog } from "@/components/modules/admin/orders/OrderStatusConfirmDialog";
+import {
+  getValidNextStatuses,
+  getOrderStatusBadgeVariant,
+  ORDER_STATUS_LABELS,
+} from "@/lib/constants/orderStatus";
 import type { Order, OrderStatus, PaymentStatus } from "@/lib/types/order.types";
 
 interface AdminOrdersListProps {
@@ -86,7 +94,7 @@ const statusOptions = [
   { value: "SHIPPED", label: "Shipped" },
   { value: "DELIVERED", label: "Delivered" },
   { value: "CANCELLED", label: "Cancelled" },
-  { value: "RETURNED", label: "Returned" },
+  { value: "RETURNED", label: "ডেলিভারি ব্যর্থ/ফেরত" },
 ];
 
 export function AdminOrdersList({
@@ -103,6 +111,69 @@ export function AdminOrdersList({
 
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [statusFilter, setStatusFilter] = useState(initialStatus);
+
+  const [confirmDialogState, setConfirmDialogState] = useState<{
+    open: boolean;
+    order: Order | null;
+    targetStatus: OrderStatus | null;
+  }>({
+    open: false,
+    order: null,
+    targetStatus: null,
+  });
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+
+  const handleStatusChangeRequest = async (
+    order: Order,
+    nextStatus: OrderStatus,
+  ) => {
+    if (["DELIVERED", "RETURNED", "CANCELLED"].includes(nextStatus)) {
+      setConfirmDialogState({
+        open: true,
+        order,
+        targetStatus: nextStatus,
+      });
+      return;
+    }
+
+    setIsUpdatingStatus(true);
+    try {
+      const res = await updateOrderStatusAction(order.id, nextStatus);
+      if (res.success) {
+        toast.success(res.message);
+        router.refresh();
+      } else {
+        toast.error(res.message);
+      }
+    } catch {
+      toast.error("Failed to update status");
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
+
+  const handleConfirmStatusChange = async (reason?: string) => {
+    if (!confirmDialogState.order || !confirmDialogState.targetStatus) return;
+    setIsUpdatingStatus(true);
+    try {
+      const res = await updateOrderStatusAction(
+        confirmDialogState.order.id,
+        confirmDialogState.targetStatus,
+        reason,
+      );
+      if (res.success) {
+        toast.success(res.message);
+        setConfirmDialogState({ open: false, order: null, targetStatus: null });
+        router.refresh();
+      } else {
+        toast.error(res.message);
+      }
+    } catch {
+      toast.error("Failed to update status");
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
 
   const applyFilters = (newSearch: string, newStatus: string, newPage = 1) => {
     const params = new URLSearchParams(searchParams?.toString() ?? "");
@@ -346,9 +417,39 @@ export function AdminOrdersList({
 
                         {/* Status */}
                         <td className="px-5 py-4 whitespace-nowrap">
-                          <Badge variant={statusBadgeVariant(order.status)}>
-                            {order.status}
-                          </Badge>
+                          <div className="flex flex-col gap-1.5 items-start">
+                            <Badge variant={statusBadgeVariant(order.status)}>
+                              {order.status === "RETURNED"
+                                ? "ডেলিভারি ব্যর্থ/ফেরত"
+                                : order.status}
+                            </Badge>
+                            {(() => {
+                              const validNext = getValidNextStatuses(order.status);
+                              if (validNext.length === 0) return null;
+                              return (
+                                <Select
+                                  value=""
+                                  onValueChange={(val) => {
+                                    if (val) {
+                                      handleStatusChangeRequest(order, val as OrderStatus);
+                                    }
+                                  }}
+                                  disabled={isUpdatingStatus}
+                                >
+                                  <SelectTrigger className="h-7 text-xs px-2 w-[140px] bg-background border-border">
+                                    <SelectValue placeholder="Next step..." />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {validNext.map((st) => (
+                                      <SelectItem key={st} value={st} className="text-xs">
+                                        {ORDER_STATUS_LABELS[st] ?? st}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              );
+                            })()}
+                          </div>
                         </td>
 
                         {/* Action */}
@@ -457,10 +558,38 @@ export function AdminOrdersList({
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex flex-col items-end gap-1">
                         <Badge variant={statusBadgeVariant(order.status)} className="text-[11px]">
-                          {order.status}
+                          {order.status === "RETURNED"
+                            ? "ডেলিভারি ব্যর্থ/ফেরত"
+                            : order.status}
                         </Badge>
+                        {(() => {
+                          const validNext = getValidNextStatuses(order.status);
+                          if (validNext.length === 0) return null;
+                          return (
+                            <Select
+                              value=""
+                              onValueChange={(val) => {
+                                if (val) {
+                                  handleStatusChangeRequest(order, val as OrderStatus);
+                                }
+                              }}
+                              disabled={isUpdatingStatus}
+                            >
+                              <SelectTrigger className="h-6 text-[10px] px-2 w-[130px] bg-background border-border">
+                                <SelectValue placeholder="Next step..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {validNext.map((st) => (
+                                  <SelectItem key={st} value={st} className="text-xs">
+                                    {ORDER_STATUS_LABELS[st] ?? st}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          );
+                        })()}
                       </div>
                     </div>
 
@@ -558,6 +687,17 @@ export function AdminOrdersList({
           </div>
         </div>
       )}
+
+      <OrderStatusConfirmDialog
+        open={confirmDialogState.open}
+        onOpenChange={(open) =>
+          setConfirmDialogState((prev) => ({ ...prev, open }))
+        }
+        orderNumber={confirmDialogState.order?.orderNumber}
+        targetStatus={confirmDialogState.targetStatus}
+        onConfirm={handleConfirmStatusChange}
+        isLoading={isUpdatingStatus}
+      />
     </div>
   );
 }

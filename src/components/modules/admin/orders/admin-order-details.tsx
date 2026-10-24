@@ -45,6 +45,12 @@ import {
   Calendar,
 } from "lucide-react";
 import { updateOrderStatusAction } from "@/actions/order.actions";
+import { OrderStatusConfirmDialog } from "@/components/modules/admin/orders/OrderStatusConfirmDialog";
+import {
+  getValidNextStatuses,
+  getOrderStatusBadgeVariant,
+  ORDER_STATUS_LABELS,
+} from "@/lib/constants/orderStatus";
 import type { Order, OrderStatus, PaymentStatus } from "@/lib/types/order.types";
 
 interface AdminOrderDetailsProps {
@@ -89,22 +95,7 @@ const paymentBadgeVariant = (
   }
 };
 
-const NEXT_STATUS_MAP: Record<string, { next: OrderStatus; label: string }> = {
-  PENDING: { next: "CONFIRMED", label: "Confirm Order" },
-  CONFIRMED: { next: "PROCESSING", label: "Start Processing" },
-  PROCESSING: { next: "SHIPPED", label: "Dispatch & Ship" },
-  SHIPPED: { next: "DELIVERED", label: "Mark Delivered" },
-};
 
-const ALL_STATUSES = [
-  "PENDING",
-  "CONFIRMED",
-  "PROCESSING",
-  "SHIPPED",
-  "DELIVERED",
-  "CANCELLED",
-  "RETURNED",
-];
 
 const MILESTONES: Array<{ status: OrderStatus; label: string; icon: any }> = [
   { status: "PENDING", label: "Placed", icon: Clock },
@@ -141,7 +132,9 @@ export function AdminOrderDetails({ order }: AdminOrderDetailsProps) {
   }
 
   const isCancelled = order.status === "CANCELLED" || order.status === "RETURNED";
-  const nextAction = NEXT_STATUS_MAP[order.status?.toUpperCase()];
+  const validNextStatuses = getValidNextStatuses(order.status);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [pendingTargetStatus, setPendingTargetStatus] = useState<OrderStatus | null>(null);
 
   const getMilestoneIndex = (status: OrderStatus | string) => {
     switch (status?.toUpperCase()) {
@@ -163,15 +156,20 @@ export function AdminOrderDetails({ order }: AdminOrderDetailsProps) {
   const currentStep = getMilestoneIndex(order.status);
 
   const handleOpenStatusModal = (targetStatus?: string) => {
-    setSelectedStatus(targetStatus || nextAction?.next || order.status);
+    setSelectedStatus(targetStatus || validNextStatuses[0] || "");
     setStatusModalOpen(true);
   };
 
-  const handleStatusSubmit = async () => {
-    if (!order.id || !selectedStatus) return;
+  const handleSelectStatus = async (target: OrderStatus) => {
+    if (["DELIVERED", "RETURNED", "CANCELLED"].includes(target)) {
+      setPendingTargetStatus(target);
+      setConfirmDialogOpen(true);
+      return;
+    }
+
     setIsUpdating(true);
     try {
-      const res = await updateOrderStatusAction(order.id, selectedStatus);
+      const res = await updateOrderStatusAction(order.id, target);
       if (res.success) {
         toast.success(res.message);
         setStatusModalOpen(false);
@@ -184,6 +182,35 @@ export function AdminOrderDetails({ order }: AdminOrderDetailsProps) {
     } finally {
       setIsUpdating(false);
     }
+  };
+
+  const handleConfirmStatusChange = async (reason?: string) => {
+    if (!pendingTargetStatus || !order.id) return;
+    setIsUpdating(true);
+    try {
+      const res = await updateOrderStatusAction(
+        order.id,
+        pendingTargetStatus,
+        reason,
+      );
+      if (res.success) {
+        toast.success(res.message);
+        setConfirmDialogOpen(false);
+        setStatusModalOpen(false);
+        router.refresh();
+      } else {
+        toast.error(res.message);
+      }
+    } catch {
+      toast.error("Failed to update order status. Please try again.");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleStatusSubmit = async () => {
+    if (!order.id || !selectedStatus) return;
+    await handleSelectStatus(selectedStatus as OrderStatus);
   };
 
   const formattedPlacedDate = order.createdAt
@@ -250,7 +277,7 @@ export function AdminOrderDetails({ order }: AdminOrderDetailsProps) {
                 #{order.orderNumber}
               </h1>
               <Badge variant={statusBadgeVariant(order.status)} className="text-xs px-3 py-1">
-                {order.status}
+                {order.status === "RETURNED" ? "ডেলিভারি ব্যর্থ/ফেরত" : order.status}
               </Badge>
               {order.paymentStatus && (
                 <Badge variant={paymentBadgeVariant(order.paymentStatus)} className="text-xs px-3 py-1">
@@ -274,25 +301,26 @@ export function AdminOrderDetails({ order }: AdminOrderDetailsProps) {
 
           {/* Quick Action Controls */}
           <div className="flex flex-wrap items-center gap-2.5 print:hidden">
-            {nextAction && order.status !== "DELIVERED" && order.status !== "CANCELLED" && (
-              <Button
-                onClick={() => handleOpenStatusModal(nextAction.next)}
-                variant="default"
-                className="gap-2 font-semibold shadow-xs"
+            {validNextStatuses.length > 0 && (
+              <Select
+                value=""
+                onValueChange={(val) => {
+                  if (val) handleSelectStatus(val as OrderStatus);
+                }}
+                disabled={isUpdating}
               >
-                <ArrowRightCircle className="h-4 w-4" />
-                {nextAction.label}
-              </Button>
+                <SelectTrigger className="w-[180px] bg-background border-border h-10 font-medium">
+                  <SelectValue placeholder="Update status..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {validNextStatuses.map((st) => (
+                    <SelectItem key={st} value={st}>
+                      {ORDER_STATUS_LABELS[st] ?? st}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             )}
-
-            <Button
-              onClick={() => handleOpenStatusModal()}
-              variant="outline"
-              className="gap-1.5"
-            >
-              <RotateCcw className="h-4 w-4" />
-              Update Status
-            </Button>
           </div>
         </div>
 
@@ -307,10 +335,12 @@ export function AdminOrderDetails({ order }: AdminOrderDetailsProps) {
               <XCircle className="h-6 w-6 shrink-0" />
               <div>
                 <p className="font-semibold text-sm">
-                  Order status is {order.status}
+                  Order status is {order.status === "RETURNED" ? "ডেলিভারি ব্যর্থ/ফেরত (RETURNED)" : order.status}
                 </p>
                 <p className="text-xs text-destructive/80 mt-0.5">
-                  This order was marked as {order.status.toLowerCase()}. Stock and warranty adjustments follow MVP guidelines.
+                  {order.status === "RETURNED"
+                    ? "ডেলিভারি ব্যর্থ হয়েছে অথবা অর্ডারটি ফেরত এসেছে। পণ্যসমূহ স্টকে ফেরত দেওয়া হয়েছে।"
+                    : "This order was marked as cancelled. Stock and warranty adjustments follow MVP guidelines."}
                 </p>
               </div>
             </div>
@@ -654,9 +684,9 @@ export function AdminOrderDetails({ order }: AdminOrderDetailsProps) {
                 <SelectValue placeholder="Choose status" />
               </SelectTrigger>
               <SelectContent>
-                {ALL_STATUSES.map((st) => (
+                {validNextStatuses.map((st) => (
                   <SelectItem key={st} value={st}>
-                    {st}
+                    {ORDER_STATUS_LABELS[st] ?? st}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -665,6 +695,11 @@ export function AdminOrderDetails({ order }: AdminOrderDetailsProps) {
             {selectedStatus === "DELIVERED" && (
               <p className="text-xs text-primary font-medium mt-2 bg-primary/10 p-2.5 rounded-lg border border-primary/20">
                 ⚡ Note: Moving to DELIVERED automatically activates warranties for sold units per MVP flow.
+              </p>
+            )}
+            {selectedStatus === "RETURNED" && (
+              <p className="text-xs text-destructive font-medium mt-2 bg-destructive/10 p-2.5 rounded-lg border border-destructive/20">
+                ⚡ Note: Moving to RETURNED (ডেলিভারি ব্যর্থ/ফেরত) releases reserved items back to available inventory.
               </p>
             )}
           </div>
@@ -687,6 +722,15 @@ export function AdminOrderDetails({ order }: AdminOrderDetailsProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <OrderStatusConfirmDialog
+        open={confirmDialogOpen}
+        onOpenChange={setConfirmDialogOpen}
+        orderNumber={order.orderNumber}
+        targetStatus={pendingTargetStatus}
+        onConfirm={handleConfirmStatusChange}
+        isLoading={isUpdating}
+      />
     </div>
   );
 }

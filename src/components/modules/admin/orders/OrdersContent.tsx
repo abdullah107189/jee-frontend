@@ -53,6 +53,8 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
         return <Badge variant="warning" className="rounded-full px-3 py-1 text-xs">Pending</Badge>;
       case 'CANCELLED':
         return <Badge variant="destructive" className="rounded-full px-3 py-1 text-xs">Cancelled</Badge>;
+      case 'RETURNED':
+        return <Badge variant="destructive" className="rounded-full px-3 py-1 text-xs">ডেলিভারি ব্যর্থ/ফেরত</Badge>;
       default:
         return <Badge variant="outline" className="rounded-full px-3 py-1 text-xs">{status}</Badge>;
     }
@@ -152,6 +154,7 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
               <option value="SHIPPED">Shipped</option>
               <option value="DELIVERED">Delivered</option>
               <option value="CANCELLED">Cancelled</option>
+              <option value="RETURNED">ডেলিভারি ব্যর্থ/ফেরত</option>
             </select>
             <select 
               value={paymentFilter}

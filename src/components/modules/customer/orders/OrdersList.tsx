@@ -77,6 +77,7 @@ const statusOptions = [
   { value: "SHIPPED", label: "Shipped" },
   { value: "DELIVERED", label: "Delivered" },
   { value: "CANCELLED", label: "Cancelled" },
+  { value: "RETURNED", label: "ডেলিভারি ব্যর্থ/ফেরত" },
 ];
 
 export function OrdersList({
@@ -258,7 +259,9 @@ export function OrdersList({
                           Order #{order.orderNumber}
                         </span>
                         <Badge variant={statusBadgeVariant(order.status)}>
-                          {order.status}
+                          {order.status === "RETURNED"
+                            ? "ডেলিভারি ব্যর্থ/ফেরত"
+                            : order.status}
                         </Badge>
                         {order.paymentStatus && (
                           <Badge variant={paymentBadgeVariant(order.paymentStatus)}>
