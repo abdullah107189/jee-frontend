@@ -32,6 +32,9 @@ import {
   XCircle,
   HelpCircle,
   Calendar,
+  Copy,
+  Check,
+  ExternalLink,
 } from "lucide-react";
 import { cancelOrderAction } from "@/actions/order.actions";
 import type { Order, OrderStatus, PaymentStatus } from "@/lib/types/order.types";
@@ -91,6 +94,14 @@ export function OrderDetails({ order }: OrderDetailsProps) {
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [isCancelling, setIsCancelling] = useState(false);
+  const [copiedSerial, setCopiedSerial] = useState<string | null>(null);
+
+  const handleCopySerial = (serial: string) => {
+    navigator.clipboard.writeText(serial);
+    setCopiedSerial(serial);
+    toast.success(`Serial ${serial} copied to clipboard`);
+    setTimeout(() => setCopiedSerial(null), 2000);
+  };
 
   if (!order) {
     return (
@@ -377,10 +388,43 @@ export function OrderDetails({ order }: OrderDetailsProps) {
                         </div>
 
                         {/* Serial Number & Warranty Badges */}
-                        <div className="flex flex-wrap items-center gap-2 pt-1">
-                          {item.serialNumber && (
-                            <span className="font-mono text-xs font-semibold px-2.5 py-1 rounded-md bg-muted text-foreground border border-border/60">
-                              SN: {item.serialNumber}
+                        <div className="flex flex-wrap items-center gap-2 pt-1.5">
+                          {item.serialNumber ? (
+                            <div className="inline-flex items-center gap-1.5 rounded-lg border border-border/80 bg-muted/60 pl-2.5 pr-1.5 py-1 text-xs">
+                              <span className="font-medium text-muted-foreground">SN:</span>
+                              <span className="font-mono font-bold text-foreground tracking-wide">
+                                {item.serialNumber}
+                              </span>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleCopySerial(item.serialNumber!)}
+                                className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                                title="Copy Serial Number"
+                              >
+                                {copiedSerial === item.serialNumber ? (
+                                  <Check className="h-3 w-3 text-emerald-600" />
+                                ) : (
+                                  <Copy className="h-3 w-3" />
+                                )}
+                              </Button>
+                              <Separator orientation="vertical" className="h-3 mx-0.5" />
+                              <Link
+                                href={`/warranty?serial=${encodeURIComponent(item.serialNumber)}`}
+                                className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary hover:underline pl-0.5"
+                              >
+                                Check Warranty
+                                <ExternalLink className="h-3 w-3" />
+                              </Link>
+                            </div>
+                          ) : order.status === "DELIVERED" ? (
+                            <span className="text-[11px] text-muted-foreground italic">
+                              Serial not registered
+                            </span>
+                          ) : (
+                            <span className="text-[11px] text-muted-foreground">
+                              Unit serial assigned on delivery
                             </span>
                           )}
 

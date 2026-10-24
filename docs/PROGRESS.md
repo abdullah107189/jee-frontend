@@ -2,7 +2,7 @@
 শেষ আপডেট: 2026-10-24 | Repo: frontend
 
 ## এখন কোন কাজ চলছে
-- M2: /warranty real API ইন্টিগ্রেশন (mock ডাটা সরানো)
+- M3: Seller (খোলা প্রশ্ন: seller account কে বানাবে? + seller real API)
 
 ## নিয়ম
 DONE = build পাস + প্রমাণ | PARTIAL = কী বাকি লেখো | TODO | UNVERIFIED
@@ -16,8 +16,8 @@ DONE = build পাস + প্রমাণ | PARTIAL = কী বাকি ল�
 - [x] frontend: admin status dropdown (বৈধ ধাপ, RETURNED, confirm dialog) — DONE (`src/components/modules/admin/orders/admin-order-details.tsx`, `src/actions/order.actions.ts`)
 - [x] frontend: customer order list/details real API; Cancel শুধু PENDING — DONE (`src/services/order.service.ts`, `src/components/modules/customer/orders/OrdersList.tsx`, `src/components/modules/customer/orders/details/OrderDetails.tsx`, Cancel action `src/actions/order.actions.ts`)
 ### M2 Public warranty check
-- [ ] backend: GET /warranties/check/:serial — অন্য repo
-- [ ] frontend: /warranty real API (mock বাদ) — TODO (`src/services/warranty.service.ts` এ mock রয়েছে, real API কল বাকি)
+- [x] backend: GET /warranties/check/:serial — অন্য repo (backend এ টেস্টসহ সম্পন্ন)
+- [x] frontend: /warranty real API (mock বাদ) — DONE (`src/services/warranty.service.ts`, `src/actions/warranty.actions.ts`, `src/app/(public)/warranty/page.tsx`, bun run build পাস)
 ### M3 Seller
 - [ ] সিদ্ধান্ত: seller account কে বানাবে (খোলা প্রশ্ন) — TODO
 - [ ] admin দিয়ে seller approve; seller এর serial দিয়ে item খোঁজার endpoint — অন্য repo
@@ -46,8 +46,10 @@ SSLCommerz, analytics, audit log UI
 ## খোলা প্রশ্ন
 - seller account কে বানাবে? (সুপারিশ: admin বানাবে/approve করবে, APPROVED ছাড়া বিক্রি নেই)
 
-## Done log
+- 2026-10-24: Customer order details এ item serial number, copy বাটন ও সরাসরি /warranty?serial=... গভীর লিংক এবং auto-lookup সম্পন্ন (bun run build পাস, ৩৯ রুট জেনারেটেড)
+- 2026-10-24: Public warranty check /warranty real API ইন্টিগ্রেশন সম্পন্ন (mock বাদ, bun run build পাস)
 - 2026-10-24: Admin order status transitions (CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED, RETURNED) ও confirm dialog সম্পন্ন (commit e8bdc9d, 1a1581d)
 - 2026-10-24: Customer order list, details ও cancel order real API সম্পন্ন
 - 2026-10-24: Admin variant create (`/admin/products/[id]/variants/new`) ও edit (`/admin/products/[id]/variants/[variantId]/edit`) real API সম্পন্ন
 - 2026-10-24: Frontend build পাস (bun run build: ৩৯ রুট জেনারেটেড)
+
