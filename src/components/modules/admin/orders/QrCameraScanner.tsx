@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import jsQR from "jsqr";
 import {
   Dialog,
   DialogContent,
@@ -9,7 +10,7 @@ import {
   DialogFooter,
 } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
-import { Camera, X, RefreshCw, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Camera, RefreshCw, AlertCircle, CheckCircle2, Upload, Sparkles } from "lucide-react";
 
 interface QrCameraScannerProps {
   open: boolean;
@@ -25,9 +26,12 @@ export function QrCameraScanner({
   title = "Scan QR Code / Barcode",
 }: QrCameraScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isInsecureHttp, setIsInsecureHttp] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
+  const [isProcessingImage, setIsProcessingImage] = useState(false);
   const [scannedResult, setScannedResult] = useState<string | null>(null);
   const animationFrameRef = useRef<number | null>(null);
 
@@ -49,6 +53,14 @@ export function QrCameraScanner({
     return trimmed.toUpperCase();
   };
 
+  // Check Secure Context on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const isSecure = window.isSecureContext || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+      setIsInsecureHttp(!isSecure);
+    }
+  }, []);
+
   // Start Camera
   const startCamera = async () => {
     try {
@@ -56,7 +68,12 @@ export function QrCameraScanner({
       setScannedResult(null);
 
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        setErrorMsg("Camera access is not supported by your browser/device.");
+        const isHttp = typeof window !== "undefined" && window.location.protocol === "http:" && window.location.hostname !== "localhost";
+        if (isHttp) {
+          setErrorMsg("Mobile browsers block live video on HTTP (requires HTTPS). Use the Photo Camera button below to snap QR directly!");
+        } else {
+          setErrorMsg("Camera access is not supported by your browser/device.");
+        }
         return;
       }
 
@@ -112,7 +129,7 @@ export function QrCameraScanner({
     };
   }, [open]);
 
-  // Frame scanner loop using Native BarcodeDetector if available
+  // Frame scanner loop using Native BarcodeDetector with jsQR fallback
   useEffect(() => {
     if (!isScanning || !videoRef.current) return;
 
@@ -128,29 +145,57 @@ export function QrCameraScanner({
           formats: ["qr_code", "code_128", "ean_13", "code_39"],
         });
       } catch (e) {
-        console.warn("BarcodeDetector initialization failed, fallback to manual capture", e);
+        console.warn("BarcodeDetector initialization failed, fallback to jsQR", e);
       }
     }
+
+    // Offscreen canvas for jsQR fallback
+    const offscreenCanvas = document.createElement("canvas");
+    const offscreenCtx = offscreenCanvas.getContext("2d", { willReadFrequently: true });
 
     const scanFrame = async () => {
       if (!isSubscribed || !videoRef.current || !isScanning) return;
 
-      if (detector && videoRef.current.readyState >= 2) {
-        try {
-          const barcodes = await detector.detect(videoRef.current);
-          if (barcodes && barcodes.length > 0) {
-            const rawValue = barcodes[0].rawValue;
-            if (rawValue) {
-              const cleanSerial = parseSerialFromText(rawValue);
+      const video = videoRef.current;
+      if (video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0) {
+        // Try native BarcodeDetector first
+        if (detector) {
+          try {
+            const barcodes = await detector.detect(video);
+            if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
+              const cleanSerial = parseSerialFromText(barcodes[0].rawValue);
               setScannedResult(cleanSerial);
               stopCamera();
               onScanSuccess(cleanSerial);
               onOpenChange(false);
               return;
             }
+          } catch {
+            // ignore detector error on empty frame
           }
-        } catch {
-          // ignore detector error on empty frame
+        }
+
+        // Fallback to jsQR
+        if (offscreenCtx) {
+          try {
+            offscreenCanvas.width = video.videoWidth;
+            offscreenCanvas.height = video.videoHeight;
+            offscreenCtx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+            const imgData = offscreenCtx.getImageData(0, 0, video.videoWidth, video.videoHeight);
+            const qrCode = jsQR(imgData.data, imgData.width, imgData.height, {
+              inversionAttempts: "dontInvert",
+            });
+            if (qrCode && qrCode.data) {
+              const cleanSerial = parseSerialFromText(qrCode.data);
+              setScannedResult(cleanSerial);
+              stopCamera();
+              onScanSuccess(cleanSerial);
+              onOpenChange(false);
+              return;
+            }
+          } catch {
+            // frame capture skipped
+          }
         }
       }
 
@@ -166,6 +211,85 @@ export function QrCameraScanner({
       }
     };
   }, [isScanning]);
+
+  /**
+   * Handle Photo Capture / Image Upload Fallback
+   * Works on ALL browsers and HTTP local network without requiring HTTPS!
+   */
+  const handleImageFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsProcessingImage(true);
+    setErrorMsg(null);
+
+    try {
+      const img = new Image();
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        img.onload = async () => {
+          try {
+            // 1. Try BarcodeDetector first if available
+            const BarcodeDetectorClass = (window as any).BarcodeDetector;
+            if (BarcodeDetectorClass) {
+              try {
+                const detector = new BarcodeDetectorClass({
+                  formats: ["qr_code", "code_128", "ean_13", "code_39"],
+                });
+                const barcodes = await detector.detect(img);
+                if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
+                  const cleanSerial = parseSerialFromText(barcodes[0].rawValue);
+                  setScannedResult(cleanSerial);
+                  stopCamera();
+                  onScanSuccess(cleanSerial);
+                  onOpenChange(false);
+                  setIsProcessingImage(false);
+                  return;
+                }
+              } catch {
+                // fall through to jsQR
+              }
+            }
+
+            // 2. Decode with jsQR on canvas
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d", { willReadFrequently: true });
+            canvas.width = img.width;
+            canvas.height = img.height;
+            if (ctx) {
+              ctx.drawImage(img, 0, 0);
+              const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+              const code = jsQR(imgData.data, imgData.width, imgData.height, {
+                inversionAttempts: "attemptBoth",
+              });
+              if (code && code.data) {
+                const cleanSerial = parseSerialFromText(code.data);
+                setScannedResult(cleanSerial);
+                stopCamera();
+                onScanSuccess(cleanSerial);
+                onOpenChange(false);
+                setIsProcessingImage(false);
+                return;
+              }
+            }
+
+            setErrorMsg("No QR code found in photo. Please ensure good lighting and focus on the QR code.");
+            setIsProcessingImage(false);
+          } catch (err: any) {
+            setErrorMsg("Failed to read image: " + (err.message || "Unknown error"));
+            setIsProcessingImage(false);
+          }
+        };
+        img.src = reader.result as string;
+      };
+
+      reader.readAsDataURL(file);
+    } catch (err: any) {
+      setErrorMsg("Failed to process photo: " + (err.message || "Unknown error"));
+      setIsProcessingImage(false);
+    }
+  };
 
   const handleClose = () => {
     stopCamera();
@@ -207,31 +331,45 @@ export function QrCameraScanner({
             </div>
           )}
 
-          {/* Error Message if camera failed */}
+          {/* Error Message & Photo Capture Fallback */}
           {errorMsg && (
             <div className="absolute inset-0 p-5 bg-background/95 flex flex-col items-center justify-center text-center">
-              <AlertCircle className="h-8 w-8 text-destructive mb-2" />
-              <p className="text-xs font-semibold text-foreground mb-1">
-                Camera Access Error
+              <AlertCircle className="h-8 w-8 text-amber-500 mb-2" />
+              <p className="text-xs font-bold text-foreground mb-1">
+                {isInsecureHttp ? "HTTP Camera Policy" : "Camera Access Notice"}
               </p>
-              <p className="text-[11px] text-muted-foreground max-w-xs mb-4">
+              <p className="text-[11px] text-muted-foreground max-w-xs mb-3 leading-relaxed">
                 {errorMsg}
               </p>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={startCamera}
-                className="gap-1.5 text-xs rounded-xl"
-              >
-                <RefreshCw className="h-3.5 w-3.5" />
-                Retry Camera
-              </Button>
+
+              <div className="flex flex-col gap-2 w-full max-w-xs">
+                <Button
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="gap-2 text-xs font-bold rounded-xl bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                >
+                  <Camera className="h-4 w-4" />
+                  <span>Snap Photo with Camera</span>
+                </Button>
+
+                {!isInsecureHttp && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={startCamera}
+                    className="gap-1.5 text-xs rounded-xl"
+                  >
+                    <RefreshCw className="h-3.5 w-3.5" />
+                    Retry Live Camera
+                  </Button>
+                )}
+              </div>
             </div>
           )}
 
           {/* Success Overlay */}
           {scannedResult && (
-            <div className="absolute inset-0 bg-emerald-950/80 backdrop-blur-xs flex flex-col items-center justify-center text-center p-4">
+            <div className="absolute inset-0 bg-emerald-950/85 backdrop-blur-xs flex flex-col items-center justify-center text-center p-4">
               <CheckCircle2 className="h-10 w-10 text-emerald-400 mb-2" />
               <p className="text-xs font-bold text-white uppercase tracking-wider">
                 Scanned Successfully!
@@ -241,18 +379,50 @@ export function QrCameraScanner({
               </p>
             </div>
           )}
+
+          {/* Processing Photo Overlay */}
+          {isProcessingImage && (
+            <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center text-center p-4">
+              <Sparkles className="h-8 w-8 text-primary animate-spin mb-2" />
+              <p className="text-xs font-bold text-foreground">Reading QR Code...</p>
+            </div>
+          )}
         </div>
 
-        <p className="text-xs text-muted-foreground text-center mt-3">
-          Point your camera at the QR code or Barcode printed on the product box.
+        {/* Hidden Camera Capture / File Input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onChange={handleImageFile}
+          className="hidden"
+        />
+
+        {/* Alternative Photo Capture Option even when video is active */}
+        {!errorMsg && (
+          <div className="flex justify-center mt-3">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
+            >
+              <Upload className="h-3.5 w-3.5" />
+              <span>Take photo or upload image</span>
+            </button>
+          </div>
+        )}
+
+        <p className="text-[11px] text-muted-foreground text-center mt-2">
+          Point camera at the QR code on the product box, or tap take photo to snap it.
         </p>
 
-        <DialogFooter className="p-0 mt-4">
+        <DialogFooter className="p-0 mt-3">
           <Button
             type="button"
             variant="outline"
             onClick={handleClose}
-            className="w-full rounded-xl"
+            className="w-full rounded-xl text-xs font-semibold h-9"
           >
             Cancel
           </Button>

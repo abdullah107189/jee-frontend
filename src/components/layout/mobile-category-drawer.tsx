@@ -2,8 +2,16 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { X, ChevronRight, ChevronDown } from "lucide-react";
+import { ChevronRight, ChevronDown, Sparkles, FolderTree, Search } from "lucide-react";
 import type { CategoryNavItem } from "@/lib/types/category.types";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { Input } from "@/components/ui/Input";
+import { Badge } from "@/components/ui/Badge";
 
 interface MobileCategoryDrawerProps {
   open: boolean;
@@ -17,6 +25,7 @@ export function MobileCategoryDrawer({
   categories,
 }: MobileCategoryDrawerProps) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [filterQuery, setFilterQuery] = useState("");
 
   const toggle = (id: string) => {
     setExpanded((prev) => {
@@ -27,98 +36,121 @@ export function MobileCategoryDrawer({
     });
   };
 
-  if (!open) return null;
+  const filteredCategories = filterQuery.trim()
+    ? categories.filter(
+        (cat) =>
+          cat.name.toLowerCase().includes(filterQuery.toLowerCase()) ||
+          cat.children?.some((child) =>
+            child.name.toLowerCase().includes(filterQuery.toLowerCase())
+          )
+      )
+    : categories;
 
   return (
-    <>
-      {/* Overlay */}
-      <div
-        className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm lg:hidden"
-        onClick={onClose}
-        aria-hidden
-      />
-
-      {/* Drawer */}
-      <div className="fixed inset-y-0 left-0 z-50 flex w-80 max-w-[85vw] flex-col bg-white shadow-2xl lg:hidden">
+    <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <SheetContent side="left" className="w-[85vw] sm:max-w-sm p-0 flex flex-col h-full bg-background border-r border-border">
         {/* Header */}
-        <div className="flex shrink-0 items-center justify-between border-b border-slate-100 px-4 py-4">
-          <h2 className="text-lg font-bold text-slate-900">Categories</h2>
-          <button
-            onClick={onClose}
-            className="rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-100"
-            aria-label="Close"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
+        <SheetHeader className="p-4 border-b border-border bg-muted/30">
+          <SheetTitle className="flex items-center gap-2 text-base font-bold text-foreground">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <FolderTree className="h-4 w-4" />
+            </div>
+            Browse Categories
+          </SheetTitle>
 
-        {/* List */}
-        <nav className="flex-1 overflow-y-auto p-2">
-          {/* Featured */}
+          {/* Quick Filter Search */}
+          <div className="relative mt-2">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Find category..."
+              value={filterQuery}
+              onChange={(e) => setFilterQuery(e.target.value)}
+              className="h-8 pl-8 text-xs rounded-lg bg-background"
+            />
+          </div>
+        </SheetHeader>
+
+        {/* Categories List */}
+        <nav className="flex-1 overflow-y-auto p-3 space-y-1">
+          {/* All Products Featured Pill */}
           <Link
-            href="/products?featured=true"
+            href="/products"
             onClick={onClose}
-            className="mb-1 flex items-center justify-between rounded-lg bg-amber-50 px-3 py-3 text-sm font-bold text-amber-700 transition-colors hover:bg-amber-100"
+            className="flex items-center justify-between rounded-xl bg-primary/10 px-3.5 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/20 mb-2"
           >
-            Exclusive Deals
+            <span className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-primary" />
+              All Products & Deals
+            </span>
             <ChevronRight className="h-4 w-4" />
           </Link>
 
-          {categories.map((cat) => {
-            const hasChildren = (cat.children?.length ?? 0) > 0;
-            const isExpanded = expanded.has(cat.id);
+          {filteredCategories.length === 0 ? (
+            <p className="py-8 text-center text-xs text-muted-foreground">
+              No categories found for &quot;{filterQuery}&quot;
+            </p>
+          ) : (
+            filteredCategories.map((cat) => {
+              const hasChildren = (cat.children?.length ?? 0) > 0;
+              const isExpanded = expanded.has(cat.id);
 
-            return (
-              <div key={cat.id}>
-                <div className="flex items-center">
-                  <Link
-                    href={`/categories/${cat.fullSlug}`}
-                    onClick={onClose}
-                    className="flex-1 rounded-lg px-3 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
-                  >
-                    {cat.name}
-                  </Link>
-
-                  {hasChildren && (
-                    <button
-                      onClick={() => toggle(cat.id)}
-                      className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100"
-                      aria-label={isExpanded ? "Collapse" : "Expand"}
+              return (
+                <div key={cat.id} className="rounded-xl border border-transparent transition-colors">
+                  <div className="flex items-center justify-between rounded-xl hover:bg-accent/60">
+                    <Link
+                      href={`/categories/${cat.fullSlug}`}
+                      onClick={onClose}
+                      className="flex-1 px-3 py-2.5 text-sm font-semibold text-foreground transition-colors"
                     >
-                      {isExpanded ? (
-                        <ChevronDown className="h-4 w-4" />
-                      ) : (
-                        <ChevronRight className="h-4 w-4" />
-                      )}
-                    </button>
+                      {cat.name}
+                    </Link>
+
+                    {hasChildren && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggle(cat.id);
+                        }}
+                        className="p-2.5 text-muted-foreground hover:text-foreground transition-colors"
+                        aria-label={isExpanded ? "Collapse" : "Expand"}
+                      >
+                        {isExpanded ? (
+                          <ChevronDown className="h-4 w-4" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4" />
+                        )}
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Children / Subcategories */}
+                  {hasChildren && isExpanded && (
+                    <div className="ml-3 my-1 border-l-2 border-primary/20 pl-2 space-y-0.5">
+                      {cat.children.map((child) => (
+                        <Link
+                          key={child.id}
+                          href={`/categories/${child.fullSlug}`}
+                          onClick={onClose}
+                          className="flex items-center justify-between rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                        >
+                          <span>{child.name}</span>
+                          {child.productCount > 0 && (
+                            <Badge variant="outline" className="text-[10px] h-4 px-1.5 py-0 font-mono">
+                              {child.productCount}
+                            </Badge>
+                          )}
+                        </Link>
+                      ))}
+                    </div>
                   )}
                 </div>
-
-                {/* Children */}
-                {hasChildren && isExpanded && (
-                  <div className="ml-3 border-l border-slate-100 pl-2">
-                    {cat.children.map((child) => (
-                      <Link
-                        key={child.id}
-                        href={`/categories/${child.fullSlug}`}
-                        onClick={onClose}
-                        className="flex items-center justify-between rounded-lg px-3 py-2.5 text-sm text-slate-600 transition-colors hover:bg-slate-50"
-                      >
-                        <span>{child.name}</span>
-                        {child.productCount > 0 && (
-                          <span className="text-xs text-slate-400">
-                            {child.productCount}
-                          </span>
-                        )}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </nav>
-      </div>
-    </>
+      </SheetContent>
+    </Sheet>
   );
 }

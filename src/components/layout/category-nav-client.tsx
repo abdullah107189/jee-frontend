@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, ChevronDown } from "lucide-react";
+import { Menu, ChevronDown, Sparkles } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import type { CategoryNavItem } from "@/lib/types/category.types";
@@ -124,18 +124,37 @@ export function CategoryNavClient({
         >
             <div className="mxw flex h-12 items-center">
                 {/* ========================================================== */}
-                {/* Mobile toggle                                               */}
+                {/* Mobile scrollable category pills (< lg)                    */}
                 {/* ========================================================== */}
+                <div className="flex lg:hidden w-full items-center overflow-x-auto py-2 gap-2 scrollbar-none">
+                    <button
+                        type="button"
+                        onClick={() => setMobileOpen(true)}
+                        className="flex shrink-0 items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-white/25 transition-all"
+                        aria-label="Open all categories"
+                    >
+                        <Menu className="h-3.5 w-3.5 text-amber-300" />
+                        <span>Categories</span>
+                    </button>
 
-                <button
-                    type="button"
-                    onClick={() => setMobileOpen(true)}
-                    className="mr-2 flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium hover:bg-white/10 lg:hidden"
-                    aria-label="Open categories menu"
-                >
-                    <Menu className="h-5 w-5" />
-                    <span>Categories</span>
-                </button>
+                    <Link
+                        href="/products"
+                        className="shrink-0 flex items-center gap-1 rounded-full bg-amber-400 text-slate-900 px-3 py-1.5 text-xs font-bold shadow-sm hover:bg-amber-300 transition-all"
+                    >
+                        <Sparkles className="h-3 w-3" />
+                        <span>All Products</span>
+                    </Link>
+
+                    {categories.map((cat) => (
+                        <Link
+                            key={cat.id}
+                            href={`/categories/${cat.fullSlug}`}
+                            className="shrink-0 rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/20 hover:text-white transition-all whitespace-nowrap"
+                        >
+                            {cat.name}
+                        </Link>
+                    ))}
+                </div>
 
                 {/* ========================================================== */}
                 {/* Desktop list                                                */}
@@ -148,10 +167,10 @@ export function CategoryNavClient({
 
                     <li>
                         <Link
-                            href="/products?featured=true"
+                            href="/products"
                             className="block rounded-md px-3 py-2 text-sm font-bold text-amber-300 transition-colors hover:bg-white/10"
                         >
-                            Exclusive Deals
+                            All Products
                         </Link>
                     </li>
 

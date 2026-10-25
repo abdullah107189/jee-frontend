@@ -1,5 +1,5 @@
 # Jee.store PROGRESS (agent আপডেট রাখবে)
-শেষ আপডেট: 2026-10-24 | Repo: frontend
+শেষ আপডেট: 2026-10-25 | Repo: frontend
 
 ## এখন কোন কাজ চলছে
 - M3: Seller (খোলা প্রশ্ন: seller account কে বানাবে? + seller real API)
@@ -44,9 +44,9 @@ SSLCommerz, analytics, audit log UI
 - কাজ main এ, user নিজে commit করে
 
 ## খোলা প্রশ্ন
-- seller account কে বানাবে? (সুপারিশ: admin বানাবে/approve করবে, APPROVED ছাড়া বিক্রি নেই)
-
 ## Done log
+- 2026-10-25: ওয়ারেন্টি ট্র্যাকার সম্পূর্ণ ইংরেজিতে রূপান্তর, ইন-স্টক আইটেম ব্যাকএন্ড লুকআপ ফিক্স (ReferenceError ও case-insensitive সমাধান), এবং ১-ক্লিক সিরিয়াল কপি ও ফুল প্রডাক্ট ইনফো UI সম্পন্ন (bun run build পাস, backend Case k পাস)
+- 2026-10-25: মোবাইল ও ডেস্কটপে প্রিমিয়াম ShadCN নেভবার, সরাসরি মোবাইল সার্চ ও ১-ট্যাপ ক্যামেরা স্ক্যান বাটন, স্ক্রোলেবল ক্যাটাগরি পিলস এবং Sheet ক্যাটাগরি ড্রয়ার সম্পন্ন (bun run build পাস, ৩৯ রুট জেনারেটেড)
 - 2026-10-25: প্রডাক্ট আইটেম সেভের পর অটো QR স্টিকার জেনারেশন ও প্রিন্ট ডায়ালগ (QrStickerModal, box packaging label, single ও batch print) এবং JEE backend AGENTS.md এ strict validation রুল সংযোজন সম্পন্ন (bun run build পাস, ৩৯ রুট জেনারেটেড)
 - 2026-10-25: Multi-courier (Steadfast, Pathao, Sundarban) ট্র্যাকিং ও PROCESSING এ QR/সিরিয়াল অ্যাসাইন ডায়ালগ এবং README.md ডকুমেন্টেশন সম্পন্ন (bun run build পাস, ৩৯ রুট জেনারেটেড)
 - 2026-10-24: Customer order details এ item serial number, copy বাটন ও সরাসরি /warranty?serial=... গভীর লিংক এবং auto-lookup সম্পন্ন (bun run build পাস, ৩৯ রুট জেনারেটেড)

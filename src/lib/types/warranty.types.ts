@@ -1,13 +1,25 @@
-export type WarrantyStatus = "ACTIVE" | "EXPIRED" | "CLAIMED" | "VOID";
+export type WarrantyStatus =
+  | "ACTIVE"
+  | "EXPIRED"
+  | "CLAIMED"
+  | "VOID"
+  | "UNSOLD"
+  | "AVAILABLE";
 
 export interface PublicWarrantyCheckResult {
   productName: string;
-  variantAttributes: Record<string, unknown> | null;
+  variantAttributes?: Record<string, unknown> | null;
   status: WarrantyStatus;
-  effectiveStatus: WarrantyStatus;
-  startDate: string;
-  endDate: string;
+  effectiveStatus?: WarrantyStatus;
+  startDate?: string | null;
+  endDate?: string | null;
   serialNumber?: string;
+  isSold?: boolean;
+  warrantyMonths?: number;
+  warrantyTerms?: string | null;
+  sku?: string;
+  brandName?: string;
+  message?: string;
 }
 
 export interface PublicWarrantyCheckResponse {
