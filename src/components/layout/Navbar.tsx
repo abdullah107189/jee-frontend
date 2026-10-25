@@ -146,14 +146,6 @@ export function Navbar({ user }: { user: AuthUser | null }) {
                   priority
                 />
               </Link>
-
-              <Link
-                href="/products"
-                className="hidden lg:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold text-foreground bg-accent/70 hover:bg-accent transition-colors border border-border/60"
-              >
-                <Package className="h-3.5 w-3.5 text-primary" />
-                <span>All Products</span>
-              </Link>
             </div>
 
             {/* Desktop Center: Search & Warranty Hub */}
