@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { notFound } from "next/navigation";
+import SellerWarrantyDetailsContent from "@/components/modules/seller/warranties/details/SellerWarrantyDetailsContent";
 import { getSellerWarrantyDetails } from "@/services/seller.service";
 
 export const metadata: Metadata = {
@@ -11,12 +12,14 @@ export const metadata: Metadata = {
 export default async function SellerWarrantyDetailsPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const warranty = await getSellerWarrantyDetails(params.id);
+  const { id } = await params;
+  const warranty = await getSellerWarrantyDetails(id);
 
-  return (
-    // <SellerWarrantyDetailsContent warranty={warranty} />
-    <>coming soon {warranty}</>
-  );
+  if (!warranty) {
+    notFound();
+  }
+
+  return <SellerWarrantyDetailsContent warranty={warranty} />;
 }

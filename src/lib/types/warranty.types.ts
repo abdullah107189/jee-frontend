@@ -18,6 +18,7 @@ export interface PublicWarrantyCheckResult {
   warrantyMonths?: number;
   warrantyTerms?: string | null;
   sku?: string;
+  price?: number;
   brandName?: string;
   message?: string;
 }

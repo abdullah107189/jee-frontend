@@ -30,6 +30,7 @@ import {
   Check,
   FileText,
   BadgeCheck,
+  ShoppingCart,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -317,6 +318,23 @@ function WarrantyTrackerContent() {
                 </p>
               </div>
             )}
+
+            {/* Quick POS Offline Sale CTA for showroom sellers */}
+            <div className="pt-3 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-border">
+              <div className="text-xs text-muted-foreground flex items-center gap-1.5">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                <span>Showroom Seller? Open POS to sell this verified authentic unit.</span>
+              </div>
+              <Link
+                href={`/seller/sales/new?serial=${encodeURIComponent(data.serialNumber || "")}`}
+                className="w-full sm:w-auto"
+              >
+                <Button className="w-full sm:w-auto h-11 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold gap-2 shadow-md shadow-blue-500/20">
+                  <ShoppingCart className="h-4 w-4" />
+                  ⚡ Sell this Unit (Open POS)
+                </Button>
+              </Link>
+            </div>
           </div>
         </Card>
       )}

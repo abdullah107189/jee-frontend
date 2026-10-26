@@ -45,7 +45,7 @@ export function QrStickerModal({
   if (!isOpen || items.length === 0) return null;
 
   const handleCopyUrl = (serial: string) => {
-    const url = `https://jee.store/warranty?serial=${encodeURIComponent(serial)}`;
+    const url = `http://localhost:3000/warranty?serial=${encodeURIComponent(serial)}`;
     navigator.clipboard.writeText(url);
     setCopiedSerial(serial);
     toast.success("Warranty URL copied to clipboard");

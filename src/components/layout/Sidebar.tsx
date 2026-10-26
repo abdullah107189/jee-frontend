@@ -189,12 +189,7 @@ export function Sidebar({
 
     SELLER: [
       { name: "Dashboard", href: "/seller", icon: LayoutDashboard },
-      {
-        name: "New Sale",
-        href: "/seller/sales/new",
-        icon: PlusCircle,
-        isPrimary: true,
-      },
+      { name: "New Sale", href: "/seller/sales/new", icon: PlusCircle },
       { name: "Sales History", href: "/seller/sales", icon: Package },
       { name: "Warranties", href: "/seller/warranties", icon: ShieldCheck },
       { name: "Profile", href: "/seller/profile", icon: User },

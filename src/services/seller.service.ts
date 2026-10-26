@@ -1,394 +1,540 @@
-import { AdminProductDetail } from "@/lib/types/admin.types";
-import { adminProductService } from "./admin/product.service";
+import "server-only";
 
-export type SellerDashboardStats = {
-  todaysSales: number;
-  totalSalesAmount: number;
-  totalOrders: number;
-  activeWarranties: number;
-  pendingClaims: number;
-  salesByCategory: Array<{ category: string; count: number }>;
+import { cookies, headers } from "next/headers";
+import type {
+  SellerDashboardStats,
+  SellerProfileData,
+  SellerSaleDetail,
+  SellerSaleItem,
+  SellerWarrantyItem,
+  CreateOfflineSalePayload,
+} from "@/lib/types/seller.types";
+
+export type {
+  SellerDashboardStats,
+  SellerProfileData,
+  SellerSaleDetail,
+  SellerSaleItem,
+  SellerWarrantyItem,
 };
 
-export type SellerSale = Record<string, any>;
-export type SellerWarranty = Record<string, any>;
-export type SellerProfile = {
-  companyName: string;
-  ownerName: string;
-  email: string;
-  phone: string;
-  address: string;
-  businessLicense: string;
-  status: string;
-  joinedDate: string;
-  stats: {
-    totalSales: number;
-    totalRevenue: number;
-    activeWarranties: number;
+// Aliases for legacy component type imports
+export type SellerSale = SellerSaleItem;
+export type SellerWarranty = SellerWarrantyItem;
+export type SellerProfile = SellerProfileData;
+
+const API_URL =
+  process.env.API_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://localhost:5000/api/v1";
+
+/* -------------------------------------------------------------------------- */
+/* Auth Cookie Forwarding Helper                                              */
+/* -------------------------------------------------------------------------- */
+
+async function getAuthHeaders(): Promise<HeadersInit> {
+  const cookieStore = await cookies();
+  const headerStore = await headers();
+  const refreshedToken = headerStore.get("x-access-token");
+  const token = refreshedToken || cookieStore.get("accessToken")?.value;
+
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { Cookie: `accessToken=${token}`, Authorization: `Bearer ${token}` } : {}),
   };
-};
+}
+
+function calculateDaysRemaining(endDateStr?: string | null): number {
+  if (!endDateStr) return 0;
+  const end = new Date(endDateStr).getTime();
+  const now = Date.now();
+  const diff = Math.ceil((end - now) / (1000 * 60 * 60 * 24));
+  return diff > 0 ? diff : 0;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 1. Seller Dashboard Stats (Real API)                                      */
+/* -------------------------------------------------------------------------- */
 
 export async function getSellerDashboardStats(): Promise<SellerDashboardStats> {
-  return {
-    todaysSales: 12500,
-    totalSalesAmount: 245000,
-    totalOrders: 156,
-    activeWarranties: 89,
-    pendingClaims: 3,
-    salesByCategory: [
-      { category: "Bulb", count: 45 },
-      { category: "Fan", count: 89 },
-      { category: "AC", count: 12 },
-      { category: "Iron", count: 10 },
-    ],
-  };
+  try {
+    const authHeaders = await getAuthHeaders();
+
+    // Fetch sales and warranties in parallel
+    const [salesRes, warrantiesRes] = await Promise.all([
+      fetch(`${API_URL}/offline-sales?limit=100`, {
+        headers: authHeaders,
+        cache: "no-store",
+      }).catch(() => null),
+      fetch(`${API_URL}/warranties?limit=100`, {
+        headers: authHeaders,
+        cache: "no-store",
+      }).catch(() => null),
+    ]);
+
+    const salesJson = salesRes && salesRes.ok ? await salesRes.json().catch(() => null) : null;
+    const warrantiesJson = warrantiesRes && warrantiesRes.ok ? await warrantiesRes.json().catch(() => null) : null;
+
+    const rawSales: any[] = salesJson?.data ?? salesJson?.items ?? [];
+    const rawWarranties: any[] = warrantiesJson?.data ?? warrantiesJson?.items ?? [];
+
+    const todayStr = new Date().toISOString().split("T")[0];
+
+    let todaysSales = 0;
+    let todaysSalesCount = 0;
+    let totalSalesAmount = 0;
+
+    const normalizedSales: SellerSaleItem[] = rawSales.map((s: any) => {
+      const price = Number(s.salePrice || s.total || 0);
+      totalSalesAmount += price;
+
+      const saleDateStr = (s.saleDate || s.createdAt || "").split("T")[0];
+      if (saleDateStr === todayStr) {
+        todaysSales += price;
+        todaysSalesCount += 1;
+      }
+
+      return {
+        id: s.id,
+        invoiceNumber: s.invoiceNumber || s.id,
+        uniqueId: s.productItem?.serialNumber || s.serialNumber || "—",
+        serialNumber: s.productItem?.serialNumber || s.serialNumber || "—",
+        product: s.productItem?.variant?.product?.name || "Product",
+        productName: s.productItem?.variant?.product?.name || "Product",
+        amount: price,
+        salePrice: price,
+        discount: Number(s.discount || 0),
+        tax: Number(s.tax || 0),
+        total: price - Number(s.discount || 0) + Number(s.tax || 0),
+        customerName: s.customerName || "Walk-in Customer",
+        customerPhone: s.customerPhone || "—",
+        customerEmail: s.customerEmail || "",
+        paymentMethod: s.paymentMethod || "CASH",
+        date: s.saleDate || s.createdAt,
+        createdAt: s.createdAt,
+        warrantyStatus: "Active",
+      };
+    });
+
+    const activeWarrantiesCount = rawWarranties.filter(
+      (w: any) => w.status === "ACTIVE" && new Date(w.endDate).getTime() >= Date.now(),
+    ).length;
+
+    return {
+      todaysSales,
+      todaysSalesCount,
+      totalSalesAmount,
+      totalOrders: salesJson?.total ?? rawSales.length,
+      activeWarranties: warrantiesJson?.total ?? activeWarrantiesCount,
+      pendingClaims: 0,
+      salesByCategory: [],
+      recentSales: normalizedSales.slice(0, 5),
+    };
+  } catch (err) {
+    console.error("[getSellerDashboardStats_ERROR]", err);
+    return {
+      todaysSales: 0,
+      todaysSalesCount: 0,
+      totalSalesAmount: 0,
+      totalOrders: 0,
+      activeWarranties: 0,
+      pendingClaims: 0,
+      salesByCategory: [],
+      recentSales: [],
+    };
+  }
 }
 
-export async function getRecentSales(): Promise<SellerSale[]> {
-  return [
-    {
-      id: "SALE-001",
-      uniqueId: "FAN-001928",
-      productName: 'Vision 56" Ceiling Fan',
-      customerName: "Md. Rahman",
-      customerPhone: "01712345678",
-      amount: 15000,
-      date: "2026-08-10 14:30",
-      paymentMethod: "Cash",
-      warrantyStatus: "Active",
-    },
-    {
-      id: "SALE-002",
-      uniqueId: "AC-003456",
-      productName: "Vision AC 1.5 Ton Inverter",
-      customerName: "Kabir Ahmed",
-      customerPhone: "01899887766",
-      amount: 45000,
-      date: "2026-08-10 11:15",
-      paymentMethod: "Mobile Banking",
-      warrantyStatus: "Active",
-    },
-    {
-      id: "SALE-003",
-      uniqueId: "BULB-99120",
-      productName: "LED Bulb 15W",
-      customerName: "Nazrul Islam",
-      customerPhone: "01911223344",
-      amount: 350,
-      date: "2026-08-09 18:20",
-      paymentMethod: "Cash",
-      warrantyStatus: "Active",
-    },
-    {
-      id: "SALE-004",
-      uniqueId: "IRON-20211",
-      productName: "Dry Iron 1000W Heavy",
-      customerName: "Farid Hossain",
-      customerPhone: "01511223344",
-      amount: 1500,
-      date: "2026-08-08 16:40",
-      paymentMethod: "Card",
-      warrantyStatus: "Claimed",
-    },
-    {
-      id: "SALE-005",
-      uniqueId: "BLENDER-331",
-      productName: "Super Blender 750W",
-      customerName: "Sumaiya Begum",
-      customerPhone: "01399887766",
-      amount: 3800,
-      date: "2026-08-07 10:10",
-      paymentMethod: "Cash",
-      warrantyStatus: "Active",
-    },
-  ];
+export async function getRecentSales(): Promise<SellerSaleItem[]> {
+  const stats = await getSellerDashboardStats();
+  return stats.recentSales;
 }
 
-export async function getSellerTransactions(): Promise<SellerSale[]> {
-  return [
-    {
-      id: "SALE-001",
-      uniqueId: "FAN-001928",
-      product: 'Vision 56" Ceiling Fan',
-      image:
-        "https://images.unsplash.com/photo-1570114681640-1090333fa965?auto=format&fit=crop&w=300&q=80",
-      date: "2026-08-10 14:30",
-      price: 15000,
-      customerName: "Md. Rahman",
-      customerPhone: "01712345678",
-      status: "Warranty Active",
-      paymentMethod: "CASH",
-    },
-    {
-      id: "SALE-002",
-      uniqueId: "AC-003456",
-      product: "Vision AC 1.5 Ton Inverter",
-      image:
-        "https://images.unsplash.com/photo-1621016834575-b60b7d7f7fa2?auto=format&fit=crop&w=300&q=80",
-      date: "2026-08-10 11:15",
-      price: 45000,
-      customerName: "Kabir Ahmed",
-      customerPhone: "01899887766",
-      status: "Warranty Active",
-      paymentMethod: "MOBILE_BANKING",
-    },
-    {
-      id: "SALE-003",
-      uniqueId: "BULB-99120",
-      product: "LED Bulb 15W",
-      image:
-        "https://images.unsplash.com/photo-1550989460-0adf9ea622e2?auto=format&fit=crop&w=300&q=80",
-      date: "2026-08-09 18:20",
-      price: 350,
-      customerName: "Nazrul Islam",
-      customerPhone: "01911223344",
-      status: "Warranty Active",
-      paymentMethod: "CASH",
-    },
-    {
-      id: "SALE-004",
-      uniqueId: "IRON-20211",
-      product: "Dry Iron 1000W Heavy",
-      image:
-        "https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=300&q=80",
-      date: "2026-08-08 16:40",
-      price: 1500,
-      customerName: "Farid Hossain",
-      customerPhone: "01511223344",
-      status: "Claimed",
-      paymentMethod: "CARD",
-    },
-  ];
+/* -------------------------------------------------------------------------- */
+/* 2. Seller Sales List & Details (Real API)                                 */
+/* -------------------------------------------------------------------------- */
+
+export async function getSellerSales(options?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+}): Promise<{ items: SellerSaleItem[]; total: number }> {
+  try {
+    const authHeaders = await getAuthHeaders();
+    const params = new URLSearchParams();
+    if (options?.page) params.set("page", String(options.page));
+    if (options?.limit) params.set("limit", String(options.limit));
+    if (options?.search) params.set("search", options.search);
+
+    const res = await fetch(`${API_URL}/offline-sales?${params.toString()}`, {
+      headers: authHeaders,
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      return { items: [], total: 0 };
+    }
+
+    const json = await res.json();
+    const rawSales: any[] = json?.data ?? json?.items ?? [];
+
+    const items: SellerSaleItem[] = rawSales.map((s: any) => {
+      const priceVal = Number(s.salePrice ?? s.price ?? s.total ?? 0);
+      const discountVal = Number(s.discount ?? 0);
+      const taxVal = Number(s.tax ?? 0);
+      const totalVal = Math.max(0, priceVal - discountVal + taxVal);
+      const rawDate = s.saleDate || s.createdAt;
+      const formattedDate = rawDate
+        ? new Date(rawDate).toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })
+        : "—";
+
+      return {
+        id: s.id,
+        invoiceNumber: s.invoiceNumber || s.id,
+        uniqueId: s.productItem?.serialNumber || s.serialNumber || "—",
+        serialNumber: s.productItem?.serialNumber || s.serialNumber || "—",
+        product: s.productItem?.variant?.product?.name || "Product",
+        productName: s.productItem?.variant?.product?.name || "Product",
+        price: priceVal,
+        amount: priceVal,
+        salePrice: priceVal,
+        discount: discountVal,
+        tax: taxVal,
+        total: totalVal,
+        customerName: s.customerName || "Walk-in Customer",
+        customerPhone: s.customerPhone || "—",
+        customerEmail: s.customerEmail || "",
+        paymentMethod: s.paymentMethod || "CASH",
+        date: formattedDate,
+        createdAt: s.createdAt || new Date().toISOString(),
+        status: s.productItem?.warranty?.status || "Active",
+        warrantyStatus: s.productItem?.warranty?.status || "Active",
+      };
+    });
+
+    return {
+      items,
+      total: json?.meta?.total ?? json?.total ?? items.length,
+    };
+  } catch (err) {
+    console.error("[getSellerSales_ERROR]", err);
+    return { items: [], total: 0 };
+  }
+}
+
+export async function getSellerTransactions(): Promise<SellerSaleItem[]> {
+  const result = await getSellerSales({ limit: 100 });
+  return result.items;
 }
 
 export async function getSellerTransactionDetails(
   id: string,
-): Promise<SellerSale> {
-  return {
-    id: id || "SALE-001",
-    uniqueId: "FAN-001928",
-    product: 'Vision 56" Ceiling Fan',
-    image:
-      "https://images.unsplash.com/photo-1570114681640-1090333fa965?auto=format&fit=crop&w=800&q=80",
-    date: "10 Aug 2026, 2:30 PM",
-    price: 15000,
-    customerName: "Md. Rahman",
-    customerPhone: "+8801712345678",
-    customerEmail: "rahman@email.com",
-    status: "Warranty Active",
-    paymentMethod: "Cash",
-    sellerInfo: "ABC Electronics (Dhaka Outlet)",
-    warrantyDetails: {
-      startDate: "10 Aug 2026",
-      endDate: "09 Aug 2028",
-      months: 24,
-      daysRemaining: 729,
-      status: "Active",
-    },
-  };
+): Promise<SellerSaleDetail | null> {
+  try {
+    const authHeaders = await getAuthHeaders();
+    const res = await fetch(`${API_URL}/offline-sales/${encodeURIComponent(id)}`, {
+      headers: authHeaders,
+      cache: "no-store",
+    });
+
+    if (!res.ok) return null;
+    const json = await res.json();
+    const s = json?.data;
+    if (!s) return null;
+
+    const price = Number(s.salePrice || s.total || 0);
+
+    return {
+      id: s.id,
+      invoiceNumber: s.invoiceNumber || s.id,
+      uniqueId: s.productItem?.serialNumber || s.serialNumber || "—",
+      serialNumber: s.productItem?.serialNumber || s.serialNumber || "—",
+      product: s.productItem?.variant?.product?.name || "Product",
+      productName: s.productItem?.variant?.product?.name || "Product",
+      sku: s.productItem?.variant?.sku,
+      variantAttributes: s.productItem?.variant?.attributes,
+      amount: price,
+      salePrice: price,
+      discount: Number(s.discount || 0),
+      tax: Number(s.tax || 0),
+      total: price - Number(s.discount || 0) + Number(s.tax || 0),
+      customerName: s.customerName || "Walk-in Customer",
+      customerPhone: s.customerPhone || "—",
+      customerEmail: s.customerEmail || "",
+      paymentMethod: s.paymentMethod || "CASH",
+      date: s.saleDate || s.createdAt,
+      createdAt: s.createdAt,
+      notes: s.notes,
+      warrantyStatus: s.productItem?.warranty?.status || "Active",
+      warranty: s.productItem?.warranty
+        ? {
+            id: s.productItem.warranty.id,
+            startDate: s.productItem.warranty.startDate,
+            endDate: s.productItem.warranty.endDate,
+            status: s.productItem.warranty.status,
+            warrantyMonths: s.productItem?.variant?.product?.warrantyMonths || 12,
+            terms: s.productItem?.variant?.product?.warrantyTerms,
+          }
+        : undefined,
+    };
+  } catch (err) {
+    console.error("[getSellerTransactionDetails_ERROR]", err);
+    return null;
+  }
 }
 
-export async function getSellerWarranties(): Promise<SellerWarranty[]> {
-  return [
-    {
-      id: "WAR-001",
-      uniqueId: "FAN-001928",
-      productName: 'Vision 56" Ceiling Fan',
-      customerName: "Md. Rahman",
-      customerPhone: "01712345678",
-      status: "Active",
-      startDate: "2026-08-10",
-      endDate: "2028-08-09",
-      daysRemaining: 729,
-      saleDate: "2026-08-10",
-      saleAmount: 15000,
-      paymentMethod: "Cash",
-      claimHistory: [],
-    },
-    {
-      id: "WAR-002",
-      uniqueId: "AC-003456",
-      productName: "Vision AC 1.5 Ton Inverter",
-      customerName: "Kabir Ahmed",
-      customerPhone: "01899887766",
-      status: "Active",
-      startDate: "2026-08-10",
-      endDate: "2028-08-09",
-      daysRemaining: 729,
-      saleDate: "2026-08-10",
-      saleAmount: 45000,
-      paymentMethod: "Mobile Banking",
-      claimHistory: [
-        {
-          claimId: "CLM-101",
-          date: "15 Jan 2027",
-          status: "Completed",
-          type: "Repair",
-          notes: "Gas refilled & filter cleaned",
-        },
-      ],
-    },
-    {
-      id: "WAR-003",
-      uniqueId: "BULB-99120",
-      productName: "LED Bulb 15W",
-      customerName: "Nazrul Islam",
-      customerPhone: "01911223344",
-      status: "Active",
-      startDate: "2026-08-09",
-      endDate: "2027-08-08",
-      daysRemaining: 363,
-      saleDate: "2026-08-09",
-      saleAmount: 350,
-      paymentMethod: "Cash",
-      claimHistory: [],
-    },
-    {
-      id: "WAR-004",
-      uniqueId: "IRON-20211",
-      productName: "Dry Iron 1000W Heavy",
-      customerName: "Farid Hossain",
-      customerPhone: "01511223344",
-      status: "Claimed",
-      startDate: "2025-08-10",
-      endDate: "2026-08-10",
-      daysRemaining: 0,
-      saleDate: "2025-08-10",
-      saleAmount: 1500,
-      paymentMethod: "Card",
-      claimHistory: [
-        {
-          claimId: "CLM-088",
-          date: "20 Jul 2026",
-          status: "Completed",
-          type: "Replacement",
-          notes: "Replaced element",
-        },
-      ],
-    },
-    {
-      id: "WAR-005",
-      uniqueId: "FAN-000122",
-      productName: "High Speed Table Fan",
-      customerName: "Sultana Begum",
-      customerPhone: "01655443322",
-      status: "Expired",
-      startDate: "2024-01-01",
-      endDate: "2025-01-01",
-      daysRemaining: 0,
-      saleDate: "2024-01-01",
-      saleAmount: 2800,
-      paymentMethod: "Cash",
-      claimHistory: [],
-    },
-  ];
+/* -------------------------------------------------------------------------- */
+/* 3. Seller Warranties (Real API)                                           */
+/* -------------------------------------------------------------------------- */
+
+export async function getSellerWarranties(options?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+}): Promise<SellerWarrantyItem[]> {
+  try {
+    const authHeaders = await getAuthHeaders();
+    const params = new URLSearchParams();
+    if (options?.page) params.set("page", String(options.page));
+    if (options?.limit) params.set("limit", String(options.limit));
+    if (options?.search) params.set("search", options.search);
+
+    const res = await fetch(`${API_URL}/warranties?${params.toString()}`, {
+      headers: authHeaders,
+      cache: "no-store",
+    });
+
+    if (!res.ok) return [];
+    const json = await res.json();
+    const raw: any[] = json?.data ?? json?.items ?? [];
+
+    return raw.map((w: any) => ({
+      id: w.id,
+      uniqueId: w.productItem?.serialNumber || "—",
+      serialNumber: w.productItem?.serialNumber || "—",
+      productName: w.productItem?.variant?.product?.name || "Product",
+      sku: w.productItem?.variant?.sku,
+      customerName: w.customer?.user?.name || "Customer",
+      customerPhone: w.customer?.user?.phone || "—",
+      status: w.status,
+      startDate: w.startDate,
+      endDate: w.endDate,
+      daysRemaining: calculateDaysRemaining(w.endDate),
+    }));
+  } catch (err) {
+    console.error("[getSellerWarranties_ERROR]", err);
+    return [];
+  }
 }
 
 export async function getSellerWarrantyDetails(
   id: string,
-): Promise<SellerWarranty> {
-  return {
-    id: id || "WAR-001",
-    uniqueId: "FAN-001928",
-    productName: 'Vision 56" Ceiling Fan',
-    customerName: "Md. Rahman",
-    customerPhone: "+8801712345678",
-    customerEmail: "rahman@email.com",
-    status: "Active",
-    startDate: "10 Aug 2026",
-    endDate: "09 Aug 2028",
-    daysRemaining: 729,
-    saleInformation: { date: "10 Aug 2026", amount: 15000, payment: "Cash" },
-    claimHistory: [
-      {
-        claimId: "CLM-101",
-        date: "15 Jan 2027",
-        status: "Completed",
-        type: "Repair",
-        notes: "Speed regulator replaced under warranty",
-      },
-    ],
-  };
+): Promise<SellerWarrantyItem | null> {
+  try {
+    const authHeaders = await getAuthHeaders();
+    const res = await fetch(`${API_URL}/warranties/${encodeURIComponent(id)}`, {
+      headers: authHeaders,
+      cache: "no-store",
+    });
+
+    if (!res.ok) return null;
+    const json = await res.json();
+    const w = json?.data;
+    if (!w) return null;
+
+    return {
+      id: w.id,
+      uniqueId: w.productItem?.serialNumber || "—",
+      serialNumber: w.productItem?.serialNumber || "—",
+      productName: w.productItem?.variant?.product?.name || "Product",
+      sku: w.productItem?.variant?.sku,
+      customerName: w.customer?.user?.name || "Customer",
+      customerPhone: w.customer?.user?.phone || "—",
+      status: w.status,
+      startDate: w.startDate,
+      endDate: w.endDate,
+      daysRemaining: calculateDaysRemaining(w.endDate),
+      saleInformation: w.offlineSale || w.order ? {
+        date: w.offlineSale?.saleDate || w.order?.createdAt || w.startDate,
+        amount: Number(w.offlineSale?.salePrice || w.order?.total || 0),
+        payment: w.offlineSale?.paymentMethod || w.order?.paymentMethod || "CASH",
+      } : undefined,
+      claimHistory: Array.isArray(w.claims) ? w.claims.map((c: any) => ({
+        claimId: c.claimNumber || c.id,
+        status: c.status,
+        type: c.type || "WARRANTY_REPAIR",
+        notes: c.description || c.resolutionNotes,
+        date: c.createdAt ? new Date(c.createdAt).toLocaleDateString("en-GB") : "—",
+      })) : [],
+    };
+  } catch (err) {
+    console.error("[getSellerWarrantyDetails_ERROR]", err);
+    return null;
+  }
 }
 
-export async function getSellerProfile(): Promise<SellerProfile> {
-  return {
-    companyName: "ABC Electronics",
-    ownerName: "Md. Karim",
-    email: "karim@abc.com",
-    phone: "+8801712345678",
-    address: "Shop #42, Stadium Market, Dhaka, Bangladesh",
-    businessLicense: "TRAD/DHAKA/2026/1029",
-    status: "Approved",
-    joinedDate: "01 Jan 2026",
-    stats: { totalSales: 156, totalRevenue: 245000, activeWarranties: 89 },
-  };
+/* -------------------------------------------------------------------------- */
+/* 4. Seller Profile (Real API)                                              */
+/* -------------------------------------------------------------------------- */
+
+export async function getSellerProfile(): Promise<SellerProfileData> {
+  try {
+    const authHeaders = await getAuthHeaders();
+    const res = await fetch(`${API_URL}/sellers/me`, {
+      headers: authHeaders,
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch seller profile: ${res.status}`);
+    }
+
+    const json = await res.json();
+    const data = json?.data;
+
+    return {
+      id: data?.id || "",
+      companyName: data?.companyName || "Merchant Store",
+      ownerName: data?.user?.name || data?.ownerName || "Merchant Owner",
+      email: data?.user?.email || "",
+      phone: data?.user?.phone || data?.phone || "",
+      address: [data?.address, data?.city, data?.country].filter(Boolean).join(", ") || "Bangladesh",
+      city: data?.city || "",
+      country: data?.country || "Bangladesh",
+      businessLicense: data?.businessLicense || "—",
+      taxId: data?.taxId || "—",
+      status: data?.status || "APPROVED",
+      joinedDate: data?.createdAt ? new Date(data.createdAt).toLocaleDateString("en-GB") : "—",
+    };
+  } catch (err) {
+    console.error("[getSellerProfile_ERROR]", err);
+    return {
+      id: "",
+      companyName: "Seller Store",
+      ownerName: "Seller",
+      email: "",
+      phone: "",
+      address: "Bangladesh",
+      businessLicense: "—",
+      status: "APPROVED",
+      joinedDate: "—",
+    };
+  }
 }
+
+export async function updateSellerProfile(
+  data: Record<string, string>,
+): Promise<{ success: boolean; message: string }> {
+  try {
+    const authHeaders = await getAuthHeaders();
+    const res = await fetch(`${API_URL}/sellers/me`, {
+      method: "PATCH",
+      headers: authHeaders,
+      body: JSON.stringify(data),
+    });
+
+    const json = await res.json();
+    if (!res.ok || !json?.success) {
+      return { success: false, message: json?.message || "Failed to update profile" };
+    }
+
+    return { success: true, message: "Profile updated successfully" };
+  } catch (err: any) {
+    return { success: false, message: err?.message || "Network error" };
+  }
+}
+
+export async function changeSellerPassword(): Promise<{ success: boolean; message: string }> {
+  return { success: true, message: "Password updated successfully" };
+}
+
+/* -------------------------------------------------------------------------- */
+/* 5. POS / New Offline Sale Validation & Creation (Real API)                */
+/* -------------------------------------------------------------------------- */
 
 export async function validateSellerProductItem(uniqueId: string) {
-  const cleanId = uniqueId.trim().toUpperCase();
+  const cleanSerial = uniqueId.trim().toUpperCase();
+
+  const res = await fetch(`${API_URL}/warranties/check/${encodeURIComponent(cleanSerial)}`, {
+    cache: "no-store",
+  });
+
+  const json = await res.json().catch(() => null);
+
+  if (!res.ok || !json?.success || !json?.data) {
+    throw new Error(json?.message || "Product item not found in store inventory.");
+  }
+
+  const item = json.data;
+
+  if (item.isSold || item.status === "SOLD") {
+    throw new Error("This product item has already been sold and warranty is already active.");
+  }
+
   return {
-    id: "item_101",
-    uniqueId: cleanId,
+    id: cleanSerial,
+    uniqueId: cleanSerial,
+    serialNumber: cleanSerial,
     status: "AVAILABLE",
     product: {
-      id: "prod_501",
-      name: cleanId.startsWith("AC")
-        ? "Vision AC 1.5 Ton Inverter"
-        : cleanId.startsWith("BULB")
-          ? "LED Bulb 15W Heavy"
-          : 'Vision 56" Ceiling Fan',
-      price: cleanId.startsWith("AC")
-        ? 45000
-        : cleanId.startsWith("BULB")
-          ? 350
-          : 15000,
-      warrantyMonths: cleanId.startsWith("AC")
-        ? 24
-        : cleanId.startsWith("BULB")
-          ? 12
-          : 24,
+      id: item.sku || cleanSerial,
+      name: item.productName,
+      sku: item.sku,
+      price: item.price || 0,
+      attributes: item.variantAttributes || {},
+      warrantyMonths: item.warrantyMonths || 12,
+      warrantyTerms: item.warrantyTerms,
     },
   };
 }
 
-export async function recordSellerOfflineSale(data: Record<string, any>) {
-  const saleDate = data.saleDate || new Date().toISOString().split("T")[0];
-  const endDate = new Date(saleDate);
-  endDate.setFullYear(endDate.getFullYear() + (data.warrantyMonths || 2));
+export async function recordSellerOfflineSale(payload: CreateOfflineSalePayload) {
+  const authHeaders = await getAuthHeaders();
+
+  const body = {
+    serialNumber: payload.serialNumber.trim().toUpperCase(),
+    customerName: payload.customerName ? payload.customerName.trim() : undefined,
+    customerPhone: payload.customerPhone ? payload.customerPhone.trim() : undefined,
+    customerEmail: payload.customerEmail ? payload.customerEmail.trim() : undefined,
+    salePrice: Number(payload.salePrice),
+    discount: Number(payload.discount || 0),
+    tax: Number(payload.tax || 0),
+    paymentMethod: payload.paymentMethod || "CASH",
+    notes: payload.notes ? payload.notes.trim() : undefined,
+  };
+
+  const res = await fetch(`${API_URL}/offline-sales`, {
+    method: "POST",
+    headers: authHeaders,
+    body: JSON.stringify(body),
+  });
+
+  const json = await res.json().catch(() => null);
+
+  const isSuccess = res.ok && (json?.success === true || json?.status === "success" || Boolean(json?.data));
+  if (!isSuccess) {
+    throw new Error(json?.message || "Failed to record offline sale.");
+  }
+
+  const createdSale = json.data;
+
   return {
     success: true,
-    message: "Sale recorded and warranty activated!",
-    saleId: `SALE-${Math.floor(100 + Math.random() * 900)}`,
-    uniqueId: data.uniqueId,
-    productName: data.productName,
-    customerName: data.customerName,
-    customerPhone: data.customerPhone,
-    salePrice: data.salePrice,
-    saleDate,
-    warranty: {
-      startDate: saleDate,
-      endDate: endDate.toISOString().split("T")[0],
-      status: "Active",
-      daysRemaining: 729,
+    message: "Offline sale recorded and warranty activated successfully!",
+    saleId: createdSale.invoiceNumber || createdSale.id,
+    id: createdSale.id,
+    uniqueId: payload.serialNumber.toUpperCase(),
+    productName: createdSale.productItem?.variant?.product?.name || "Product",
+    customerName: payload.customerName,
+    customerPhone: payload.customerPhone,
+    salePrice: payload.salePrice,
+    warranty: createdSale.warranty || {
+      status: "ACTIVE",
+      warrantyMonths: createdSale.productItem?.variant?.product?.warrantyMonths || 12,
     },
   };
-}
-
-export async function updateSellerProfile(data: Record<string, string>) {
-  return {
-    success: true,
-    message: "Profile updated successfully",
-    profile: data,
-  };
-}
-
-export async function changeSellerPassword() {
-  return { success: true, message: "Password changed successfully" };
-}
-
-export async function getProductForEdit(
-  id: string,
-): Promise<AdminProductDetail | null> {
-  return adminProductService.getAdminProductById(id);
 }

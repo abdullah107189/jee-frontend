@@ -17,6 +17,28 @@ interface QrCameraScannerProps {
   onOpenChange: (open: boolean) => void;
   onScanSuccess: (decodedSerial: string) => void;
   title?: string;
+  continuous?: boolean;
+  scannedCount?: number;
+}
+
+function playScanBeep() {
+  try {
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContextClass) return;
+    const ctx = new AudioContextClass();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(1400, ctx.currentTime);
+    gain.gain.setValueAtTime(0.25, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.12);
+  } catch {
+    // browser audio policies ignore
+  }
 }
 
 export function QrCameraScanner({
@@ -24,6 +46,8 @@ export function QrCameraScanner({
   onOpenChange,
   onScanSuccess,
   title = "Scan QR Code / Barcode",
+  continuous = false,
+  scannedCount = 0,
 }: QrCameraScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -33,7 +57,9 @@ export function QrCameraScanner({
   const [isScanning, setIsScanning] = useState(false);
   const [isProcessingImage, setIsProcessingImage] = useState(false);
   const [scannedResult, setScannedResult] = useState<string | null>(null);
+  const [recentScanned, setRecentScanned] = useState<string | null>(null);
   const animationFrameRef = useRef<number | null>(null);
+  const lastScannedRef = useRef<{ serial: string; time: number } | null>(null);
 
   /**
    * Helper to parse serial number from scanned text
@@ -153,6 +179,33 @@ export function QrCameraScanner({
     const offscreenCanvas = document.createElement("canvas");
     const offscreenCtx = offscreenCanvas.getContext("2d", { willReadFrequently: true });
 
+    const handleDetected = (rawCode: string) => {
+      const cleanSerial = parseSerialFromText(rawCode);
+      const now = Date.now();
+      if (
+        lastScannedRef.current &&
+        lastScannedRef.current.serial === cleanSerial &&
+        now - lastScannedRef.current.time < 2200
+      ) {
+        return false;
+      }
+      lastScannedRef.current = { serial: cleanSerial, time: now };
+      playScanBeep();
+
+      if (continuous) {
+        setRecentScanned(cleanSerial);
+        setTimeout(() => setRecentScanned(null), 1800);
+        onScanSuccess(cleanSerial);
+        return false; // keep scanning
+      } else {
+        setScannedResult(cleanSerial);
+        stopCamera();
+        onScanSuccess(cleanSerial);
+        onOpenChange(false);
+        return true; // stop
+      }
+    };
+
     const scanFrame = async () => {
       if (!isSubscribed || !videoRef.current || !isScanning) return;
 
@@ -163,12 +216,8 @@ export function QrCameraScanner({
           try {
             const barcodes = await detector.detect(video);
             if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
-              const cleanSerial = parseSerialFromText(barcodes[0].rawValue);
-              setScannedResult(cleanSerial);
-              stopCamera();
-              onScanSuccess(cleanSerial);
-              onOpenChange(false);
-              return;
+              const shouldStop = handleDetected(barcodes[0].rawValue);
+              if (shouldStop) return;
             }
           } catch {
             // ignore detector error on empty frame
@@ -186,12 +235,8 @@ export function QrCameraScanner({
               inversionAttempts: "dontInvert",
             });
             if (qrCode && qrCode.data) {
-              const cleanSerial = parseSerialFromText(qrCode.data);
-              setScannedResult(cleanSerial);
-              stopCamera();
-              onScanSuccess(cleanSerial);
-              onOpenChange(false);
-              return;
+              const shouldStop = handleDetected(qrCode.data);
+              if (shouldStop) return;
             }
           } catch {
             // frame capture skipped
@@ -304,6 +349,11 @@ export function QrCameraScanner({
             <Camera className="h-4 w-4 text-primary" />
             {title}
           </DialogTitle>
+          {continuous && (
+            <span className="text-xs font-black px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 animate-pulse">
+              ⚡ Scanned: {scannedCount}
+            </span>
+          )}
         </DialogHeader>
 
         {/* Video Viewport / Viewfinder */}
@@ -367,8 +417,21 @@ export function QrCameraScanner({
             </div>
           )}
 
-          {/* Success Overlay */}
-          {scannedResult && (
+          {/* Continuous Scan Beep Flash Banner */}
+          {recentScanned && (
+            <div className="absolute top-3 left-3 right-3 bg-emerald-600/95 text-white py-2 px-3 rounded-xl shadow-lg backdrop-blur-xs flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-200 z-20">
+              <div className="flex items-center gap-2 font-mono font-bold text-xs truncate">
+                <CheckCircle2 className="h-4 w-4 text-emerald-200 shrink-0" />
+                <span className="truncate">Added #{scannedCount}: {recentScanned}</span>
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded text-white shrink-0">
+                BEEP!
+              </span>
+            </div>
+          )}
+
+          {/* Success Overlay for Single Scan */}
+          {!continuous && scannedResult && (
             <div className="absolute inset-0 bg-emerald-950/85 backdrop-blur-xs flex flex-col items-center justify-center text-center p-4">
               <CheckCircle2 className="h-10 w-10 text-emerald-400 mb-2" />
               <p className="text-xs font-bold text-white uppercase tracking-wider">
@@ -414,18 +477,40 @@ export function QrCameraScanner({
         )}
 
         <p className="text-[11px] text-muted-foreground text-center mt-2">
-          Point camera at the QR code on the product box, or tap take photo to snap it.
+          {continuous
+            ? "Keep pointing at QR codes on each box to scan continuously. An audio beep confirms each unit."
+            : "Point camera at the QR code on the product box, or tap take photo to snap it."}
         </p>
 
-        <DialogFooter className="p-0 mt-3">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleClose}
-            className="w-full rounded-xl text-xs font-semibold h-9"
-          >
-            Cancel
-          </Button>
+        <DialogFooter className="p-0 mt-3 flex flex-row gap-2">
+          {continuous ? (
+            <>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleClose}
+                className="flex-1 rounded-xl text-xs font-semibold h-10"
+              >
+                Close
+              </Button>
+              <Button
+                type="button"
+                onClick={handleClose}
+                className="flex-1 rounded-xl text-xs font-bold h-10 bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20"
+              >
+                Done ({scannedCount} Items)
+              </Button>
+            </>
+          ) : (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleClose}
+              className="w-full rounded-xl text-xs font-semibold h-9"
+            >
+              Cancel
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

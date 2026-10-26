@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { notFound } from "next/navigation";
+import SaleDetailsContent from "@/components/modules/seller/sales/SaleDetailsContent";
 import { getSellerTransactionDetails } from "@/services/seller.service";
 
 export const metadata: Metadata = {
@@ -11,12 +12,14 @@ export const metadata: Metadata = {
 export default async function SaleDetailsPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const sale = await getSellerTransactionDetails(params.id);
+  const { id } = await params;
+  const sale = await getSellerTransactionDetails(id);
 
-  return (
-    // <SaleDetailsContent sale={sale} />
-    <>Coming soon {sale}</>
-  );
+  if (!sale) {
+    notFound();
+  }
+
+  return <SaleDetailsContent sale={sale} />;
 }
