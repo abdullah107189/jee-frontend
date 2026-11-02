@@ -1,8 +1,8 @@
 # Jee.store PROGRESS (agent আপডেট রাখবে)
-শেষ আপডেট: 2026-10-25 | Repo: frontend
+শেষ আপডেট: 2026-11-02 | Repo: frontend
 
 ## এখন কোন কাজ চলছে
-- M4: Admin sellers approval & users real API (mock বাদ দিয়ে real API ইন্টিগ্রেশন)
+- M4: Admin Cloud Image Upload & M5 Customer Warranties/Profile Real API
 
 ## নিয়ম
 DONE = build পাস + প্রমাণ | PARTIAL = কী বাকি লেখো | TODO | UNVERIFIED
@@ -21,10 +21,11 @@ DONE = build পাস + প্রমাণ | PARTIAL = কী বাকি ল�
 ### M3 Seller
 - [x] seller নতুন বিক্রি UI, বিক্রির ইতিহাস, নিজের warranty তালিকা — DONE (`src/services/seller.service.ts` real API, POS serial verification, offline sale creation, printable receipt `src/components/modules/seller/sales/SaleDetailsContent.tsx`, warranty details `src/app/(dashboard)/seller/warranties/[id]/page.tsx`, bun run build পাস)
 - [ ] সিদ্ধান্ত: seller account কে বানাবে (খোলা প্রশ্ন) — TODO
-- [ ] admin দিয়ে seller approve; seller এর serial দিয়ে item খোঁজার endpoint — অন্য repo
+- [x] admin দিয়ে seller approve; seller এর serial দিয়ে item খোঁজার endpoint — DONE (`src/services/admin.service.ts`, `src/actions/admin.actions.ts`, `PendingSellersContent.tsx`, `SellersContent.tsx`)
 ### M4 Admin
-- [ ] product create/edit (ছবি আপলোডসহ) — PARTIAL (`/admin/products/new`, `[id]/edit`, `[id]/variants/new`, `[id]/variants/[variantId]/edit` real API সম্পন্ন, ক্লাউড ইমেজ আপলোড বাকি)
-- [ ] orders, sellers, pending sellers, users: mock বাদ, real API — PARTIAL (orders DONE; sellers, pending sellers, users `src/services/admin.service.ts` এ mock বাকি)
+- [ ] product create/edit (ক্লাউড ইমেজ আপলোডসহ) — PARTIAL (`/admin/products/new`, `[id]/edit` সম্পন্ন)
+- [x] product variant create & edit (Dual image: URL + File Upload) — DONE (`src/actions/product.action.ts`, `VariantEditContent.tsx`, `VariantAddContent.tsx`, backend `product.service.ts`, `product.validation.ts`, tsc & bun build পাস)
+- [x] orders, sellers, pending sellers, users: mock বাদ, real API — DONE (`src/services/admin.service.ts`, `src/actions/admin.actions.ts`, `SellersContent.tsx`, `PendingSellersContent.tsx`, `UsersContent.tsx`, tsc --noEmit পাস)
 ### M5 Customer dashboard
 - [ ] orders, warranties, profile real API (mock বাদ) — PARTIAL (orders DONE; warranties ও profile `src/services/customer.service.ts` এ mock বাকি)
 ### M6 লঞ্চের আগে
@@ -46,6 +47,8 @@ SSLCommerz, analytics, audit log UI
 
 ## খোলা প্রশ্ন
 ## Done log
+- 2026-11-02: Admin Product Variant Edit ও Add এ Dual Image Support (Direct URL paste + Local file upload FileReader Data-URL) এবং ব্যাকএন্ড ProductVariant Update লজিক ও SKU সিঙ্ক সম্পন্ন (frontend ও backend build/lint পাস: 0 errors)
+- 2026-11-02: Admin Sellers, Pending Sellers Approvals, এবং Users Management এর mock বাদ দিয়ে রিয়েল API (`/sellers`, `/users`, `PATCH /sellers/:id`, `PATCH /users/:id`) এবং Next.js Server Actions ইন্টিগ্রেশন সম্পন্ন (tsc --noEmit পাস: 0 errors)
 - 2026-10-26: Seller POS ব্যাচ সেল রেসপন্স ও টোস্ট ফিক্স (একক কনসোলিডেটেড টোস্ট, Sonner স্ট্যান্ডার্ড), সেল হিস্ট্রি পেজ ক্র্যাশ ফিক্স (price ও status সেফটি) এবং মোবাইল-ফার্স্ট কার্ড ভিউ সম্পন্ন (bun run build পাস: ৩৯ রুট জেনারেটেড)
 - 2026-10-26: Seller POS এ ডুপ্লিকেট স্ক্যান রোধ (Set ref + ক্যামেরা ডিবাইন্স), ব্যাকএন্ড ইউনিট প্রাইস ক্যালকুলেশন ফিক্স, এবং ফুল মোবাইল-ফার্স্ট কার্ড ভিউ ও টাচ-ফ্রেন্ডলি UI সম্পন্ন (bun run build পাস)
 - 2026-10-26: Seller POS এ বহু-আইটেম (Multi-item) ব্যাচ সেল, ক্যামেরা চালু রেখে কন্টিনিউয়াস স্ক্যান ও অডিও বিপ সাউন্ড, ঐচ্ছিক কাস্টমার ইনফো (ডিফল্ট Walk-in Customer) এবং প্রিন্টেবল ক্যাশ মেমো রিসিট সম্পন্ন (bun run build পাস)
@@ -60,4 +63,3 @@ SSLCommerz, analytics, audit log UI
 - 2026-10-24: Customer order list, details ও cancel order real API সম্পন্ন
 - 2026-10-24: Admin variant create (`/admin/products/[id]/variants/new`) ও edit (`/admin/products/[id]/variants/[variantId]/edit`) real API সম্পন্ন
 - 2026-10-24: Frontend build পাস (bun run build: ৩৯ রুট জেনারেটেড)
-

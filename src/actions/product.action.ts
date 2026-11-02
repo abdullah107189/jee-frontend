@@ -1,5 +1,7 @@
-"use server";
+﻿"use server";
 import { revalidatePath } from "next/cache";
+
+const SERVER_API = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 import { cookies } from "next/headers";
 import z from "zod";
 
@@ -201,7 +203,7 @@ export async function addVariantAction(
   if (!token) return { success: false, message: "Unauthorized" };
 
   try {
-    const getRes = await fetch(`${process.env.API_URL}/products/${productId}`, {
+    const getRes = await fetch(`${SERVER_API}/products/${productId}`, {
       headers: { Cookie: `accessToken=${token}` },
       cache: "no-store",
     });
@@ -211,6 +213,7 @@ export async function addVariantAction(
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const existingVariants = (product.variants || []).map((v: any) => ({
+      id: v.id,
       sku: v.sku || undefined,
       attributes: v.attributes || {},
       price: Number(v.price),
@@ -225,7 +228,7 @@ export async function addVariantAction(
 
     const updatedVariants = [...existingVariants, newVariant];
 
-    const res = await fetch(`${process.env.API_URL}/products/${productId}`, {
+    const res = await fetch(`${SERVER_API}/products/${productId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -267,7 +270,7 @@ export async function updateVariantAction(
   if (!token) return { success: false, message: "Unauthorized" };
 
   try {
-    const getRes = await fetch(`${process.env.API_URL}/products/${productId}`, {
+    const getRes = await fetch(`${SERVER_API}/products/${productId}`, {
       headers: { Cookie: `accessToken=${token}` },
       cache: "no-store",
     });
@@ -281,6 +284,7 @@ export async function updateVariantAction(
       if (v.id === variantId) {
         matched = true;
         return {
+          id: v.id,
           sku: updatedData.sku !== undefined ? updatedData.sku : v.sku,
           attributes:
             updatedData.attributes !== undefined
@@ -317,6 +321,7 @@ export async function updateVariantAction(
         };
       }
       return {
+          id: v.id,
         sku: v.sku || undefined,
         attributes: v.attributes || {},
         price: Number(v.price),
@@ -334,7 +339,7 @@ export async function updateVariantAction(
       return { success: false, message: "Variant not found in product" };
     }
 
-    const res = await fetch(`${process.env.API_URL}/products/${productId}`, {
+    const res = await fetch(`${SERVER_API}/products/${productId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -376,7 +381,7 @@ export async function deleteVariantAction(
   if (!token) return { success: false, message: "Unauthorized" };
 
   try {
-    const getRes = await fetch(`${process.env.API_URL}/products/${productId}`, {
+    const getRes = await fetch(`${SERVER_API}/products/${productId}`, {
       headers: { Cookie: `accessToken=${token}` },
       cache: "no-store",
     });
@@ -398,6 +403,7 @@ export async function deleteVariantAction(
       .filter((v: any) => v.id !== variantId)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .map((v: any) => ({
+        id: v.id,
         sku: v.sku || undefined,
         attributes: v.attributes || {},
         price: Number(v.price),
@@ -410,7 +416,7 @@ export async function deleteVariantAction(
         isActive: v.isActive ?? true,
       }));
 
-    const res = await fetch(`${process.env.API_URL}/products/${productId}`, {
+    const res = await fetch(`${SERVER_API}/products/${productId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

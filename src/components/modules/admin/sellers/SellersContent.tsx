@@ -12,34 +12,44 @@ import { toast } from 'sonner';
 export default function AdminSellersPage({ sellers }: { sellers: AdminSeller[] }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
-  const [selectedSeller, setSelectedSeller] = useState<any | null>(null);
+  const [selectedSeller, setSelectedSeller] = useState<AdminSeller | null>(null);
   const [activeTab, setActiveTab] = useState<'profile' | 'sales' | 'warranties'>('profile');
+  const [isUpdating, setIsUpdating] = useState(false);
 
-  const filteredSellers = sellers.filter((seller: any) => {
+  const filteredSellers = sellers.filter((seller) => {
+    const company = (seller.companyName || '').toLowerCase();
+    const owner = (seller.ownerName || '').toLowerCase();
+    const email = (seller.email || '').toLowerCase();
+    const term = searchTerm.toLowerCase();
+
     const matchesSearch = 
-      seller.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      seller.ownerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      seller.email.toLowerCase().includes(searchTerm.toLowerCase());
+      company.includes(term) ||
+      owner.includes(term) ||
+      email.includes(term);
     
-    const matchesStatus = statusFilter === 'ALL' || seller.status.toUpperCase() === statusFilter.toUpperCase();
+    const sellerStatus = (seller.status || '').toUpperCase();
+    const matchesStatus = statusFilter === 'ALL' || sellerStatus === statusFilter.toUpperCase();
 
     return matchesSearch && matchesStatus;
   });
 
   const handleStatusChange = async (sellerId: string, newStatus: string) => {
+    setIsUpdating(true);
     try {
       await updateSellerStatusAction({ id: sellerId, status: newStatus });
       toast.success(`Seller status updated to ${newStatus}`);
-      if (selectedSeller) {
-        setSelectedSeller((prev: any) => prev ? { ...prev, status: newStatus } : null);
+      if (selectedSeller && selectedSeller.id === sellerId) {
+        setSelectedSeller({ ...selectedSeller, status: newStatus });
       }
-    } catch (err) {
-      toast.error('Failed to update seller status');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update seller status');
+    } finally {
+      setIsUpdating(false);
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status.toUpperCase()) {
+  const getStatusBadge = (status?: string) => {
+    switch ((status || '').toUpperCase()) {
       case 'APPROVED':
         return <Badge variant="success" className="rounded-full px-3 py-1 text-xs">Approved</Badge>;
       case 'PENDING':
@@ -49,9 +59,16 @@ export default function AdminSellersPage({ sellers }: { sellers: AdminSeller[] }
       case 'DISABLED':
         return <Badge variant="destructive" className="rounded-full px-3 py-1 text-xs">Disabled</Badge>;
       default:
-        return <Badge variant="outline" className="rounded-full px-3 py-1 text-xs">{status}</Badge>;
+        return <Badge variant="outline" className="rounded-full px-3 py-1 text-xs">{status || 'Unknown'}</Badge>;
     }
   };
+
+  const approvedCount = sellers.filter((s) => (s.status || '').toUpperCase() === 'APPROVED').length;
+  const pendingCount = sellers.filter((s) => (s.status || '').toUpperCase() === 'PENDING').length;
+  const suspendedCount = sellers.filter((s) => {
+    const st = (s.status || '').toUpperCase();
+    return st === 'SUSPENDED' || st === 'DISABLED';
+  }).length;
 
   return (
       <div className="space-y-6 sm:space-y-8">
@@ -83,7 +100,7 @@ export default function AdminSellersPage({ sellers }: { sellers: AdminSeller[] }
                 </div>
                 <span className="text-xs font-semibold text-slate-500 uppercase">Approved</span>
               </div>
-              <p className="text-2xl font-extrabold text-slate-900">{sellers.filter((s: any) => s.status === 'Approved').length}</p>
+              <p className="text-2xl font-extrabold text-slate-900">{approvedCount}</p>
             </CardContent>
           </Card>
           <Card className="rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white">
@@ -94,7 +111,7 @@ export default function AdminSellersPage({ sellers }: { sellers: AdminSeller[] }
                 </div>
                 <span className="text-xs font-semibold text-slate-500 uppercase">Pending</span>
               </div>
-              <p className="text-2xl font-extrabold text-slate-900">{sellers.filter((s: any) => s.status === 'Pending').length}</p>
+              <p className="text-2xl font-extrabold text-slate-900">{pendingCount}</p>
             </CardContent>
           </Card>
           <Card className="rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white">
@@ -105,7 +122,7 @@ export default function AdminSellersPage({ sellers }: { sellers: AdminSeller[] }
                 </div>
                 <span className="text-xs font-semibold text-slate-500 uppercase">Suspended</span>
               </div>
-              <p className="text-2xl font-extrabold text-slate-900">{sellers.filter((s: any) => s.status === 'Suspended' || s.status === 'Disabled').length}</p>
+              <p className="text-2xl font-extrabold text-slate-900">{suspendedCount}</p>
             </CardContent>
           </Card>
         </div>
@@ -151,7 +168,7 @@ export default function AdminSellersPage({ sellers }: { sellers: AdminSeller[] }
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
-                  {filteredSellers.map((seller: any) => (
+                  {filteredSellers.map((seller) => (
                     <tr key={seller.id} className="hover:bg-slate-50/50 transition-colors bg-white">
                       <td className="px-4 sm:px-6 py-4">
                         <div className="font-semibold text-slate-900">{seller.companyName}</div>
@@ -195,7 +212,7 @@ export default function AdminSellersPage({ sellers }: { sellers: AdminSeller[] }
               <div className="p-6 bg-slate-900 text-white flex justify-between items-center">
                 <div>
                   <h3 className="text-xl font-bold">{selectedSeller.companyName}</h3>
-                  <p className="text-xs text-slate-400 font-mono mt-1">Owner: {selectedSeller.ownerName} • Lic: {selectedSeller.licenseNo}</p>
+                  <p className="text-xs text-slate-400 mt-1">Merchant Profile & System Authorization</p>
                 </div>
                 <div>
                   {getStatusBadge(selectedSeller.status)}
@@ -244,30 +261,41 @@ export default function AdminSellersPage({ sellers }: { sellers: AdminSeller[] }
                         <span className="text-xs font-semibold text-slate-400 uppercase">Joined Date</span>
                         <p className="text-slate-800 font-semibold mt-1">{selectedSeller.joinedDate}</p>
                       </div>
+                      {selectedSeller.address && (
+                        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 md:col-span-2">
+                          <span className="text-xs font-semibold text-slate-400 uppercase">Address</span>
+                          <p className="text-slate-800 font-medium mt-1">
+                            {[selectedSeller.address, selectedSeller.city, selectedSeller.state, selectedSeller.zipCode, selectedSeller.country].filter(Boolean).join(', ')}
+                          </p>
+                        </div>
+                      )}
                     </div>
 
                     <div className="pt-4 border-t border-slate-100">
                       <h4 className="text-sm font-bold text-slate-900 mb-3">Seller Status Actions</h4>
                       <div className="flex flex-wrap gap-3">
-                        {selectedSeller.status !== 'Approved' && (
+                        {(selectedSeller.status || '').toUpperCase() !== 'APPROVED' && (
                           <Button 
-                            onClick={() => handleStatusChange(selectedSeller.id, 'Approved')} 
+                            disabled={isUpdating}
+                            onClick={() => handleStatusChange(selectedSeller.id, 'APPROVED')} 
                             className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl"
                           >
                             <UserCheck className="h-4 w-4 mr-2" /> Approve Seller
                           </Button>
                         )}
-                        {selectedSeller.status !== 'Suspended' && (
+                        {(selectedSeller.status || '').toUpperCase() !== 'SUSPENDED' && (
                           <Button 
-                            onClick={() => handleStatusChange(selectedSeller.id, 'Suspended')} 
+                            disabled={isUpdating}
+                            onClick={() => handleStatusChange(selectedSeller.id, 'SUSPENDED')} 
                             className="bg-amber-600 hover:bg-amber-700 text-white rounded-xl"
                           >
                             <ShieldOff className="h-4 w-4 mr-2" /> Suspend Account
                           </Button>
                         )}
-                        {selectedSeller.status !== 'Disabled' && (
+                        {(selectedSeller.status || '').toUpperCase() !== 'DISABLED' && (
                           <Button 
-                            onClick={() => handleStatusChange(selectedSeller.id, 'Disabled')} 
+                            disabled={isUpdating}
+                            onClick={() => handleStatusChange(selectedSeller.id, 'DISABLED')} 
                             variant="destructive" 
                             className="rounded-xl"
                           >
@@ -281,59 +309,31 @@ export default function AdminSellersPage({ sellers }: { sellers: AdminSeller[] }
 
                 {activeTab === 'sales' && (
                   <div className="space-y-4">
-                    <p className="text-xs text-slate-500">Offline transactions issued by this seller:</p>
-                    <div className="border border-slate-100 rounded-2xl overflow-hidden">
-                      <table className="w-full text-sm text-left">
-                        <thead className="bg-slate-50 text-xs font-semibold text-slate-500 uppercase">
-                          <tr>
-                            <th className="p-3">Invoice No</th>
-                            <th className="p-3">Product</th>
-                            <th className="p-3">Price</th>
-                            <th className="p-3">Date</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                          <tr className="hover:bg-slate-50">
-                            <td className="p-3 font-mono text-xs">INV-001928</td>
-                            <td className="p-3 font-medium">Vision 56" Ceiling Fan</td>
-                            <td className="p-3 font-bold">৳3,500</td>
-                            <td className="p-3 text-xs text-slate-500">2026-08-09</td>
-                          </tr>
-                          <tr className="hover:bg-slate-50">
-                            <td className="p-3 font-mono text-xs">INV-001929</td>
-                            <td className="p-3 font-medium">Dry Iron 1000W Heavy</td>
-                            <td className="p-3 font-bold">৳1,500</td>
-                            <td className="p-3 text-xs text-slate-500">2026-08-07</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
+                    <p className="text-xs text-slate-500">Total offline sales registered: {selectedSeller.salesCount}</p>
+                    {selectedSeller.salesCount === 0 ? (
+                      <div className="p-8 text-center text-slate-500 bg-slate-50 rounded-2xl text-xs font-medium">
+                        No sales registered yet by this merchant.
+                      </div>
+                    ) : (
+                      <div className="p-4 text-xs text-slate-600 bg-slate-50 rounded-xl">
+                        Sales history is managed via POS terminal.
+                      </div>
+                    )}
                   </div>
                 )}
 
                 {activeTab === 'warranties' && (
                   <div className="space-y-4">
-                    <p className="text-xs text-slate-500">Activated product warranties under this merchant:</p>
-                    <div className="border border-slate-100 rounded-2xl overflow-hidden">
-                      <table className="w-full text-sm text-left">
-                        <thead className="bg-slate-50 text-xs font-semibold text-slate-500 uppercase">
-                          <tr>
-                            <th className="p-3">Unique ID</th>
-                            <th className="p-3">Product</th>
-                            <th className="p-3">Customer</th>
-                            <th className="p-3">Status</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                          <tr className="hover:bg-slate-50">
-                            <td className="p-3 font-mono text-xs text-blue-600 font-bold">FAN-001928</td>
-                            <td className="p-3 font-medium">Vision 56" Ceiling Fan</td>
-                            <td className="p-3">John Doe</td>
-                            <td className="p-3"><Badge variant="success">Active</Badge></td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
+                    <p className="text-xs text-slate-500">Active product warranties registered: {selectedSeller.warrantyCount}</p>
+                    {selectedSeller.warrantyCount === 0 ? (
+                      <div className="p-8 text-center text-slate-500 bg-slate-50 rounded-2xl text-xs font-medium">
+                        No warranty records linked to this merchant.
+                      </div>
+                    ) : (
+                      <div className="p-4 text-xs text-slate-600 bg-slate-50 rounded-xl">
+                        Warranty registry is updated upon POS/Order delivery.
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

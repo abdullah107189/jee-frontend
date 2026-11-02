@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
-import { ArrowLeft, Plus, Trash2, Save, ImageIcon, Layers, AlertCircle } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Save, ImageIcon, Layers, AlertCircle, Upload, Check } from "lucide-react";
 import { toast } from "sonner";
 
 import { Card } from "@/components/ui/Card";
@@ -23,6 +22,7 @@ export default function VariantEditContent({
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
     const [isDeleting, setIsDeleting] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     /* Form state initialized from existing variant */
     const [sku, setSku] = useState(variant.sku || "");
@@ -31,6 +31,9 @@ export default function VariantEditContent({
         variant.comparePrice ? String(variant.comparePrice) : "",
     );
     const [stockQuantity, setStockQuantity] = useState(String(variant.stockQuantity ?? 0));
+    const [lowStockThreshold, setLowStockThreshold] = useState(
+        String(variant.lowStockThreshold ?? 5),
+    );
     const [isActive, setIsActive] = useState(variant.isActive ?? true);
 
     /* Attributes initialized */
@@ -70,6 +73,38 @@ export default function VariantEditContent({
         setImages(images.filter((_, i) => i !== index));
     };
 
+    /* Local File Upload Handler (Dual mode: Upload + URL) */
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+
+        Array.from(files).forEach((file) => {
+            if (!file.type.startsWith("image/")) {
+                toast.error(`${file.name} is not an image file`);
+                return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                toast.error(`${file.name} exceeds 5MB size limit`);
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const result = event.target?.result as string;
+                if (result) {
+                    setImages((prev) => {
+                        const filtered = prev.filter((img) => img.trim().length > 0);
+                        return [...filtered, result];
+                    });
+                    toast.success(`Image ${file.name} loaded`);
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+
+        e.target.value = "";
+    };
+
     /* Submit changes */
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -97,17 +132,18 @@ export default function VariantEditContent({
             comparePrice: comparePrice ? Number(comparePrice) : undefined,
             images: validImages,
             stockQuantity: Number(stockQuantity) || 0,
+            lowStockThreshold: Number(lowStockThreshold) || 5,
             isActive,
         };
 
         startTransition(async () => {
             const res = await updateVariantAction(productId, variant.id, payload);
             if (res.success) {
-                toast.success(res.message);
+                toast.success(res.message || "Variant updated successfully");
                 router.push(`/admin/products/${productId}/variants/${variant.id}`);
                 router.refresh();
             } else {
-                toast.error(res.message);
+                toast.error(res.message || "Failed to update variant");
             }
         });
     };
@@ -122,11 +158,11 @@ export default function VariantEditContent({
         startTransition(async () => {
             const res = await deleteVariantAction(productId, variant.id);
             if (res.success) {
-                toast.success(res.message);
+                toast.success(res.message || "Variant deleted successfully");
                 router.push(`/admin/products/${productId}`);
                 router.refresh();
             } else {
-                toast.error(res.message);
+                toast.error(res.message || "Failed to delete variant");
                 setIsDeleting(false);
             }
         });
@@ -276,7 +312,7 @@ export default function VariantEditContent({
                 {/* Pricing & Stock */}
                 <Card className="rounded-2xl border-none p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-[2rem] sm:p-8">
                     <h2 className="mb-4 text-lg font-bold text-slate-900">Pricing & Inventory</h2>
-                    <div className="grid gap-4 sm:grid-cols-3">
+                    <div className="grid gap-4 sm:grid-cols-4">
                         <div className="space-y-2">
                             <label className="text-sm font-semibold text-slate-700">
                                 Selling Price (৳) *
@@ -321,6 +357,20 @@ export default function VariantEditContent({
                                 className="h-11 rounded-xl bg-slate-50 tabular-nums text-sm font-semibold"
                             />
                         </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-semibold text-slate-700">
+                                Low Stock Alert
+                            </label>
+                            <Input
+                                type="number"
+                                min="0"
+                                value={lowStockThreshold}
+                                onChange={(e) => setLowStockThreshold(e.target.value)}
+                                placeholder="5"
+                                className="h-11 rounded-xl bg-slate-50 tabular-nums text-sm font-semibold"
+                            />
+                        </div>
                     </div>
 
                     {variant.productItems && variant.productItems.length > 0 && (
@@ -333,38 +383,65 @@ export default function VariantEditContent({
                     )}
                 </Card>
 
-                {/* Images */}
+                {/* Images (Dual Mode: URL + File Upload) */}
                 <Card className="rounded-2xl border-none p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-[2rem] sm:p-8">
-                    <div className="mb-4 flex items-center justify-between">
+                    <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div className="flex items-center gap-2">
                             <ImageIcon className="h-5 w-5 text-slate-600" />
-                            <h2 className="text-lg font-bold text-slate-900">Variant Images</h2>
+                            <div>
+                                <h2 className="text-lg font-bold text-slate-900">Variant Images</h2>
+                                <p className="text-xs text-slate-500">Add direct image URL or upload image file from your device</p>
+                            </div>
                         </div>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={handleAddImage}
-                            className="rounded-xl border-slate-200"
-                        >
-                            <Plus className="mr-1.5 h-3.5 w-3.5" />
-                            Add Image URL
-                        </Button>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                accept="image/*"
+                                multiple
+                                onChange={handleFileUpload}
+                                className="hidden"
+                            />
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => fileInputRef.current?.click()}
+                                className="rounded-xl border-slate-200 hover:bg-blue-50 hover:text-blue-600 text-xs"
+                            >
+                                <Upload className="mr-1.5 h-3.5 w-3.5" />
+                                Upload File
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={handleAddImage}
+                                className="rounded-xl border-slate-200 text-xs"
+                            >
+                                <Plus className="mr-1.5 h-3.5 w-3.5" />
+                                Add URL
+                            </Button>
+                        </div>
                     </div>
 
                     <div className="space-y-3">
                         {images.map((imgUrl, idx) => (
                             <div key={idx} className="flex items-center gap-3">
-                                {imgUrl.trim() && (
+                                {imgUrl.trim() ? (
                                     <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
-                                        <Image
+                                        <img
                                             src={imgUrl}
                                             alt={`Preview ${idx + 1}`}
-                                            fill
-                                            sizes="44px"
-                                            className="object-cover"
-                                            unoptimized
+                                            className="h-full w-full object-cover"
+                                            onError={(e) => {
+                                                (e.currentTarget as HTMLImageElement).src = "/product-placeholder.jpg";
+                                            }}
                                         />
+                                    </div>
+                                ) : (
+                                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 text-slate-400">
+                                        <ImageIcon className="h-5 w-5" />
                                     </div>
                                 )}
                                 <Input
@@ -374,8 +451,8 @@ export default function VariantEditContent({
                                         updated[idx] = e.target.value;
                                         setImages(updated);
                                     }}
-                                    placeholder="https://example.com/image.jpg"
-                                    className="h-11 flex-1 rounded-xl bg-slate-50 text-sm"
+                                    placeholder="Enter image URL (https://... or /image.png or upload above)"
+                                    className="h-11 flex-1 rounded-xl bg-slate-50 text-sm font-mono text-xs"
                                 />
                                 <Button
                                     type="button"

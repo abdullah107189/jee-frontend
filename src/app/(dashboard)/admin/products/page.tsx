@@ -18,6 +18,8 @@ export default async function AdminProductsPage({
     sort: sp.sort,
   });
 
+  console.log("hitting!");
+
   return (
     <ProductsListContent
       products={res.data}

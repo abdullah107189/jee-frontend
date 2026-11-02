@@ -1,5 +1,65 @@
-export type AdminUser = Record<string, any>;
-export type AdminSeller = Record<string, any>;
+import "server-only";
+
+import { cookies, headers } from "next/headers";
+
+const API_URL =
+  process.env.API_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://localhost:5000/api/v1";
+
+async function getAuthHeaders(): Promise<HeadersInit> {
+  const cookieStore = await cookies();
+  const headerStore = await headers();
+  const refreshedToken = headerStore.get("x-access-token");
+  const token = refreshedToken || cookieStore.get("accessToken")?.value;
+
+  const reqHeaders: Record<string, string> = {
+    "Content-Type": "application/json",
+    Cookie: cookieStore.toString(),
+  };
+
+  if (token) {
+    reqHeaders["Authorization"] = `Bearer ${token}`;
+  }
+
+  return reqHeaders;
+}
+
+export interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: string;
+  status: string;
+  isActive: boolean;
+  isVerified: boolean;
+  joinedDate: string;
+  avatar: string;
+}
+
+export interface AdminSeller {
+  id: string;
+  userId?: string;
+  companyName: string;
+  ownerName: string;
+  email: string;
+  phone: string;
+  status: string;
+  joinedDate: string;
+  salesCount: number;
+  warrantyCount: number;
+  licenseNo: string;
+  licenseDocUrl?: string;
+  nidNumber?: string;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  zipCode?: string | null;
+  country?: string | null;
+  taxId?: string | null;
+}
+
 export type AuditLog = Record<string, any>;
 export type AdminAnalytics = Record<string, any>;
 
@@ -11,30 +71,126 @@ export type AdminCategory = Record<string, any>;
 export type AdminWarrantyClaim = Record<string, any>;
 
 export async function getUsers(): Promise<AdminUser[]> {
-  return [
-    { id: 'usr_1', name: 'Super Admin', email: 'admin@JEE.bd', role: 'admin', status: 'Active', joinedDate: '2025-01-01', phone: '01700000000', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80' },
-    { id: 'usr_2', name: 'Rafiqul Islam', email: 'vision.store@example.com', role: 'seller', status: 'Active', joinedDate: '2025-11-12', phone: '01711002233', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80' },
-    { id: 'usr_3', name: 'Ariful Islam', email: 'arif@example.com', role: 'customer', status: 'Active', joinedDate: '2026-02-14', phone: '01711223344', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80' },
-    { id: 'usr_4', name: 'Tanvir Hossain', email: 'tanvir@electrotech.bd', role: 'seller', status: 'Active', joinedDate: '2026-01-05', phone: '01822334455', avatar: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=200&q=80' },
-    { id: 'usr_5', name: 'Farhana Ahmed', email: 'sylhet.digital@outlet.bd', role: 'seller', status: 'Disabled', joinedDate: '2025-09-20', phone: '01644556677', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80' },
-  ];
+  try {
+    const authHeaders = await getAuthHeaders();
+    const res = await fetch(`${API_URL}/users?limit=100`, {
+      method: "GET",
+      headers: authHeaders,
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      console.error("Failed to fetch users from backend:", res.status, res.statusText);
+      return [];
+    }
+
+    const json = await res.json();
+    const rawUsers: any[] = Array.isArray(json.data) ? json.data : [];
+
+    return rawUsers.map((u) => ({
+      id: u.id,
+      name: u.name || "N/A",
+      email: u.email,
+      phone: u.phone || "N/A",
+      role: (u.role || "customer").toLowerCase(),
+      status: u.isActive ? "Active" : "Disabled",
+      isActive: Boolean(u.isActive),
+      isVerified: Boolean(u.isVerified),
+      joinedDate: u.createdAt ? new Date(u.createdAt).toISOString().split("T")[0] : "N/A",
+      avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(u.name || u.email)}`,
+    }));
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return [];
+  }
 }
 
 export async function getSellers(): Promise<AdminSeller[]> {
-  return [
-    { id: 'sel_1', companyName: 'Vision Official Store', ownerName: 'Rafiqul Islam', email: 'vision.store@example.com', phone: '01711002233', status: 'Approved', joinedDate: '2025-11-12', salesCount: 342, warrantyCount: 290, licenseNo: 'TRAD/DHAKA/2025/8821' },
-    { id: 'sel_2', companyName: 'Electro Tech Dhaka', ownerName: 'Tanvir Hossain', email: 'tanvir@electrotech.bd', phone: '01822334455', status: 'Approved', joinedDate: '2026-01-05', salesCount: 189, warrantyCount: 175, licenseNo: 'TRAD/DHAKA/2026/1029' },
-    { id: 'sel_3', companyName: 'Chittagong Electronics Hub', ownerName: 'Kamrul Hasan', email: 'ctg.hub@gmail.com', phone: '01933445566', status: 'Pending', joinedDate: '2026-08-01', salesCount: 0, warrantyCount: 0, licenseNo: 'TRAD/CTG/2026/4412' },
-    { id: 'sel_4', companyName: 'Sylhet Digital Appliances', ownerName: 'Farhana Ahmed', email: 'sylhet.digital@outlet.bd', phone: '01644556677', status: 'Suspended', joinedDate: '2025-09-20', salesCount: 95, warrantyCount: 88, licenseNo: 'TRAD/SYL/2025/0091' },
-    { id: 'sel_5', companyName: 'Bogra Smart Gadgets', ownerName: 'Mahbub Alam', email: 'bogra.smart@gmail.com', phone: '01555667788', status: 'Disabled', joinedDate: '2025-06-15', salesCount: 42, warrantyCount: 40, licenseNo: 'TRAD/BOG/2025/3310' },
-  ];
+  try {
+    const authHeaders = await getAuthHeaders();
+    const res = await fetch(`${API_URL}/sellers?limit=100`, {
+      method: "GET",
+      headers: authHeaders,
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      console.error("Failed to fetch sellers from backend:", res.status, res.statusText);
+      return [];
+    }
+
+    const json = await res.json();
+    const rawSellers: any[] = Array.isArray(json.data) ? json.data : [];
+
+    return rawSellers.map((s) => ({
+      id: s.id,
+      userId: s.userId,
+      companyName: s.companyName || "N/A",
+      ownerName: s.user?.name || "N/A",
+      email: s.user?.email || "N/A",
+      phone: s.user?.phone || s.phone || "N/A",
+      status: s.status, // "APPROVED", "PENDING", "SUSPENDED", "DISABLED"
+      joinedDate: s.createdAt ? new Date(s.createdAt).toISOString().split("T")[0] : "N/A",
+      salesCount: s._count?.offlineSales ?? 0,
+      warrantyCount: 0,
+      licenseNo: s.businessLicense || "N/A",
+      licenseDocUrl: s.businessLicense ? `https://placehold.co/600x400/png?text=${encodeURIComponent(s.companyName + ' License')}` : "",
+      nidNumber: s.taxId || "N/A",
+      address: s.address,
+      city: s.city,
+      state: s.state,
+      zipCode: s.zipCode,
+      country: s.country,
+      taxId: s.taxId,
+    }));
+  } catch (error) {
+    console.error("Error fetching sellers:", error);
+    return [];
+  }
 }
 
 export async function getPendingSellers(): Promise<AdminSeller[]> {
-  return [
-    { id: 'sel_3', companyName: 'Chittagong Electronics Hub', ownerName: 'Kamrul Hasan', email: 'ctg.hub@gmail.com', phone: '01933445566', status: 'Pending', joinedDate: '2026-08-01', licenseNo: 'TRAD/CTG/2026/4412', licenseDocUrl: 'https://images.unsplash.com/photo-1568992687947-868a62a9f521?auto=format&fit=crop&w=600&q=80', nidNumber: '19922691238910' },
-    { id: 'sel_6', companyName: 'Rajshahi Power Mart', ownerName: 'Sabbir Hossain', email: 'rajshahi.power@mart.bd', phone: '01799887766', status: 'Pending', joinedDate: '2026-08-08', licenseNo: 'TRAD/RAJ/2026/9931', licenseDocUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80', nidNumber: '19882690019283' },
-  ];
+  try {
+    const authHeaders = await getAuthHeaders();
+    const res = await fetch(`${API_URL}/sellers?status=PENDING&limit=100`, {
+      method: "GET",
+      headers: authHeaders,
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      console.error("Failed to fetch pending sellers from backend:", res.status, res.statusText);
+      return [];
+    }
+
+    const json = await res.json();
+    const rawSellers: any[] = Array.isArray(json.data) ? json.data : [];
+
+    return rawSellers.map((s) => ({
+      id: s.id,
+      userId: s.userId,
+      companyName: s.companyName || "N/A",
+      ownerName: s.user?.name || "N/A",
+      email: s.user?.email || "N/A",
+      phone: s.user?.phone || s.phone || "N/A",
+      status: s.status,
+      joinedDate: s.createdAt ? new Date(s.createdAt).toISOString().split("T")[0] : "N/A",
+      salesCount: 0,
+      warrantyCount: 0,
+      licenseNo: s.businessLicense || "N/A",
+      licenseDocUrl: s.businessLicense ? `https://placehold.co/600x400/png?text=${encodeURIComponent(s.companyName + ' License')}` : "",
+      nidNumber: s.taxId || "N/A",
+      address: s.address,
+      city: s.city,
+      state: s.state,
+      zipCode: s.zipCode,
+      country: s.country,
+      taxId: s.taxId,
+    }));
+  } catch (error) {
+    console.error("Error fetching pending sellers:", error);
+    return [];
+  }
 }
 
 export async function getAuditLogs(): Promise<AuditLog[]> {
@@ -73,8 +229,6 @@ export async function getAnalytics(_period = 'MONTH'): Promise<AdminAnalytics> {
   };
 }
 
- 
-
 export async function getAdminProductItems(): Promise<AdminProductItem[]> {
   return [
     { id: '1', productName: 'Premium Standing Desk', uniqueId: 'FAN-001', serialNumber: 'SN-001', status: 'AVAILABLE', createdAt: '2023-10-24' },
@@ -91,8 +245,6 @@ export async function getAdminCategories(): Promise<AdminCategory[]> {
     { categoryId: '3', name: 'Furniture', slug: 'furniture', level: 'Parent', status: 'Active' },
   ];
 }
-
-
 
 export async function getAdminOrders(): Promise<AdminOrder[]> {
   return [
@@ -123,7 +275,7 @@ export async function getAdminWarranties(): Promise<AdminWarranty[]> {
   return [
     { id: 'WAR-101', uniqueId: 'FAN-001928', productName: 'Vision 56" Ceiling Fan', customerName: 'John Doe', customerPhone: '01711223344', sellerName: 'Vision Official Store', saleType: 'Offline', status: 'Active', startDate: '2026-01-15', endDate: '2027-01-15', claimsCount: 0 },
     { id: 'WAR-102', uniqueId: 'AC-100293', productName: 'Vision AC 1.5 Ton', customerName: 'Alice Smith', customerPhone: '01899887766', sellerName: 'Electro Tech Dhaka', saleType: 'Online', status: 'Active', startDate: '2026-03-10', endDate: '2028-03-10', claimsCount: 1 },
-    { id: 'WAR-103', uniqueId: 'BULB-99212', productName: 'LED Bulb 15W', customerName: 'Karim Ahmed', customerPhone: '01900112233', sellerName: 'Direct Online', saleType: 'Online', status: 'Expired', startDate: '2024-05-01', endDate: '2025-05-01', claimsCount: 0 },
+    { id: 'WAR-103', uniqueId: 'BULB-99212', productName: 'LED Bulb 15W', customerName: 'Karim Ahmed', customerPhone: '01900112233', sellerName: 'Direct Online', saleType: 'Expired', status: 'Expired', startDate: '2024-05-01', endDate: '2025-05-01', claimsCount: 0 },
     { id: 'WAR-104', uniqueId: 'IRON-20211', productName: 'Dry Iron 1000W', customerName: 'Farid Hossain', customerPhone: '01511223344', sellerName: 'Bogra Smart Gadgets', saleType: 'Offline', status: 'Claimed', startDate: '2025-08-10', endDate: '2026-08-10', claimsCount: 2 },
     { id: 'WAR-105', uniqueId: 'BLENDER-331', productName: 'Super Blender 750W', customerName: 'Sumaiya Begum', customerPhone: '01399887766', sellerName: 'Sylhet Digital', saleType: 'Offline', status: 'Void', startDate: '2025-10-01', endDate: '2026-10-01', claimsCount: 1 },
   ];
@@ -139,15 +291,54 @@ export async function getAdminWarrantyClaims(): Promise<AdminWarrantyClaim[]> {
 }
 
 export async function updateAdminUserRole(id: string, role: string) {
-  return { success: true, message: `User role updated to ${role}`, id };
+  const normalizedRole = role.toUpperCase();
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_URL}/users/${id}`, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify({ role: normalizedRole }),
+  });
+
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(json.message || `Failed to update user role to ${role}`);
+  }
+
+  return { success: true, message: json.message || `User role updated to ${role}`, id };
 }
 
 export async function updateAdminUserStatus(id: string, status: string) {
-  return { success: true, message: `User status changed to ${status}`, id };
+  const isActive = status.toUpperCase() === "ACTIVE";
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_URL}/users/${id}`, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify({ isActive }),
+  });
+
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(json.message || `Failed to update user status to ${status}`);
+  }
+
+  return { success: true, message: json.message || `User status changed to ${status}`, id };
 }
 
 export async function updateAdminSellerStatus(id: string, status: string) {
-  return { success: true, message: `Seller status updated to ${status}`, id };
+  const normalizedStatus = status.toUpperCase();
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_URL}/sellers/${id}`, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify({ status: normalizedStatus }),
+  });
+
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(json.message || `Failed to update seller status to ${status}`);
+  }
+
+  return { success: true, message: json.message || `Seller status updated to ${status}`, id };
 }
 
 export async function bulkAddAdminProductItems(productId: string, items: Array<Record<string, unknown>>) {

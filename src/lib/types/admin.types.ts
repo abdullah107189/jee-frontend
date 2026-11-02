@@ -1,4 +1,4 @@
-// lib/types/admin.types.ts
+﻿// lib/types/admin.types.ts
 // Admin-only types — product, list, detail, variant items
 
 /* -------------------------------------------------------------------------- */
@@ -109,6 +109,7 @@ export type AdminVariantDetail = {
   images: string[];
   isDefault: boolean;
   stockQuantity: number;
+  lowStockThreshold?: number;
   isActive: boolean;
   product: { id: string; name: string; slug: string };
   productItems: VariantItem[];

@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
-import { Search, Users, UserCheck, Shield, Store, User, Ban, Edit2, CheckCircle, Eye } from 'lucide-react';
+import { Search, Users, UserCheck, Shield, Store, User, Ban, Edit2, CheckCircle } from 'lucide-react';
 import { updateUserRoleAction, updateUserStatusAction } from '@/actions/admin.actions';
 import type { AdminUser } from '@/services/admin.service';
 import { toast } from 'sonner';
@@ -13,44 +13,57 @@ export default function AdminUsersPage({ users }: { users: AdminUser[] }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('ALL');
   const [statusFilter, setStatusFilter] = useState('ALL');
-  const [editingUser, setEditingUser] = useState<any | null>(null);
+  const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
   const [selectedRole, setSelectedRole] = useState('');
+  const [isUpdating, setIsUpdating] = useState(false);
 
-  const filteredUsers = users.filter((user: any) => {
+  const filteredUsers = users.filter((user) => {
+    const name = (user.name || '').toLowerCase();
+    const email = (user.email || '').toLowerCase();
+    const phone = user.phone || '';
+    const term = searchTerm.toLowerCase();
+
     const matchesSearch = 
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.phone.includes(searchTerm);
+      name.includes(term) ||
+      email.includes(term) ||
+      phone.includes(term);
 
-    const matchesRole = roleFilter === 'ALL' || user.role.toUpperCase() === roleFilter.toUpperCase();
-    const matchesStatus = statusFilter === 'ALL' || user.status.toUpperCase() === statusFilter.toUpperCase();
+    const userRole = (user.role || '').toUpperCase();
+    const userStatus = (user.status || (user.isActive ? 'Active' : 'Disabled')).toUpperCase();
+
+    const matchesRole = roleFilter === 'ALL' || userRole === roleFilter.toUpperCase();
+    const matchesStatus = statusFilter === 'ALL' || userStatus === statusFilter.toUpperCase();
 
     return matchesSearch && matchesRole && matchesStatus;
   });
 
   const handleRoleSave = async () => {
     if (!editingUser) return;
+    setIsUpdating(true);
     try {
-      await updateUserRoleAction({ id: editingUser.id, role: selectedRole });
-      toast.success(`Role for ${editingUser.name} updated to ${selectedRole}`);
+      await updateUserRoleAction({ id: editingUser.id, role: selectedRole.toUpperCase() });
+      toast.success(`Role for ${editingUser.name} updated to ${selectedRole.toUpperCase()}`);
       setEditingUser(null);
-    } catch (err) {
-      toast.error('Failed to update user role');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update user role');
+    } finally {
+      setIsUpdating(false);
     }
   };
 
-  const handleToggleStatus = async (user: any) => {
-    const newStatus = user.status === 'Active' ? 'Disabled' : 'Active';
+  const handleToggleStatus = async (user: AdminUser) => {
+    const isCurrentlyActive = user.isActive ?? (user.status?.toUpperCase() === 'ACTIVE');
+    const newStatus = isCurrentlyActive ? 'Disabled' : 'Active';
     try {
       await updateUserStatusAction({ id: user.id, status: newStatus });
       toast.success(`Account for ${user.name} is now ${newStatus}`);
-    } catch (err) {
-      toast.error('Failed to change user account status');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to change user account status');
     }
   };
 
-  const getRoleBadge = (role: string) => {
-    switch (role.toUpperCase()) {
+  const getRoleBadge = (role?: string) => {
+    switch ((role || '').toUpperCase()) {
       case 'ADMIN':
         return <Badge className="bg-purple-600 text-white rounded-full px-3 py-1 text-xs"><Shield className="h-3 w-3 mr-1 inline" /> Admin</Badge>;
       case 'SELLER':
@@ -58,9 +71,13 @@ export default function AdminUsersPage({ users }: { users: AdminUser[] }) {
       case 'CUSTOMER':
         return <Badge variant="outline" className="rounded-full px-3 py-1 text-xs text-slate-700"><User className="h-3 w-3 mr-1 inline" /> Customer</Badge>;
       default:
-        return <Badge variant="outline" className="rounded-full px-3 py-1 text-xs">{role}</Badge>;
+        return <Badge variant="outline" className="rounded-full px-3 py-1 text-xs">{role || 'Unknown'}</Badge>;
     }
   };
+
+  const adminCount = users.filter((u) => (u.role || '').toUpperCase() === 'ADMIN').length;
+  const sellerCount = users.filter((u) => (u.role || '').toUpperCase() === 'SELLER').length;
+  const customerCount = users.filter((u) => (u.role || '').toUpperCase() === 'CUSTOMER').length;
 
   return (
       <div className="space-y-6 sm:space-y-8">
@@ -92,7 +109,7 @@ export default function AdminUsersPage({ users }: { users: AdminUser[] }) {
                 </div>
                 <span className="text-xs font-semibold text-slate-500 uppercase">Admins</span>
               </div>
-              <p className="text-2xl font-extrabold text-slate-900">{users.filter((u: any) => u.role === 'admin').length}</p>
+              <p className="text-2xl font-extrabold text-slate-900">{adminCount}</p>
             </CardContent>
           </Card>
           <Card className="rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white">
@@ -103,7 +120,7 @@ export default function AdminUsersPage({ users }: { users: AdminUser[] }) {
                 </div>
                 <span className="text-xs font-semibold text-slate-500 uppercase">Sellers</span>
               </div>
-              <p className="text-2xl font-extrabold text-slate-900">{users.filter((u: any) => u.role === 'seller').length}</p>
+              <p className="text-2xl font-extrabold text-slate-900">{sellerCount}</p>
             </CardContent>
           </Card>
           <Card className="rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white">
@@ -114,7 +131,7 @@ export default function AdminUsersPage({ users }: { users: AdminUser[] }) {
                 </div>
                 <span className="text-xs font-semibold text-slate-500 uppercase">Customers</span>
               </div>
-              <p className="text-2xl font-extrabold text-slate-900">{users.filter((u: any) => u.role === 'customer').length}</p>
+              <p className="text-2xl font-extrabold text-slate-900">{customerCount}</p>
             </CardContent>
           </Card>
         </div>
@@ -168,54 +185,57 @@ export default function AdminUsersPage({ users }: { users: AdminUser[] }) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
-                  {filteredUsers.map((user: any) => (
-                    <tr key={user.id} className="hover:bg-slate-50/50 transition-colors bg-white">
-                      <td className="px-4 sm:px-6 py-4">
-                        <div className="flex items-center space-x-3">
-                          <img src={user.avatar} alt={user.name} className="h-9 w-9 rounded-full object-cover border border-slate-200" />
-                          <div>
-                            <div className="font-semibold text-slate-900">{user.name}</div>
-                            <div className="text-xs text-slate-400 font-mono">{user.email}</div>
+                  {filteredUsers.map((user) => {
+                    const isActive = user.isActive ?? (user.status?.toUpperCase() === 'ACTIVE');
+                    return (
+                      <tr key={user.id} className="hover:bg-slate-50/50 transition-colors bg-white">
+                        <td className="px-4 sm:px-6 py-4">
+                          <div className="flex items-center space-x-3">
+                            <img src={user.avatar} alt={user.name} className="h-9 w-9 rounded-full object-cover border border-slate-200 bg-slate-100" />
+                            <div>
+                              <div className="font-semibold text-slate-900">{user.name}</div>
+                              <div className="text-xs text-slate-400 font-mono">{user.email}</div>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-4 sm:px-6 py-4 font-mono text-xs text-slate-600">
-                        {user.phone}
-                      </td>
-                      <td className="px-4 sm:px-6 py-4">
-                        {getRoleBadge(user.role)}
-                      </td>
-                      <td className="px-4 sm:px-6 py-4 text-xs font-mono text-slate-500">
-                        {user.joinedDate}
-                      </td>
-                      <td className="px-4 sm:px-6 py-4">
-                        {user.status === 'Active' ? (
-                          <Badge variant="success" className="rounded-full px-2.5 py-0.5 text-xs">Active</Badge>
-                        ) : (
-                          <Badge variant="destructive" className="rounded-full px-2.5 py-0.5 text-xs">Disabled</Badge>
-                        )}
-                      </td>
-                      <td className="px-4 sm:px-6 py-4 text-right space-x-2 whitespace-nowrap">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => { setEditingUser(user); setSelectedRole(user.role); }}
-                          className="h-8 px-2.5 rounded-lg text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-semibold"
-                        >
-                          <Edit2 className="h-3.5 w-3.5 mr-1" /> Edit Role
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => handleToggleStatus(user)}
-                          className={`h-8 px-2.5 rounded-lg font-semibold ${user.status === 'Active' ? 'text-rose-600 hover:bg-rose-50' : 'text-emerald-600 hover:bg-emerald-50'}`}
-                        >
-                          {user.status === 'Active' ? <Ban className="h-3.5 w-3.5 mr-1 inline" /> : <CheckCircle className="h-3.5 w-3.5 mr-1 inline" />}
-                          {user.status === 'Active' ? 'Disable' : 'Enable'}
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td className="px-4 sm:px-6 py-4 font-mono text-xs text-slate-600">
+                          {user.phone}
+                        </td>
+                        <td className="px-4 sm:px-6 py-4">
+                          {getRoleBadge(user.role)}
+                        </td>
+                        <td className="px-4 sm:px-6 py-4 text-xs font-mono text-slate-500">
+                          {user.joinedDate}
+                        </td>
+                        <td className="px-4 sm:px-6 py-4">
+                          {isActive ? (
+                            <Badge variant="success" className="rounded-full px-2.5 py-0.5 text-xs">Active</Badge>
+                          ) : (
+                            <Badge variant="destructive" className="rounded-full px-2.5 py-0.5 text-xs">Disabled</Badge>
+                          )}
+                        </td>
+                        <td className="px-4 sm:px-6 py-4 text-right space-x-2 whitespace-nowrap">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => { setEditingUser(user); setSelectedRole((user.role || 'customer').toLowerCase()); }}
+                            className="h-8 px-2.5 rounded-lg text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-semibold"
+                          >
+                            <Edit2 className="h-3.5 w-3.5 mr-1" /> Edit Role
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => handleToggleStatus(user)}
+                            className={`h-8 px-2.5 rounded-lg font-semibold ${isActive ? 'text-rose-600 hover:bg-rose-50' : 'text-emerald-600 hover:bg-emerald-50'}`}
+                          >
+                            {isActive ? <Ban className="h-3.5 w-3.5 mr-1 inline" /> : <CheckCircle className="h-3.5 w-3.5 mr-1 inline" />}
+                            {isActive ? 'Disable' : 'Enable'}
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             )}
@@ -286,7 +306,13 @@ export default function AdminUsersPage({ users }: { users: AdminUser[] }) {
 
               <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-end space-x-3">
                 <Button variant="outline" onClick={() => setEditingUser(null)} className="rounded-xl">Cancel</Button>
-                <Button onClick={handleRoleSave} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl">Save Role</Button>
+                <Button 
+                  disabled={isUpdating}
+                  onClick={handleRoleSave} 
+                  className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
+                >
+                  Save Role
+                </Button>
               </div>
             </div>
           </div>

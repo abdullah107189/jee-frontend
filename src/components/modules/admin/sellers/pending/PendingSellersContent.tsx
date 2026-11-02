@@ -11,22 +11,29 @@ import Link from 'next/link';
 
 export default function AdminPendingSellersPage({ pendingSellers }: { pendingSellers: AdminSeller[] }) {
   const [selectedDoc, setSelectedDoc] = useState<{ companyName: string; docUrl: string; licenseNo: string } | null>(null);
+  const [processingId, setProcessingId] = useState<string | null>(null);
 
   const handleApprove = async (id: string, name: string) => {
+    setProcessingId(id);
     try {
-      await updateSellerStatusAction({ id, status: 'Approved' });
+      await updateSellerStatusAction({ id, status: 'APPROVED' });
       toast.success(`Seller "${name}" approved successfully!`);
-    } catch (err) {
-      toast.error('Failed to approve seller.');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to approve seller.');
+    } finally {
+      setProcessingId(null);
     }
   };
 
   const handleReject = async (id: string, name: string) => {
+    setProcessingId(id);
     try {
-      await updateSellerStatusAction({ id, status: 'Disabled', reason: 'Registration Rejected' });
+      await updateSellerStatusAction({ id, status: 'DISABLED', reason: 'Registration Rejected' });
       toast.error(`Seller application for "${name}" rejected.`);
-    } catch (err) {
-      toast.error('Failed to reject seller.');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to reject seller.');
+    } finally {
+      setProcessingId(null);
     }
   };
 
@@ -54,7 +61,7 @@ export default function AdminPendingSellersPage({ pendingSellers }: { pendingSel
           <div>
             <h4 className="text-base font-bold text-amber-900">Verification Guidelines</h4>
             <p className="text-sm text-amber-800 mt-1">
-              Please verify the trade license number, business address, and NID number against official government records before approving a seller. Approved sellers get authorization to register physical product items and issue instant warranties.
+              Please verify the trade license number, business address, and tax identification number before approving a seller. Approved sellers get authorization to register physical product items and issue instant warranties.
             </p>
           </div>
         </div>
@@ -74,14 +81,14 @@ export default function AdminPendingSellersPage({ pendingSellers }: { pendingSel
                   <tr>
                     <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-slate-500 whitespace-nowrap">Company & Owner</th>
                     <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-slate-500 whitespace-nowrap">Trade License</th>
-                    <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-slate-500 whitespace-nowrap">NID Number</th>
+                    <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-slate-500 whitespace-nowrap">Tax / NID ID</th>
                     <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-slate-500 whitespace-nowrap">Contact</th>
                     <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-slate-500 whitespace-nowrap">Applied Date</th>
                     <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-slate-500 text-right whitespace-nowrap">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
-                  {pendingSellers.map((seller: any) => (
+                  {pendingSellers.map((seller) => (
                     <tr key={seller.id} className="hover:bg-slate-50/50 transition-colors bg-white">
                       <td className="px-4 sm:px-6 py-4">
                         <div className="font-semibold text-slate-900">{seller.companyName}</div>
@@ -89,34 +96,38 @@ export default function AdminPendingSellersPage({ pendingSellers }: { pendingSel
                       </td>
                       <td className="px-4 sm:px-6 py-4">
                         <div className="font-mono text-xs font-semibold text-slate-800">{seller.licenseNo}</div>
-                        <button
-                          onClick={() => setSelectedDoc({ companyName: seller.companyName, docUrl: seller.licenseDocUrl, licenseNo: seller.licenseNo })}
-                          className="inline-flex items-center text-xs text-blue-600 hover:text-blue-700 font-semibold mt-1"
-                        >
-                          <FileText className="h-3.5 w-3.5 mr-1" /> View Document
-                        </button>
+                        {seller.licenseDocUrl ? (
+                          <button
+                            onClick={() => setSelectedDoc({ companyName: seller.companyName, docUrl: seller.licenseDocUrl!, licenseNo: seller.licenseNo })}
+                            className="inline-flex items-center text-xs text-blue-600 hover:text-blue-700 font-semibold mt-1"
+                          >
+                            <FileText className="h-3.5 w-3.5 mr-1" /> View Document
+                          </button>
+                        ) : null}
                       </td>
                       <td className="px-4 sm:px-6 py-4 text-xs font-mono text-slate-600">
-                        {seller.nidNumber}
+                        {seller.nidNumber || seller.taxId || 'N/A'}
                       </td>
-                      <td className="px-4 sm:px-6 py-4 text-xs text-slate-600">
+                      <td className="px-4 sm:px-6 py-4 text-slate-600">
                         <div>{seller.email}</div>
-                        <div className="font-mono text-slate-400">{seller.phone}</div>
+                        <div className="text-xs text-slate-400 font-mono">{seller.phone}</div>
                       </td>
                       <td className="px-4 sm:px-6 py-4 text-xs font-mono text-slate-500">
                         {seller.joinedDate}
                       </td>
                       <td className="px-4 sm:px-6 py-4 text-right space-x-2 whitespace-nowrap">
                         <Button 
+                          size="sm" 
+                          disabled={processingId === seller.id}
                           onClick={() => handleApprove(seller.id, seller.companyName)}
-                          size="sm"
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md shadow-emerald-600/20"
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl"
                         >
                           <CheckCircle className="h-4 w-4 mr-1.5" /> Approve
                         </Button>
                         <Button 
+                          size="sm" 
+                          disabled={processingId === seller.id}
                           onClick={() => handleReject(seller.id, seller.companyName)}
-                          size="sm"
                           variant="destructive"
                           className="rounded-xl"
                         >

@@ -87,6 +87,7 @@ export function QrCameraScanner({
     }
   }, []);
 
+  
   // Start Camera
   const startCamera = async () => {
     try {

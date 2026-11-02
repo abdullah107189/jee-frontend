@@ -1,5 +1,6 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { requireRole } from '@/lib/auth/session';
 import {
   bulkAddAdminProductItems,
@@ -14,8 +15,8 @@ import {
 type ActionResult = { success: boolean; message: string };
 
 const USER_ROLES = new Set(['admin', 'seller', 'customer', 'ADMIN', 'SELLER', 'CUSTOMER']);
-const USER_STATUSES = new Set(['Active', 'Disabled']);
-const SELLER_STATUSES = new Set(['Approved', 'Pending', 'Suspended', 'Disabled']);
+const USER_STATUSES = new Set(['Active', 'Disabled', 'ACTIVE', 'DISABLED']);
+const SELLER_STATUSES = new Set(['Approved', 'Pending', 'Suspended', 'Disabled', 'APPROVED', 'PENDING', 'SUSPENDED', 'DISABLED']);
 const ORDER_STATUSES = new Set(['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED']);
 const WARRANTY_STATUSES = new Set(['Active', 'Claimed', 'Expired', 'Void', 'ACTIVE', 'CLAIMED', 'EXPIRED', 'VOID']);
 const CLAIM_STATUSES = new Set(['Submitted', 'In Progress', 'Approved', 'Completed', 'Rejected']);
@@ -32,7 +33,9 @@ export async function updateUserRoleAction(input: { id: string; role: string }):
   const id = requiredText(input?.id, 'user id');
   const role = requiredText(input?.role, 'role');
   if (!USER_ROLES.has(role)) throw new Error('Invalid user role');
-  return updateAdminUserRole(id, role);
+  const result = await updateAdminUserRole(id, role);
+  revalidatePath('/admin/users');
+  return result;
 }
 
 export async function updateUserStatusAction(input: { id: string; status: string }): Promise<ActionResult> {
@@ -40,7 +43,9 @@ export async function updateUserStatusAction(input: { id: string; status: string
   const id = requiredText(input?.id, 'user id');
   const status = requiredText(input?.status, 'status');
   if (!USER_STATUSES.has(status)) throw new Error('Invalid user status');
-  return updateAdminUserStatus(id, status);
+  const result = await updateAdminUserStatus(id, status);
+  revalidatePath('/admin/users');
+  return result;
 }
 
 export async function updateSellerStatusAction(input: { id: string; status: string; reason?: string }): Promise<ActionResult> {
@@ -49,7 +54,10 @@ export async function updateSellerStatusAction(input: { id: string; status: stri
   const status = requiredText(input?.status, 'status');
   if (!SELLER_STATUSES.has(status)) throw new Error('Invalid seller status');
   if (input.reason !== undefined) requiredText(input.reason, 'reason', 500);
-  return updateAdminSellerStatus(id, status);
+  const result = await updateAdminSellerStatus(id, status);
+  revalidatePath('/admin/sellers');
+  revalidatePath('/admin/sellers/pending');
+  return result;
 }
 
 export async function bulkAddProductItemsAction(input: { productId: string; items: Array<{ uniqueId: string; serialNumber?: string; status: string }> }): Promise<ActionResult> {

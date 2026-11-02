@@ -174,7 +174,7 @@ export function QrStickerModal({
               }`}
             >
               {items.map((item, idx) => {
-                const qrValue = `https://jee.store/warranty?serial=${encodeURIComponent(
+                const qrValue = `http://localhost:3000/warranty?serial=${encodeURIComponent(
                   item.serialNumber
                 )}`;
 
