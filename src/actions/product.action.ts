@@ -1,5 +1,23 @@
-﻿"use server";
-import { revalidatePath } from "next/cache";
+"use server";
+import { revalidatePath, revalidateTag } from "next/cache";
+
+function revalidateProductCaches(options?: { productId?: string; slug?: string }) {
+  try {
+    revalidateTag("products", "max");
+    revalidateTag("categories", "max");
+    if (options?.slug) {
+      revalidateTag(`product:${options.slug}`, "max");
+    }
+    revalidatePath("/", "layout");
+    revalidatePath("/products");
+    revalidatePath("/admin/products");
+    if (options?.productId) {
+      revalidatePath(`/admin/products/${options.productId}`);
+    }
+  } catch (error) {
+    console.error("[revalidateProductCaches]", error);
+  }
+}
 
 const SERVER_API = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 import { cookies } from "next/headers";
@@ -70,6 +88,7 @@ export async function bulkAddVariantItemsAction(input: {
     revalidatePath(
       `/admin/products/${parsed.data.productId}/variants/${parsed.data.variantId}/items`,
     );
+    revalidateProductCaches({ productId: parsed.data.productId });
 
     return {
       success: true,
@@ -102,7 +121,7 @@ export async function deleteProductAction(id: string) {
       return { success: false, message: json.message ?? "Delete failed" };
     }
 
-    revalidatePath("/admin/products");
+    revalidateProductCaches({ productId: id });
     return { success: true, message: "Product deleted" };
   } catch (error) {
     console.error("[deleteProductAction]", error);
@@ -141,7 +160,7 @@ export async function createProductAction(input: CreateProductInput) {
       };
     }
 
-    revalidatePath("/admin/products");
+    revalidateProductCaches({ productId: json.data?.id, slug: json.data?.slug });
     return {
       success: true,
       message: json.message ?? "Product created",
@@ -183,8 +202,7 @@ export async function updateProductAction(
       };
     }
 
-    revalidatePath("/admin/products");
-    revalidatePath(`/admin/products/${id}`);
+    revalidateProductCaches({ productId: id, slug: json.data?.slug });
     return { success: true, message: json.message ?? "Product updated" };
   } catch (error) {
     console.error("[updateProductAction]", error);
@@ -246,8 +264,7 @@ export async function addVariantAction(
       };
     }
 
-    revalidatePath("/admin/products");
-    revalidatePath(`/admin/products/${productId}`);
+    revalidateProductCaches({ productId, slug: json.data?.slug || product?.slug });
     return {
       success: true,
       message: json.message ?? "Variant added successfully",
@@ -357,9 +374,8 @@ export async function updateVariantAction(
       };
     }
 
-    revalidatePath("/admin/products");
-    revalidatePath(`/admin/products/${productId}`);
     revalidatePath(`/admin/products/${productId}/variants/${variantId}`);
+    revalidateProductCaches({ productId, slug: json.data?.slug || product?.slug });
     return {
       success: true,
       message: json.message ?? "Variant updated successfully",
@@ -433,8 +449,7 @@ export async function deleteVariantAction(
       };
     }
 
-    revalidatePath("/admin/products");
-    revalidatePath(`/admin/products/${productId}`);
+    revalidateProductCaches({ productId, slug: json.data?.slug || product?.slug });
     return { success: true, message: "Variant deleted successfully" };
   } catch (error) {
     console.error("[deleteVariantAction]", error);

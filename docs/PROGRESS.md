@@ -47,6 +47,7 @@ SSLCommerz, analytics, audit log UI
 
 ## খোলা প্রশ্ন
 ## Done log
+- 2026-11-02: Admin Product/Variant/Category তৈরি, আপডেট, ডিলিট বা ইনভেন্টরি আইটেম যোগের পর Public Storefront ও Admin-এ Instant On-Demand Cache Invalidation চালু (`revalidateTag("products", "max")`, `revalidateTag("categories", "max")`, `revalidateTag("product:${slug}", "max")`, `revalidatePath("/", "layout")`, `revalidatePath("/products")`; frontend bun run lint পাস: 0 errors)
 - 2026-11-02: Admin Product Variant Edit ও Add এ Dual Image Support (Direct URL paste + Local file upload FileReader Data-URL) এবং ব্যাকএন্ড ProductVariant Update লজিক ও SKU সিঙ্ক সম্পন্ন (frontend ও backend build/lint পাস: 0 errors)
 - 2026-11-02: Admin Sellers, Pending Sellers Approvals, এবং Users Management এর mock বাদ দিয়ে রিয়েল API (`/sellers`, `/users`, `PATCH /sellers/:id`, `PATCH /users/:id`) এবং Next.js Server Actions ইন্টিগ্রেশন সম্পন্ন (tsc --noEmit পাস: 0 errors)
 - 2026-10-26: Seller POS ব্যাচ সেল রেসপন্স ও টোস্ট ফিক্স (একক কনসোলিডেটেড টোস্ট, Sonner স্ট্যান্ডার্ড), সেল হিস্ট্রি পেজ ক্র্যাশ ফিক্স (price ও status সেফটি) এবং মোবাইল-ফার্স্ট কার্ড ভিউ সম্পন্ন (bun run build পাস: ৩৯ রুট জেনারেটেড)

@@ -56,7 +56,7 @@ export default async function CategoryPage({
         getCategoryFilters(parsed.slug),
     ]);
     if (!data?.category) notFound();
-    console.log("data", data);
+
 
     const hasActiveFilters = !!(
         parsed.brand ||

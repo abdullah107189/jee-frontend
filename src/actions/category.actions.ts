@@ -1,10 +1,22 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import type { CategoryActionState } from "@/lib/types/category.types";
 
 const API_URL = process.env.API_URL!;
+
+function revalidateCategoryCaches() {
+    try {
+        revalidateTag("categories", "max");
+        revalidateTag("products", "max");
+        revalidatePath("/", "layout");
+        revalidatePath("/products");
+        revalidatePath("/admin/categories");
+    } catch (error) {
+        console.error("[revalidateCategoryCaches]", error);
+    }
+}
 
 /* ─────────────────────────────
    Create
@@ -65,7 +77,7 @@ export async function createCategoryAction(
             };
         }
 
-        revalidateTag("categories", "max");
+        revalidateCategoryCaches();
 
         return {
             success: true,
@@ -175,7 +187,7 @@ export async function updateCategoryAction(
             };
         }
 
-        revalidateTag("categories", "max");
+        revalidateCategoryCaches();
 
         return {
             success: true,
@@ -223,7 +235,7 @@ export async function deleteCategoryAction(
             };
         }
 
-        revalidateTag("categories", "max");
+        revalidateCategoryCaches();
 
         return {
             success: true,

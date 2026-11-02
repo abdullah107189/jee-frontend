@@ -182,6 +182,7 @@ const getProductFilters = async (): Promise<ProductFiltersResponse> => {
     const response = await fetch(`${API_URL}/products/filters`, {
       next: {
         revalidate: 300,
+        tags: ["products", "filters"],
       },
     });
 
