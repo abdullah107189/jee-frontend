@@ -13,6 +13,7 @@ const getBrands = async (): Promise<BrandsResponse> => {
     const response = await fetch(`${API_URL}/brands`, {
       next: {
         revalidate: 300,
+        tags: ["brands"],
       },
     });
 

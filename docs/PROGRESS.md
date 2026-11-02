@@ -47,6 +47,7 @@ SSLCommerz, analytics, audit log UI
 
 ## খোলা প্রশ্ন
 ## Done log
+- 2026-11-02: Admin Brand Management সম্পূর্ণ রিয়েল API CRUD ইন্টিগ্রেশন সম্পন্ন (Add Brand Modal, Edit Brand Modal, Real Delete Action, Server Actions `createBrandAction`/`updateBrandAction`/`deleteBrandAction`, backend `PATCH /brands/:id` ও `DELETE /brands/:id` routes; frontend lint ও backend build পাস: 0 errors)
 - 2026-11-02: Admin All Warranties (`/admin/warranties`) এবং Claims & Servicing Desk (`/admin/warranties/claims`) এর mock বাদ দিয়ে রিয়েল API (`/warranties`, `/warranty-claims`, `PATCH /warranties/:id`, `PATCH /warranty-claims/:id`) সম্পূর্ণ ডায়নামিক ও স্ট্যাটাস আপডেট ইন্টিগ্রেশন সম্পন্ন (frontend lint ও backend build পাস: 0 errors)
 - 2026-11-02: Admin Product/Variant/Category তৈরি, আপডেট, ডিলিট বা ইনভেন্টরি আইটেম যোগের পর Public Storefront ও Admin-এ Instant On-Demand Cache Invalidation চালু (`revalidateTag("products", "max")`, `revalidateTag("categories", "max")`, `revalidateTag("product:${slug}", "max")`, `revalidatePath("/", "layout")`, `revalidatePath("/products")`; frontend bun run lint পাস: 0 errors)
 - 2026-11-02: Admin Product Variant Edit ও Add এ Dual Image Support (Direct URL paste + Local file upload FileReader Data-URL) এবং ব্যাকএন্ড ProductVariant Update লজিক ও SKU সিঙ্ক সম্পন্ন (frontend ও backend build/lint পাস: 0 errors)

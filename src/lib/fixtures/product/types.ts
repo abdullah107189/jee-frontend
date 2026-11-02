@@ -16,6 +16,7 @@ export interface Brand {
   slug: string;
   logo: string | null;
   description: string | null;
+  isActive?: boolean;
 }
 
 export interface WarrantyFilterOption {
