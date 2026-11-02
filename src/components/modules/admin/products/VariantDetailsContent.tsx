@@ -87,7 +87,7 @@ function groupItemsIntoBatches(items: VariantItem[]): ProductionBatch[] {
     rawBatches.push(currentGroup);
   }
 
-  return rawBatches.map((batchItems, idx) => {
+  const mappedBatches = rawBatches.map((batchItems, idx) => {
     // Pick manufacturedAt if any item has it, else createdAt
     const withMfg = batchItems.find((it) => it.manufacturedAt);
     const dateValue = withMfg?.manufacturedAt || batchItems[0].createdAt;
@@ -99,6 +99,9 @@ function groupItemsIntoBatches(items: VariantItem[]): ProductionBatch[] {
       items: batchItems,
     };
   });
+
+  // Reverse so the newest / last updated batch is first
+  return mappedBatches.reverse();
 }
 
 /** Calculate the next sequential serial number starting point for this SKU */
@@ -291,12 +294,12 @@ export default function VariantDetailsContent({
 
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+        <div className="space-y-1">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-900 break-words">
             {variant.product?.name || "Unnamed Variant"}
           </h1>
-          <p className="mt-1 text-sm font-mono text-slate-500 font-semibold">{variant.sku}</p>
-          <div className="mt-3 flex gap-2">
+          <p className="text-xs sm:text-sm font-mono text-slate-500 font-semibold">{variant.sku}</p>
+          <div className="pt-2 flex flex-wrap gap-2">
             {variant.isDefault && <Badge variant="outline">Default</Badge>}
             <Badge variant={variant.isActive ? "success" : "outline"}>
               {variant.isActive ? "Active" : "Inactive"}
@@ -307,8 +310,8 @@ export default function VariantDetailsContent({
           </div>
         </div>
 
-        <Link href={`/admin/products/${productId}/variants/${variant.id}/edit`}>
-          <Button className="h-11 rounded-xl shadow-lg shadow-blue-500/20 font-bold">
+        <Link href={`/admin/products/${productId}/variants/${variant.id}/edit`} className="w-full sm:w-auto">
+          <Button className="w-full sm:w-auto h-11 rounded-xl shadow-lg shadow-blue-500/20 font-bold justify-center">
             <Edit className="mr-2 h-4 w-4" />
             Edit Variant
           </Button>
@@ -316,14 +319,14 @@ export default function VariantDetailsContent({
       </div>
 
       {/* Images */}
-      <Card className="rounded-2xl border-none p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-[2rem] sm:p-8">
-        <h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-slate-800">
-          <ImageIcon className="h-5 w-5" /> Images ({variant.images.length})
+      <Card className="rounded-2xl border-none p-4 sm:p-6 lg:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-[2rem]">
+        <h2 className="mb-4 flex items-center gap-2 text-base sm:text-lg font-bold text-slate-800">
+          <ImageIcon className="h-5 w-5 text-blue-600" /> Images ({variant.images.length})
         </h2>
         {variant.images.length === 0 ? (
           <p className="text-sm text-slate-500">No images.</p>
         ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-4 lg:grid-cols-6">
             {variant.images.map((img, i) => (
               <div
                 key={i}
@@ -343,24 +346,24 @@ export default function VariantDetailsContent({
       </Card>
 
       {/* Pricing & Stock Summary */}
-      <Card className="rounded-2xl border-none p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-[2rem] sm:p-8">
-        <h2 className="mb-4 text-lg font-bold text-slate-800">Pricing & Stock</h2>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div>
-            <p className="text-sm text-slate-500">Price</p>
-            <p className="text-xl font-bold text-slate-900">
+      <Card className="rounded-2xl border-none p-4 sm:p-6 lg:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-[2rem]">
+        <h2 className="mb-4 text-base sm:text-lg font-bold text-slate-800">Pricing & Stock</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+          <div className="p-3 sm:p-4 rounded-xl bg-slate-50/70 border border-slate-100">
+            <p className="text-xs text-slate-500 font-medium">Price</p>
+            <p className="text-lg sm:text-2xl font-black text-slate-900 mt-0.5">
               ৳{price.toLocaleString()}
             </p>
           </div>
-          <div>
-            <p className="text-sm text-slate-500">Compare Price</p>
-            <p className="text-xl font-bold text-slate-400 line-through">
+          <div className="p-3 sm:p-4 rounded-xl bg-slate-50/70 border border-slate-100">
+            <p className="text-xs text-slate-500 font-medium">Compare Price</p>
+            <p className="text-lg sm:text-2xl font-bold text-slate-400 line-through mt-0.5">
               {compare ? `৳${compare.toLocaleString()}` : "—"}
             </p>
           </div>
-          <div>
-            <p className="text-sm text-slate-500">Stock Quantity</p>
-            <p className="text-xl font-bold text-slate-900">
+          <div className="col-span-2 sm:col-span-1 p-3 sm:p-4 rounded-xl bg-blue-50/50 border border-blue-100">
+            <p className="text-xs text-blue-700 font-medium">Stock Quantity</p>
+            <p className="text-lg sm:text-2xl font-black text-blue-900 mt-0.5">
               {variant.stockQuantity}
             </p>
           </div>
@@ -368,18 +371,18 @@ export default function VariantDetailsContent({
       </Card>
 
       {/* Attributes */}
-      <Card className="rounded-2xl border-none p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-[2rem] sm:p-8">
-        <h2 className="mb-4 text-lg font-bold text-slate-800">Attributes</h2>
-        <div className="grid gap-3 sm:grid-cols-2">
+      <Card className="rounded-2xl border-none p-4 sm:p-6 lg:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-[2rem]">
+        <h2 className="mb-4 text-base sm:text-lg font-bold text-slate-800">Attributes</h2>
+        <div className="grid gap-2.5 sm:grid-cols-2">
           {Object.entries(variant.attributes).map(([k, v]) => (
             <div
               key={k}
-              className="flex justify-between rounded-xl border border-slate-100 bg-slate-50/50 px-4 py-3"
+              className="flex justify-between items-center rounded-xl border border-slate-100 bg-slate-50/50 px-4 py-3"
             >
-              <span className="text-sm font-medium capitalize text-slate-500">
+              <span className="text-xs sm:text-sm font-medium capitalize text-slate-500">
                 {k}
               </span>
-              <span className="text-sm font-semibold text-slate-800">
+              <span className="text-xs sm:text-sm font-semibold text-slate-800 text-right">
                 {String(v)}
               </span>
             </div>
@@ -389,12 +392,12 @@ export default function VariantDetailsContent({
 
       {/* Production Batches & Serialized Units Section */}
       <Card className="overflow-hidden rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-[2rem]">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 p-6">
+        {/* Card Top Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 p-4 sm:p-6">
           <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                <Package className="h-5 w-5 text-blue-600" />
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
+                <Package className="h-5 w-5 text-blue-600 flex-shrink-0" />
                 Production Batches & Physical Units ({variant.productItems.length})
               </h2>
               <span className="rounded-full bg-blue-50 text-blue-700 px-2.5 py-0.5 text-xs font-bold border border-blue-200">
@@ -406,7 +409,7 @@ export default function VariantDetailsContent({
             </p>
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
             {variant.productItems.length > 0 && (
               <Button
                 variant="outline"
@@ -424,7 +427,7 @@ export default function VariantDetailsContent({
                   );
                   setQrModalOpen(true);
                 }}
-                className="rounded-xl gap-1.5 border-slate-200 text-slate-700 hover:bg-slate-50 font-bold"
+                className="flex-1 sm:flex-initial h-10 sm:h-11 rounded-xl gap-1.5 border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-xs sm:text-sm"
               >
                 <Printer className="h-4 w-4 text-blue-600" />
                 Print All ({variant.productItems.length})
@@ -433,7 +436,7 @@ export default function VariantDetailsContent({
 
             <Button
               onClick={() => setAddBatchModalOpen(true)}
-              className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold gap-2 shadow-lg shadow-blue-500/20"
+              className="flex-1 sm:flex-initial h-10 sm:h-11 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold gap-2 shadow-lg shadow-blue-500/20 text-xs sm:text-sm"
             >
               <Plus className="h-4 w-4" />
               Add Batch Units (Stock In)
@@ -441,14 +444,28 @@ export default function VariantDetailsContent({
           </div>
         </div>
 
-        {/* Batch Overview Cards / Fast Print Bar */}
+        {/* Batch Overview Cards with Horizontal Smooth Scroll (Latest batch first) */}
         {batches.length > 0 && (
-          <div className="p-6 bg-slate-50/60 border-b border-slate-100 space-y-3">
-            <div className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <Layers className="h-3.5 w-3.5" /> Production Runs (Click to Filter or Print Batch Stickers)
+          <div className="p-4 sm:p-6 bg-slate-50/60 border-b border-slate-100 space-y-3">
+            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <Layers className="h-3.5 w-3.5 text-blue-600" />
+                <span>Production Runs ({batches.length})</span>
+                <span className="text-[11px] font-normal text-slate-400 normal-case hidden xs:inline">
+                  — Latest update first
+                </span>
+              </div>
+              {batches.length > 2 && (
+                <span className="text-[11px] text-blue-600 font-semibold normal-case flex items-center gap-1">
+                  Swipe / Scroll →
+                </span>
+              )}
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {batches.map((batch) => {
+
+            {/* Scrollable Horizontal Batches Row */}
+            <div className="flex gap-3 overflow-x-auto pb-3 pt-1 -mx-4 px-4 sm:-mx-6 sm:px-6 snap-x snap-mandatory scrollbar-thin touch-pan-x">
+              {batches.map((batch, index) => {
+                const isLatest = index === 0;
                 const firstSerial = batch.items[0]?.serialNumber;
                 const lastSerial = batch.items[batch.items.length - 1]?.serialNumber;
                 const isSelected = selectedBatchFilter === String(batch.batchNumber);
@@ -461,23 +478,28 @@ export default function VariantDetailsContent({
                         prev === String(batch.batchNumber) ? "ALL" : String(batch.batchNumber)
                       )
                     }
-                    className={`cursor-pointer rounded-2xl p-4 transition-all border ${
+                    className={`min-w-[270px] sm:min-w-[310px] max-w-[340px] flex-shrink-0 snap-start cursor-pointer rounded-2xl p-4 transition-all border ${
                       isSelected
                         ? "bg-white border-blue-500 shadow-md ring-2 ring-blue-500/20"
                         : "bg-white border-slate-200/80 hover:border-slate-300 hover:shadow-sm"
                     }`}
                   >
-                    <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <span className="font-extrabold text-sm text-slate-800">
+                        <span className="font-extrabold text-sm text-slate-900">
                           {batch.label}
                         </span>
+                        {isLatest && (
+                          <span className="bg-blue-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+                            Latest
+                          </span>
+                        )}
                         <span className="bg-emerald-50 text-emerald-700 text-xs font-bold px-2 py-0.5 rounded-full border border-emerald-200">
                           {batch.items.length} units
                         </span>
                       </div>
-                      <span className="text-[11px] text-slate-500 font-mono flex items-center gap-1 font-semibold">
-                        <Calendar className="h-3 w-3 text-blue-600" /> {batch.date}
+                      <span className="text-[11px] text-slate-500 font-mono flex items-center gap-1 font-semibold whitespace-nowrap">
+                        <Calendar className="h-3 w-3 text-blue-600 flex-shrink-0" /> {batch.date}
                       </span>
                     </div>
 
@@ -505,12 +527,14 @@ export default function VariantDetailsContent({
           </div>
         )}
 
-        {/* Filter Pills */}
-        <div className="px-6 py-3 bg-white border-b border-slate-100 flex items-center gap-2 overflow-x-auto text-xs">
-          <span className="font-bold text-slate-400 whitespace-nowrap">Filter Units:</span>
+        {/* Filter Pills with Horizontal Overflow Scroll */}
+        <div className="px-4 sm:px-6 py-3 bg-white border-b border-slate-100 flex items-center gap-2 overflow-x-auto scrollbar-thin text-xs touch-pan-x">
+          <span className="font-bold text-slate-400 whitespace-nowrap flex-shrink-0">
+            Filter Units:
+          </span>
           <button
             onClick={() => setSelectedBatchFilter("ALL")}
-            className={`px-3 py-1.5 rounded-xl font-bold transition-all ${
+            className={`px-3 py-1.5 rounded-xl font-bold transition-all flex-shrink-0 whitespace-nowrap ${
               selectedBatchFilter === "ALL"
                 ? "bg-slate-900 text-white shadow-sm"
                 : "bg-slate-100 text-slate-600 hover:bg-slate-200"
@@ -518,31 +542,130 @@ export default function VariantDetailsContent({
           >
             All Units ({variant.productItems.length})
           </button>
-          {batches.map((batch) => (
+          {batches.map((batch, idx) => (
             <button
               key={batch.batchNumber}
               onClick={() => setSelectedBatchFilter(String(batch.batchNumber))}
-              className={`px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 flex-shrink-0 whitespace-nowrap ${
                 selectedBatchFilter === String(batch.batchNumber)
                   ? "bg-blue-600 text-white shadow-sm"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
               <Tag className="h-3 w-3" />
-              {batch.label} ({batch.items.length} Units — {batch.date})
+              {batch.label}
+              {idx === 0 && (
+                <span className="text-[10px] bg-blue-500 text-white px-1 py-0.2 rounded font-black">
+                  New
+                </span>
+              )}
+              ({batch.items.length} Units — {batch.date})
             </button>
           ))}
         </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
+        {/* Mobile-Optimized Units Cards View (sm:hidden) */}
+        <div className="divide-y divide-slate-100 sm:hidden">
+          {displayedItems.length === 0 ? (
+            <div className="p-8 text-center text-slate-500">
+              <Package className="mx-auto h-8 w-8 text-slate-300 mb-2" />
+              <p className="font-semibold text-sm text-slate-700">No units in this selection.</p>
+              <p className="text-xs text-slate-400 mt-1">
+                Click &quot;Add Batch Units&quot; to produce new serial numbers.
+              </p>
+            </div>
+          ) : (
+            displayedItems.map((item) => {
+              const matchedBatch = batches.find((b) =>
+                b.items.some((it) => it.id === item.id)
+              );
+              const displayDate = item.manufacturedAt || item.createdAt;
+
+              return (
+                <div key={item.id} className="p-4 bg-white space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono font-extrabold text-sm text-slate-900 tracking-tight">
+                      {item.serialNumber}
+                    </span>
+                    <Badge
+                      variant={
+                        item.status === "AVAILABLE"
+                          ? "success"
+                          : item.status === "SOLD"
+                          ? "destructive"
+                          : "outline"
+                      }
+                      className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
+                    >
+                      {item.status}
+                    </Badge>
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs text-slate-500">
+                    <div className="flex items-center gap-1.5">
+                      {matchedBatch ? (
+                        <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-[11px] font-bold text-blue-700 border border-blue-200">
+                          <Tag className="h-3 w-3" /> {matchedBatch.label}
+                        </span>
+                      ) : (
+                        <span className="text-slate-400 font-mono">—</span>
+                      )}
+                    </div>
+                    <div className="font-mono text-slate-600 font-semibold flex items-center gap-1">
+                      <Calendar className="h-3 w-3 text-blue-600" />
+                      {formatAppDate(displayDate)}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-50">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setQrItems([
+                          {
+                            serialNumber: item.serialNumber,
+                            productName: variant.product?.name,
+                            variantSku: variant.sku,
+                            status: item.status,
+                          },
+                        ]);
+                        setQrModalTitle(`Box Sticker — SN: ${item.serialNumber}`);
+                        setQrModalOpen(true);
+                      }}
+                      className="h-8 flex-1 rounded-xl text-xs font-bold text-blue-600 border-blue-200 hover:bg-blue-50"
+                    >
+                      <QrCode className="h-3.5 w-3.5 mr-1 text-blue-600" />
+                      Print Sticker
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      disabled={isDeleting}
+                      onClick={() =>
+                        setItemToDelete({ id: item.id, serial: item.serialNumber })
+                      }
+                      className="h-8 px-3 rounded-xl text-red-500 hover:text-red-700 hover:bg-red-50"
+                      title="Remove Unit"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {/* Desktop Table View (hidden sm:block) */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-slate-100 bg-slate-50/80">
               <tr>
                 <th className="px-6 py-4 font-bold text-slate-500">Serial Number</th>
                 <th className="px-6 py-4 font-bold text-slate-500">Production Batch</th>
                 <th className="px-6 py-4 font-bold text-slate-500">Status</th>
-                <th className="px-6 py-4 font-bold text-slate-500">Manufacture Date (DD MMM YYYY)</th>
+                <th className="px-6 py-4 font-bold text-slate-500">Manufacture Date</th>
                 <th className="px-6 py-4 font-bold text-slate-500 text-right">Actions</th>
               </tr>
             </thead>
@@ -642,19 +765,19 @@ export default function VariantDetailsContent({
 
       {/* Add Batch Units (Stock In) Modal */}
       {addBatchModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="relative w-full max-w-xl bg-white rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="relative w-full max-w-xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-8 space-y-5 sm:space-y-6 max-h-[92vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-slate-100">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-2xl bg-blue-50 text-blue-600">
-                  <Layers className="h-6 w-6" />
+                <div className="p-2 sm:p-2.5 rounded-2xl bg-blue-50 text-blue-600">
+                  <Layers className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-extrabold text-slate-900">
+                  <h3 className="text-base sm:text-lg font-extrabold text-slate-900">
                     Add Production Batch Units
                   </h3>
-                  <p className="text-xs text-slate-400 font-mono">
+                  <p className="text-[11px] sm:text-xs text-slate-400 font-mono">
                     SKU: <span className="font-bold text-slate-700">{variant.sku}</span> | Next Batch:{" "}
                     <span className="font-bold text-blue-600">Batch #{batches.length + 1}</span>
                   </p>
@@ -669,30 +792,30 @@ export default function VariantDetailsContent({
             </div>
 
             {/* Mode Selector */}
-            <div className="flex rounded-xl bg-slate-100 p-1">
+            <div className="flex flex-col sm:flex-row rounded-xl bg-slate-100 p-1 gap-1 sm:gap-0">
               <button
                 type="button"
                 onClick={() => setBatchMode("auto")}
-                className={`flex-1 rounded-lg py-2.5 text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                className={`flex-1 rounded-lg py-2 sm:py-2.5 text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                   batchMode === "auto"
                     ? "bg-white text-blue-600 shadow-sm"
                     : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 <Sparkles className="h-3.5 w-3.5" />
-                Auto Sequential Serials (Factory Run)
+                Auto Sequential Serials (Factory)
               </button>
               <button
                 type="button"
                 onClick={() => setBatchMode("scan")}
-                className={`flex-1 rounded-lg py-2.5 text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                className={`flex-1 rounded-lg py-2 sm:py-2.5 text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                   batchMode === "scan"
                     ? "bg-white text-blue-600 shadow-sm"
                     : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 <Barcode className="h-3.5 w-3.5" />
-                Custom / Supplier Barcode Scan
+                Custom / Barcode Scan
               </button>
             </div>
 
@@ -708,7 +831,7 @@ export default function VariantDetailsContent({
                       Current Total: {variant.productItems.length} units
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                     <Input
                       type="number"
                       min={1}
@@ -717,15 +840,15 @@ export default function VariantDetailsContent({
                       onChange={(e) =>
                         setAutoQuantity(parseInt(e.target.value, 10) || 1)
                       }
-                      className="h-11 rounded-xl text-base font-bold font-mono w-32"
+                      className="h-11 rounded-xl text-base font-bold font-mono w-full sm:w-32"
                     />
-                    <div className="flex gap-1.5 flex-wrap">
+                    <div className="grid grid-cols-4 sm:flex gap-1.5 w-full sm:w-auto">
                       {[5, 10, 20, 50].map((num) => (
                         <button
                           key={num}
                           type="button"
                           onClick={() => setAutoQuantity(num)}
-                          className={`px-3 py-2 rounded-xl text-xs font-bold border transition-colors ${
+                          className={`py-2 px-3 rounded-xl text-xs font-bold border transition-colors text-center ${
                             autoQuantity === num
                               ? "bg-blue-50 border-blue-400 text-blue-700"
                               : "border-slate-200 text-slate-600 hover:bg-slate-50"
@@ -739,12 +862,12 @@ export default function VariantDetailsContent({
                 </div>
 
                 {/* Live Sequence Preview */}
-                <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-100 space-y-2">
+                <div className="p-3 sm:p-4 rounded-2xl bg-blue-50/70 border border-blue-100 space-y-2">
                   <div className="text-xs font-bold text-blue-900 flex items-center gap-1.5">
                     <Hash className="h-3.5 w-3.5 text-blue-600" />
                     Generated Serial Number Sequence Preview:
                   </div>
-                  <div className="flex items-center justify-between text-xs font-mono">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs font-mono gap-1">
                     <div>
                       <span className="text-slate-500">First Serial:</span>{" "}
                       <span className="font-bold text-slate-800">
@@ -804,12 +927,12 @@ export default function VariantDetailsContent({
             </div>
 
             {/* Actions */}
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 pt-3 border-t border-slate-100">
               <Button
                 variant="outline"
                 type="button"
                 onClick={() => setAddBatchModalOpen(false)}
-                className="rounded-xl px-5 font-bold"
+                className="w-full sm:w-auto h-11 sm:h-10 rounded-xl px-5 font-bold"
               >
                 Cancel
               </Button>
@@ -817,7 +940,7 @@ export default function VariantDetailsContent({
                 type="button"
                 disabled={isAddingBatch}
                 onClick={handleBatchSubmit}
-                className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 shadow-lg shadow-blue-500/20"
+                className="w-full sm:w-auto h-11 sm:h-10 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 shadow-lg shadow-blue-500/20"
               >
                 <CheckCircle2 className="mr-2 h-4 w-4" />
                 {isAddingBatch

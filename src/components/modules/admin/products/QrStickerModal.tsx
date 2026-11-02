@@ -90,27 +90,27 @@ export function QrStickerModal({
       `}</style>
 
       {/* Screen Modal Backdrop */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto no-print">
-        <div className="relative w-full max-w-4xl rounded-2xl sm:rounded-3xl bg-white shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto no-print">
+        <div className="relative w-full max-w-4xl rounded-2xl sm:rounded-3xl bg-white shadow-2xl flex flex-col max-h-[92vh] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
           
           {/* Modal Header */}
-          <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 bg-slate-50/70">
+          <div className="flex items-center justify-between border-b border-slate-100 px-4 sm:px-6 py-3 sm:py-4 bg-slate-50/70">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-500/20">
+              <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-500/20 flex-shrink-0">
                 <QrCode className="h-5 w-5" />
               </div>
-              <div>
-                <h3 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
-                  {title}
-                  <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-bold text-blue-700">
+              <div className="min-w-0">
+                <h3 className="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2 flex-wrap">
+                  <span className="truncate">{title}</span>
+                  <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-bold text-blue-700 flex-shrink-0">
                     {items.length} {items.length === 1 ? "Unit" : "Units"}
                   </span>
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-500">{subtitle}</p>
+                <p className="text-xs text-slate-500 truncate">{subtitle}</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <button
                 onClick={onClose}
                 className="rounded-xl p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
@@ -121,13 +121,15 @@ export function QrStickerModal({
           </div>
 
           {/* Action Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-white px-6 py-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-b border-slate-100 bg-white px-4 sm:px-6 py-3">
             <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
-              <ShieldCheck className="h-4 w-4 text-emerald-600" />
-              <span>Smart QR: Customer scans → Warranty | Warehouse scans → Serial Auto-fill</span>
+              <ShieldCheck className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+              <span className="text-[11px] sm:text-xs">
+                Smart QR: Scan for Warranty Activation & Verification
+              </span>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 justify-between sm:justify-end">
               <div className="flex rounded-lg border border-slate-200 p-0.5 bg-slate-50 text-xs font-medium">
                 <button
                   type="button"
@@ -138,7 +140,7 @@ export function QrStickerModal({
                       : "text-slate-500 hover:text-slate-700"
                   }`}
                 >
-                  Standard (Box)
+                  Standard
                 </button>
                 <button
                   type="button"
@@ -155,7 +157,7 @@ export function QrStickerModal({
 
               <Button
                 onClick={handlePrint}
-                className="h-9 gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md shadow-blue-500/20"
+                className="h-9 gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md shadow-blue-500/20 text-xs sm:text-sm"
               >
                 <Printer className="h-4 w-4" />
                 Print Stickers ({items.length})
@@ -164,7 +166,7 @@ export function QrStickerModal({
           </div>
 
           {/* Stickers Grid */}
-          <div className="flex-1 overflow-y-auto p-6 bg-slate-100/60">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-6 bg-slate-100/60">
             <div
               id="printable-stickers-container"
               className={`grid gap-4 ${
