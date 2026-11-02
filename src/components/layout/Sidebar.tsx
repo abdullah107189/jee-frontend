@@ -153,7 +153,6 @@ export function Sidebar({
         subItems: [
           { name: "All Products", href: "/admin/products" },
           { name: "Add Product", href: "/admin/products/new" },
-          { name: "Product Items", href: "/admin/items" }
         ],
       },
       { name: "Categories", href: "/admin/categories", icon: PackageSearch },

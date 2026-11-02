@@ -1,15 +1,5 @@
-import type { Metadata } from "next";
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import AllProductItemsContent from "@/components/modules/admin/items/AllProductItemsContent";
-import { getAdminProductItems } from "@/services/admin.service";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "All Product Items | JEE Admin",
-  description: "Global view of all physical units across products.",
-};
-
-export default async function AdminAllProductItemsPage() {
-  const items = await getAdminProductItems();
-
-  return <AllProductItemsContent items={items} />;
+export default function AdminItemsRedirectPage() {
+  redirect("/admin/products");
 }

@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { QrStickerModal, type QrStickerItem } from "@/components/modules/admin/items/QrStickerModal";
+import { QrStickerModal, type QrStickerItem } from "@/components/modules/admin/products/QrStickerModal";
 
 import type { VariantItem } from "@/lib/types/admin.types";
 import { bulkAddVariantItemsAction } from "@/actions/product.action";

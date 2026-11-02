@@ -15,7 +15,9 @@ async function getAuthHeaders(): Promise<HeadersInit> {
 
   const reqHeaders: Record<string, string> = {
     "Content-Type": "application/json",
-    Cookie: cookieStore.toString(),
+    Cookie: token
+      ? `accessToken=${token}; ${cookieStore.toString()}`
+      : cookieStore.toString(),
   };
 
   if (token) {
@@ -60,13 +62,36 @@ export interface AdminSeller {
   taxId?: string | null;
 }
 
-export type AuditLog = Record<string, any>;
+export interface AuditLog {
+  id: string;
+  timestamp: string;
+  user: string;
+  userEmail: string;
+  action: string;
+  entity: string;
+  rawEntity?: string;
+  entityId?: string;
+  details: string;
+  rawChanges?: unknown;
+  ipAddress: string;
+  severity: string;
+}
 export type AdminAnalytics = Record<string, any>;
 
 export type AdminOrder = Record<string, any>;
 export type AdminWarranty = Record<string, any>;
  
-export type AdminProductItem = Record<string, any>;
+export interface AdminProductItem {
+  id: string;
+  productName: string;
+  productId?: string;
+  variantId?: string;
+  sku?: string;
+  uniqueId: string;
+  serialNumber?: string;
+  status: string;
+  createdAt: string;
+}
 export type AdminCategory = Record<string, any>; 
 export type AdminWarrantyClaim = Record<string, any>;
 
@@ -193,10 +218,23 @@ export async function getPendingSellers(): Promise<AdminSeller[]> {
   }
 }
 
-export async function getAuditLogs(): Promise<AuditLog[]> {
+export async function getAuditLogs(query?: {
+  search?: string;
+  action?: string;
+  severity?: string;
+  page?: number;
+  limit?: number;
+}): Promise<AuditLog[]> {
   try {
     const authHeaders = await getAuthHeaders();
-    const res = await fetch(`${API_URL}/audit-logs?limit=100`, {
+    const params = new URLSearchParams();
+    params.set("limit", String(query?.limit || 100));
+    if (query?.page) params.set("page", String(query.page));
+    if (query?.search && query.search.trim()) params.set("search", query.search.trim());
+    if (query?.action && query.action !== "ALL") params.set("action", query.action);
+    if (query?.severity) params.set("severity", query.severity);
+
+    const res = await fetch(`${API_URL}/audit-logs?${params.toString()}`, {
       method: "GET",
       headers: authHeaders,
       cache: "no-store",
@@ -214,8 +252,8 @@ export async function getAuditLogs(): Promise<AuditLog[]> {
       const timestamp = log.createdAt
         ? new Date(log.createdAt).toISOString().replace("T", " ").slice(0, 19)
         : "N/A";
-      const userName = log.user?.name || "System User";
-      const userEmail = log.user?.email || "system@jee.com";
+      const userName = log.user?.name || "System Admin";
+      const userEmail = log.user?.email || "admin@jee.com";
       const targetEntity =
         log.entity && log.entityId
           ? `${log.entity} (${log.entityId.slice(0, 8)})`
@@ -242,7 +280,10 @@ export async function getAuditLogs(): Promise<AuditLog[]> {
         userEmail,
         action: log.action || "ACTIVITY",
         entity: targetEntity,
+        rawEntity: log.entity || "System",
+        entityId: log.entityId || "",
         details,
+        rawChanges: log.changes ?? null,
         ipAddress: log.ipAddress || "127.0.0.1",
         severity: log.severity || "INFO",
       };
@@ -277,13 +318,52 @@ export async function getAnalytics(_period = 'MONTH'): Promise<AdminAnalytics> {
   };
 }
 
-export async function getAdminProductItems(): Promise<AdminProductItem[]> {
-  return [
-    { id: '1', productName: 'Premium Standing Desk', uniqueId: 'FAN-001', serialNumber: 'SN-001', status: 'AVAILABLE', createdAt: '2023-10-24' },
-    { id: '2', productName: 'Premium Standing Desk', uniqueId: 'FAN-002', serialNumber: 'SN-002', status: 'SOLD', createdAt: '2023-10-24' },
-    { id: '3', productName: 'Ergonomic Chair', uniqueId: 'CHR-001', serialNumber: 'SN-003', status: 'RESERVED', createdAt: '2023-10-25' },
-    { id: '4', productName: 'Ergonomic Chair', uniqueId: 'CHR-002', serialNumber: 'SN-004', status: 'DAMAGED', createdAt: '2023-10-25' },
-  ];
+export async function getAdminProductItems(query?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+}): Promise<AdminProductItem[]> {
+  try {
+    const authHeaders = await getAuthHeaders();
+    const params = new URLSearchParams();
+    params.set("page", String(query?.page || 1));
+    params.set("limit", String(query?.limit || 20));
+    if (query?.search && query.search.trim()) params.set("search", query.search.trim());
+    if (query?.status && query.status !== "ALL") params.set("status", query.status);
+
+    const res = await fetch(`${API_URL}/products/items?${params.toString()}`, {
+      method: "GET",
+      headers: authHeaders,
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      console.error("Failed to fetch product items:", res.status, res.statusText);
+      return [];
+    }
+
+    const json = await res.json();
+    return Array.isArray(json.data) ? json.data : [];
+  } catch (error) {
+    console.error("[getAdminProductItems] error:", error);
+    return [];
+  }
+}
+
+export async function deleteAdminProductItem(itemId: string) {
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_URL}/products/items/${itemId}`, {
+    method: "DELETE",
+    headers,
+  });
+
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(json.message || "Failed to delete product item");
+  }
+
+  return { success: true, message: "Product item deleted successfully", itemId };
 }
 
 export async function getAdminCategories(): Promise<AdminCategory[]> {

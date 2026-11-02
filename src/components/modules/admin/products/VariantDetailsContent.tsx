@@ -14,7 +14,7 @@ import {
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { QrStickerModal, type QrStickerItem } from "@/components/modules/admin/items/QrStickerModal";
+import { QrStickerModal, type QrStickerItem } from "@/components/modules/admin/products/QrStickerModal";
 import type { AdminVariantDetail } from "@/lib/types/admin.types";
 
 export default function VariantDetailsContent({
