@@ -47,7 +47,12 @@
 - CSS-first config in `globals.css` via `@theme`
 - NO `tailwind.config.js`
 
-## Structure
+### Date Formatting Standard (Hard Rule)
+- **Always Day First**: All dates and timestamps across UI and exports MUST format as **Day Month Year** (`DD MMM YYYY`, e.g., `02 Nov 2026`) or `DD/MM/YYYY` (e.g., `02/11/2026`).
+- **NEVER** use US format (`MM/DD/YYYY` or `Month Day, Year` like `Nov 2, 2026`).
+- Use the shared date utility functions in `@/lib/utils` (`formatAppDate`, `formatAppDateTime`, `formatAppDateNumeric`).
+
+### Structure
 ```
 src/
 ├── app/

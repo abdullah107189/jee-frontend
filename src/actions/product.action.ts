@@ -28,7 +28,7 @@ const variantItemSchema = z.object({
     .string()
     .min(3)
     .max(100)
-    .regex(/^[A-Z0-9-]+$/, "Only A-Z, 0-9, hyphen allowed"),
+    .regex(/^[A-Za-z0-9-_]+$/, "Only alphanumeric, hyphen, and underscore allowed"),
   status: z
     .enum([
       "AVAILABLE",
@@ -39,7 +39,7 @@ const variantItemSchema = z.object({
       "UNDER_REPAIR",
     ])
     .optional(),
-  manufacturedAt: z.string().optional(),
+  manufacturedAt: z.string().optional().nullable(),
 });
 
 const bulkVariantSchema = z.object({
@@ -57,7 +57,7 @@ export async function bulkAddVariantItemsAction(input: {
   if (!parsed.success) {
     return {
       success: false,
-      message: "Invalid data",
+      message: "Invalid data: " + parsed.error.issues.map(i => `${i.path.join('.')}: ${i.message}`).join(', '),
       errors: parsed.error.flatten().fieldErrors,
     };
   }
@@ -67,6 +67,17 @@ export async function bulkAddVariantItemsAction(input: {
   if (!token) return { success: false, message: "Unauthorized" };
 
   try {
+    const payloadItems = parsed.data.items.map((it) => {
+      const item: Record<string, unknown> = {
+        serialNumber: it.serialNumber.trim().toUpperCase(),
+        status: it.status || "AVAILABLE",
+      };
+      if (it.manufacturedAt && it.manufacturedAt.trim() !== "") {
+        item.manufacturedAt = it.manufacturedAt.trim();
+      }
+      return item;
+    });
+
     const res = await fetch(
       `${process.env.API_URL}/products/variants/${parsed.data.variantId}/items`,
       {
@@ -74,8 +85,9 @@ export async function bulkAddVariantItemsAction(input: {
         headers: {
           "Content-Type": "application/json",
           Cookie: `accessToken=${token}`,
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ items: parsed.data.items }),
+        body: JSON.stringify({ items: payloadItems }),
       },
     );
 
@@ -86,7 +98,7 @@ export async function bulkAddVariantItemsAction(input: {
     }
 
     revalidatePath(
-      `/admin/products/${parsed.data.productId}/variants/${parsed.data.variantId}/items`,
+      `/admin/products/${parsed.data.productId}/variants/${parsed.data.variantId}`,
     );
     revalidateProductCaches({ productId: parsed.data.productId });
 
@@ -96,6 +108,39 @@ export async function bulkAddVariantItemsAction(input: {
     };
   } catch (error) {
     console.error("[bulkAddVariantItemsAction]", error);
+    return { success: false, message: "Network error" };
+  }
+}
+
+export async function deleteVariantItemAction(params: {
+  productId: string;
+  variantId: string;
+  itemId: string;
+}) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("accessToken")?.value;
+  if (!token) return { success: false, message: "Unauthorized" };
+
+  try {
+    const res = await fetch(`${process.env.API_URL}/products/items/${params.itemId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: `accessToken=${token}`,
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      return { success: false, message: json.message ?? "Failed to delete item" };
+    }
+
+    revalidatePath(`/admin/products/${params.productId}/variants/${params.variantId}`);
+    revalidateProductCaches({ productId: params.productId });
+    return { success: true, message: "Unit removed from inventory" };
+  } catch (error) {
+    console.error("[deleteVariantItemAction]", error);
     return { success: false, message: "Network error" };
   }
 }

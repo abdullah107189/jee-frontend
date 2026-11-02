@@ -1,6 +1,7 @@
 import "server-only";
 
 import { cookies, headers } from "next/headers";
+import { formatAppDateTime } from "@/lib/utils";
 
 const API_URL =
   process.env.API_URL ||
@@ -250,7 +251,7 @@ export async function getAuditLogs(query?: {
 
     return rawLogs.map((log) => {
       const timestamp = log.createdAt
-        ? new Date(log.createdAt).toISOString().replace("T", " ").slice(0, 19)
+        ? formatAppDateTime(log.createdAt)
         : "N/A";
       const userName = log.user?.name || "System Admin";
       const userEmail = log.user?.email || "admin@jee.com";
