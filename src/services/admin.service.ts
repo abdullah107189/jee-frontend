@@ -194,15 +194,63 @@ export async function getPendingSellers(): Promise<AdminSeller[]> {
 }
 
 export async function getAuditLogs(): Promise<AuditLog[]> {
-  return [
-    { id: 'LOG-991', timestamp: '2026-08-10 08:30:12', user: 'Admin System', userEmail: 'admin@JEE.bd', action: 'SELLER_APPROVED', entity: 'Seller (sel_3)', details: 'Approved seller Chittagong Electronics Hub', ipAddress: '103.204.244.12' },
-    { id: 'LOG-990', timestamp: '2026-08-10 07:15:45', user: 'Tanvir Hossain', userEmail: 'tanvir@electrotech.bd', action: 'OFFLINE_SALE', entity: 'ProductItem (FAN-001928)', details: 'Recorded offline sale & activated 12M warranty', ipAddress: '103.112.54.89' },
-    { id: 'LOG-989', timestamp: '2026-08-09 19:40:02', user: 'Ariful Islam', userEmail: 'arif@example.com', action: 'ONLINE_ORDER', entity: 'Order (#ORD-9021)', details: 'Placed online order via Cash on Delivery', ipAddress: '119.30.38.100' },
-    { id: 'LOG-988', timestamp: '2026-08-09 14:22:18', user: 'Admin System', userEmail: 'admin@JEE.bd', action: 'PRODUCT_CREATED', entity: 'Product (prod_99)', details: 'Created product: Vision Smart LED TV 43"', ipAddress: '103.204.244.12' },
-    { id: 'LOG-987', timestamp: '2026-08-09 11:05:00', user: 'Admin System', userEmail: 'admin@JEE.bd', action: 'BULK_ITEM_ADD', entity: 'ProductItems (50 units)', details: 'Bulk imported 50 ProductItems for SKU FAN-001', ipAddress: '103.204.244.12' },
-    { id: 'LOG-986', timestamp: '2026-08-08 16:50:33', user: 'Alice Smith', userEmail: 'alice@example.com', action: 'WARRANTY_CLAIM', entity: 'Claim (#CLM-501)', details: 'Submitted warranty claim for AC-100293', ipAddress: '203.82.199.45' },
-    { id: 'LOG-985', timestamp: '2026-08-08 09:00:10', user: 'Rafiqul Islam', userEmail: 'vision.store@example.com', action: 'USER_LOGIN', entity: 'Auth', details: 'Successful seller login session', ipAddress: '103.112.54.90' },
-  ];
+  try {
+    const authHeaders = await getAuthHeaders();
+    const res = await fetch(`${API_URL}/audit-logs?limit=100`, {
+      method: "GET",
+      headers: authHeaders,
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      console.error("Failed to fetch audit logs:", res.status, res.statusText);
+      return [];
+    }
+
+    const json = await res.json();
+    const rawLogs: any[] = Array.isArray(json.data) ? json.data : [];
+
+    return rawLogs.map((log) => {
+      const timestamp = log.createdAt
+        ? new Date(log.createdAt).toISOString().replace("T", " ").slice(0, 19)
+        : "N/A";
+      const userName = log.user?.name || "System User";
+      const userEmail = log.user?.email || "system@jee.com";
+      const targetEntity =
+        log.entity && log.entityId
+          ? `${log.entity} (${log.entityId.slice(0, 8)})`
+          : log.entity || "System";
+
+      let details = "";
+      if (log.changes) {
+        try {
+          details =
+            typeof log.changes === "string"
+              ? log.changes
+              : JSON.stringify(log.changes);
+        } catch {
+          details = "Data modified";
+        }
+      } else {
+        details = `Action performed on ${log.entity || "resource"}`;
+      }
+
+      return {
+        id: log.id,
+        timestamp,
+        user: userName,
+        userEmail,
+        action: log.action || "ACTIVITY",
+        entity: targetEntity,
+        details,
+        ipAddress: log.ipAddress || "127.0.0.1",
+        severity: log.severity || "INFO",
+      };
+    });
+  } catch (error) {
+    console.error("[getAuditLogs] error:", error);
+    return [];
+  }
 }
 
 export async function getAnalytics(_period = 'MONTH'): Promise<AdminAnalytics> {

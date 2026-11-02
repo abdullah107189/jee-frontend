@@ -2,7 +2,7 @@
 শেষ আপডেট: 2026-11-02 | Repo: frontend
 
 ## এখন কোন কাজ চলছে
-- M4: Admin Cloud Image Upload & M5 Customer Warranties/Profile Real API
+- M4 Admin: Global Product Items (/admin/items) ও Analytics/Settings Real API
 
 ## নিয়ম
 DONE = build পাস + প্রমাণ | PARTIAL = কী বাকি লেখো | TODO | UNVERIFIED
@@ -23,19 +23,27 @@ DONE = build পাস + প্রমাণ | PARTIAL = কী বাকি ল�
 - [ ] সিদ্ধান্ত: seller account কে বানাবে (খোলা প্রশ্ন) — TODO
 - [x] admin দিয়ে seller approve; seller এর serial দিয়ে item খোঁজার endpoint — DONE (`src/services/admin.service.ts`, `src/actions/admin.actions.ts`, `PendingSellersContent.tsx`, `SellersContent.tsx`)
 ### M4 Admin
-- [ ] product create/edit (ক্লাউড ইমেজ আপলোডসহ) — PARTIAL (`/admin/products/new`, `[id]/edit` সম্পন্ন)
-- [x] product variant create & edit (Dual image: URL + File Upload) — DONE (`src/actions/product.action.ts`, `VariantEditContent.tsx`, `VariantAddContent.tsx`, backend `product.service.ts`, `product.validation.ts`, tsc & bun build পাস)
-- [x] orders, sellers, pending sellers, users: mock বাদ, real API — DONE (`src/services/admin.service.ts`, `src/actions/admin.actions.ts`, `SellersContent.tsx`, `PendingSellersContent.tsx`, `UsersContent.tsx`, tsc --noEmit পাস)
+- [x] orders, sellers, pending sellers, users: mock বাদ, real API — DONE (`src/services/admin.service.ts`, `src/actions/admin.actions.ts`)
+- [x] warranties & claims desk: mock বাদ, real API — DONE (`AdminWarrantiesContent.tsx`, `WarrantyClaimsContent.tsx`)
+- [x] brands: full CRUD, Add/Edit modal, real delete — DONE (`src/actions/brand.actions.ts`, `BrandsContent.tsx`)
+- [x] product variant create & edit (Dual image: URL + File Upload) — DONE (`VariantEditContent.tsx`, `VariantAddContent.tsx`)
+- [x] Admin Dashboard Overview (`/admin`) real dynamic stats — DONE (`src/app/(dashboard)/admin/page.tsx`)
+- [x] Audit Logs (`/admin/audit-logs`) real API integration — DONE (`src/services/admin.service.ts`, backend `audit-log.type.ts`)
+- [ ] Global Product Items (`/admin/items`) real inventory search — TODO
+- [ ] Analytics (`/admin/analytics`) real insights/charts — TODO
+- [ ] System Settings (`/admin/settings`) persistence — TODO
+- [ ] product create/edit (ক্লাউড ইমেজ আপলোড S3/Cloudinary) — PARTIAL (URL + Local Upload সম্পন্ন)
 ### M5 Customer dashboard
 - [ ] orders, warranties, profile real API (mock বাদ) — PARTIAL (orders DONE; warranties ও profile `src/services/customer.service.ts` এ mock বাকি)
 ### M6 লঞ্চের আগে
 - [ ] seed admin, env নথি, CORS/helmet/rate limit — অন্য repo
+- [ ] 5K-10K কনকারেন্ট ট্রাফিক লোড টেস্টিং, রেট-লিমিট ও সিকিউরিটি টেস্ট — TODO
 - [x] অনেকক্ষণ PENDING অর্ডার (MVP: admin হাতে cancel) — DONE (`src/components/modules/admin/orders/admin-order-details.tsx` থেকে admin cancel করতে পারে)
 - [ ] deploy, migrate deploy, DB backup — TODO
 
 ## MVP এর পরে
 ডেলিভারির পরের return/refund, warranty claim, notification, review, banner/settings,
-SSLCommerz, analytics, audit log UI
+SSLCommerz, Redis caching layer, load balancer
 
 ## সিদ্ধান্ত
 - MVP: COD only; Payment মডেল ভবিষ্যতের জন্য, ব্যবহার হয় না
@@ -43,10 +51,11 @@ SSLCommerz, analytics, audit log UI
 - sale/warranty মোছা যায় না (void/return পরে)
 - Frontend: শুধু App Router, src/pages নয়
 - কাজ main এ, user নিজে commit করে
-- ডাটাবেস স্কিমা কোড অপরিবর্তিত থাকবে; ৫,০০০+ কনকারেন্ট ইউজার এবং হ্যাকিং প্রতিরোধে কঠোর ভ্যালিডেশন বজায় থাকবে
+- ডাটাবেস স্কিমা কোড অপরিবর্তিত থাকবে; ৫,০০০-১০,০০০ কনকারেন্ট ইউজার এবং হ্যাকিং প্রতিরোধে কঠোর ভ্যালিডেশন বজায় থাকবে
 
 ## খোলা প্রশ্ন
 ## Done log
+- 2026-11-02: Admin Dashboard Overview (`/admin`) রিয়েল সমান্তরাল ডাটা ফেচিং এবং System Audit Logs (`/admin/audit-logs`) রিয়েল ব্যাকএন্ড API ইন্টিগ্রেশন সম্পন্ন (tsc/lint পাস: 0 errors)
 - 2026-11-02: Admin Brand Management সম্পূর্ণ রিয়েল API CRUD ইন্টিগ্রেশন সম্পন্ন (Add Brand Modal, Edit Brand Modal, Real Delete Action, Server Actions `createBrandAction`/`updateBrandAction`/`deleteBrandAction`, backend `PATCH /brands/:id` ও `DELETE /brands/:id` routes; frontend lint ও backend build পাস: 0 errors)
 - 2026-11-02: Admin All Warranties (`/admin/warranties`) এবং Claims & Servicing Desk (`/admin/warranties/claims`) এর mock বাদ দিয়ে রিয়েল API (`/warranties`, `/warranty-claims`, `PATCH /warranties/:id`, `PATCH /warranty-claims/:id`) সম্পূর্ণ ডায়নামিক ও স্ট্যাটাস আপডেট ইন্টিগ্রেশন সম্পন্ন (frontend lint ও backend build পাস: 0 errors)
 - 2026-11-02: Admin Product/Variant/Category তৈরি, আপডেট, ডিলিট বা ইনভেন্টরি আইটেম যোগের পর Public Storefront ও Admin-এ Instant On-Demand Cache Invalidation চালু (`revalidateTag("products", "max")`, `revalidateTag("categories", "max")`, `revalidateTag("product:${slug}", "max")`, `revalidatePath("/", "layout")`, `revalidatePath("/products")`; frontend bun run lint পাস: 0 errors)
