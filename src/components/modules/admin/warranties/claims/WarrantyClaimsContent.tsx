@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input'; 
@@ -12,22 +12,30 @@ import Link from 'next/link';
 import { Textarea } from '@/components/ui/textarea';
 
 export default function AdminWarrantyClaimsPage({ claims }: { claims: AdminWarrantyClaim[] }) {
+  const [claimsList, setClaimsList] = useState<AdminWarrantyClaim[]>(claims);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [selectedClaim, setSelectedClaim] = useState<any | null>(null);
 
   const [resolutionNotes, setResolutionNotes] = useState('');
   const [newStatus, setNewStatus] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
-  const filteredClaims = claims.filter((claim: any) => {
+  useEffect(() => {
+    setClaimsList(claims);
+  }, [claims]);
+
+  const filteredClaims = claimsList.filter((claim: any) => {
     const matchesSearch = 
-      claim.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      claim.uniqueId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      claim.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      claim.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      claim.customerPhone.includes(searchTerm);
+      (claim.id || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (claim.claimNumber || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (claim.uniqueId || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (claim.productName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (claim.customerName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (claim.customerPhone || "").includes(searchTerm);
 
-    const matchesStatus = statusFilter === 'ALL' || claim.status.toUpperCase().replace(/\s+/g, '_') === statusFilter.toUpperCase();
+    const claimStatusKey = (claim.status || "").toUpperCase().replace(/\s+/g, '_');
+    const matchesStatus = statusFilter === 'ALL' || claimStatusKey === statusFilter.toUpperCase();
 
     return matchesSearch && matchesStatus;
   });
@@ -35,36 +43,51 @@ export default function AdminWarrantyClaimsPage({ claims }: { claims: AdminWarra
   const handleOpenClaimModal = (claim: any) => {
     setSelectedClaim(claim);
     setResolutionNotes(claim.resolutionNotes || '');
-    setNewStatus(claim.status);
+    setNewStatus(claim.status || 'Submitted');
   };
 
   const handleSaveClaim = async () => {
     if (!selectedClaim) return;
+    setIsSaving(true);
     try {
       await updateWarrantyClaimStatusAction({ 
         id: selectedClaim.id, 
         status: newStatus,
         resolutionNotes 
       });
-      toast.success(`Claim #${selectedClaim.id} updated successfully!`);
+      toast.success(`Claim #${selectedClaim.claimNumber || selectedClaim.id} status updated successfully!`);
+      setClaimsList((prev) => 
+        prev.map((c: any) => 
+          c.id === selectedClaim.id 
+            ? { ...c, status: newStatus, resolutionNotes } 
+            : c
+        )
+      );
       setSelectedClaim(null);
-    } catch (err) {
-      toast.error('Failed to update warranty claim.');
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to update warranty claim.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
   const getClaimStatusBadge = (status: string) => {
-    switch (status.toUpperCase()) {
+    switch ((status || "").toUpperCase()) {
       case 'COMPLETED':
         return <Badge variant="success" className="rounded-full px-3 py-1 text-xs">Completed</Badge>;
       case 'IN PROGRESS':
+      case 'IN_PROGRESS':
+      case 'UNDER_REPAIR':
         return <Badge className="bg-blue-500 text-white rounded-full px-3 py-1 text-xs">In Progress</Badge>;
       case 'APPROVED':
         return <Badge className="bg-teal-500 text-white rounded-full px-3 py-1 text-xs">Approved</Badge>;
       case 'SUBMITTED':
+      case 'UNDER_REVIEW':
         return <Badge variant="warning" className="rounded-full px-3 py-1 text-xs">Submitted</Badge>;
       case 'REJECTED':
         return <Badge variant="destructive" className="rounded-full px-3 py-1 text-xs">Rejected</Badge>;
+      case 'CANCELLED':
+        return <Badge variant="outline" className="rounded-full px-3 py-1 text-xs text-slate-500">Cancelled</Badge>;
       default:
         return <Badge variant="outline" className="rounded-full px-3 py-1 text-xs">{status}</Badge>;
     }
@@ -79,10 +102,10 @@ export default function AdminWarrantyClaimsPage({ claims }: { claims: AdminWarra
                 <ArrowLeft className="h-4 w-4 mr-1" /> All Warranties
               </Link>
               <span>/</span>
-              <span className="text-slate-900 font-semibold">Warranty Claims</span>
+              <span className="text-slate-900 font-semibold">Claims & Servicing Desk</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">Warranty Claims Desk</h1>
-            <p className="text-sm sm:text-base text-slate-500 mt-1 font-medium">Review customer reported issues, assign repair technicians, and add resolution reports.</p>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">Warranty Claims & Servicing Desk</h1>
+            <p className="text-sm sm:text-base text-slate-500 mt-1 font-medium">Process customer reported defects, assign servicing/repairs, update claim status, and enter technician resolution reports.</p>
           </div>
         </div>
 
@@ -96,7 +119,7 @@ export default function AdminWarrantyClaimsPage({ claims }: { claims: AdminWarra
                 </div>
                 <span className="text-xs font-semibold text-slate-500 uppercase">Submitted</span>
               </div>
-              <p className="text-2xl font-extrabold text-slate-900">{claims.filter((c: any) => c.status === 'Submitted').length}</p>
+              <p className="text-2xl font-extrabold text-slate-900">{claimsList.filter((c: any) => (c.status || "").toLowerCase() === 'submitted').length}</p>
             </CardContent>
           </Card>
           <Card className="rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white">
@@ -105,9 +128,9 @@ export default function AdminWarrantyClaimsPage({ claims }: { claims: AdminWarra
                 <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
                   <Wrench className="h-5 w-5" />
                 </div>
-                <span className="text-xs font-semibold text-slate-500 uppercase">In Progress</span>
+                <span className="text-xs font-semibold text-slate-500 uppercase">In Progress / Approved</span>
               </div>
-              <p className="text-2xl font-extrabold text-slate-900">{claims.filter((c: any) => c.status === 'In Progress' || c.status === 'Approved').length}</p>
+              <p className="text-2xl font-extrabold text-slate-900">{claimsList.filter((c: any) => ['in progress', 'approved'].includes((c.status || "").toLowerCase())).length}</p>
             </CardContent>
           </Card>
           <Card className="rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white">
@@ -118,7 +141,7 @@ export default function AdminWarrantyClaimsPage({ claims }: { claims: AdminWarra
                 </div>
                 <span className="text-xs font-semibold text-slate-500 uppercase">Completed</span>
               </div>
-              <p className="text-2xl font-extrabold text-slate-900">{claims.filter((c: any) => c.status === 'Completed').length}</p>
+              <p className="text-2xl font-extrabold text-slate-900">{claimsList.filter((c: any) => (c.status || "").toLowerCase() === 'completed').length}</p>
             </CardContent>
           </Card>
           <Card className="rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white">
@@ -129,7 +152,7 @@ export default function AdminWarrantyClaimsPage({ claims }: { claims: AdminWarra
                 </div>
                 <span className="text-xs font-semibold text-slate-500 uppercase">Rejected</span>
               </div>
-              <p className="text-2xl font-extrabold text-slate-900">{claims.filter((c: any) => c.status === 'Rejected').length}</p>
+              <p className="text-2xl font-extrabold text-slate-900">{claimsList.filter((c: any) => (c.status || "").toLowerCase() === 'rejected').length}</p>
             </CardContent>
           </Card>
         </div>
@@ -140,7 +163,7 @@ export default function AdminWarrantyClaimsPage({ claims }: { claims: AdminWarra
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
               <Input 
-                placeholder="Search by Claim #, Unique ID, Customer, or Product..." 
+                placeholder="Search by Claim #, Serial/Unique ID, Customer, or Product..." 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 h-10 sm:h-12 rounded-xl bg-slate-50 border-transparent focus:bg-white focus:border-blue-500 focus:ring-blue-500/20 w-full"
@@ -162,9 +185,7 @@ export default function AdminWarrantyClaimsPage({ claims }: { claims: AdminWarra
 
           <div className="overflow-x-auto">
             {filteredClaims.length === 0 ? (
-              <div className="p-8 text-center text-slate-500 font-medium">Loading warranty claims...</div>
-            ) : filteredClaims.length === 0 ? (
-              <div className="p-12 text-center text-slate-500 font-medium">No claims found.</div>
+              <div className="p-12 text-center text-slate-500 font-medium">No warranty claims found.</div>
             ) : (
               <table className="w-full text-sm text-left">
                 <thead className="bg-slate-50/80 border-b border-slate-100">
@@ -182,7 +203,7 @@ export default function AdminWarrantyClaimsPage({ claims }: { claims: AdminWarra
                   {filteredClaims.map((claim: any) => (
                     <tr key={claim.id} className="hover:bg-slate-50/50 transition-colors bg-white">
                       <td className="px-4 sm:px-6 py-4 font-mono font-bold text-slate-900">
-                        #{claim.id}
+                        #{claim.claimNumber || claim.id.slice(-6).toUpperCase()}
                       </td>
                       <td className="px-4 sm:px-6 py-4">
                         <div className="font-mono font-bold text-blue-600">{claim.uniqueId}</div>
@@ -192,7 +213,7 @@ export default function AdminWarrantyClaimsPage({ claims }: { claims: AdminWarra
                         <div className="font-semibold">{claim.customerName}</div>
                         <div className="text-xs text-slate-400 font-mono">{claim.customerPhone}</div>
                       </td>
-                      <td className="px-4 sm:px-6 py-4 text-slate-600 max-w-xs truncate">
+                      <td className="px-4 sm:px-6 py-4 text-slate-600 max-w-xs truncate" title={claim.issueDescription}>
                         {claim.issueDescription}
                       </td>
                       <td className="px-4 sm:px-6 py-4 text-xs font-mono text-slate-500">
@@ -208,7 +229,7 @@ export default function AdminWarrantyClaimsPage({ claims }: { claims: AdminWarra
                           onClick={() => handleOpenClaimModal(claim)}
                           className="h-9 px-3 rounded-xl text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-semibold"
                         >
-                          <Eye className="h-4 w-4 mr-1.5" /> Process
+                          <Wrench className="h-4 w-4 mr-1.5" /> Service / Update Status
                         </Button>
                       </td>
                     </tr>
@@ -225,8 +246,8 @@ export default function AdminWarrantyClaimsPage({ claims }: { claims: AdminWarra
             <div className="bg-white rounded-3xl max-w-2xl w-full shadow-2xl overflow-hidden border border-slate-100 animate-in fade-in zoom-in-95 duration-200">
               <div className="p-6 bg-slate-900 text-white flex justify-between items-center">
                 <div>
-                  <h3 className="text-xl font-bold">Process Claim #{selectedClaim.id}</h3>
-                  <p className="text-xs text-slate-400 mt-1">Unique Product ID: {selectedClaim.uniqueId}</p>
+                  <h3 className="text-xl font-bold">Process & Update Service Status</h3>
+                  <p className="text-xs text-slate-400 mt-1">Claim #{selectedClaim.claimNumber || selectedClaim.id} • Serial: {selectedClaim.uniqueId}</p>
                 </div>
                 <Button variant="ghost" size="sm" onClick={() => setSelectedClaim(null)} className="text-slate-400 hover:text-white">✕</Button>
               </div>
@@ -247,32 +268,32 @@ export default function AdminWarrantyClaimsPage({ claims }: { claims: AdminWarra
                 </div>
 
                 <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/70 space-y-1">
-                  <span className="text-xs font-bold uppercase text-amber-900">Reported Problem</span>
+                  <span className="text-xs font-bold uppercase text-amber-900">Customer Reported Problem</span>
                   <p className="text-sm text-amber-950 font-medium">{selectedClaim.issueDescription}</p>
                 </div>
 
                 {/* Form Controls */}
                 <div className="space-y-4 pt-2">
                   <div>
-                    <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Update Claim Status</label>
+                    <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Update Claim / Servicing Status</label>
                     <select
                       value={newStatus}
                       onChange={(e) => setNewStatus(e.target.value)}
                       className="w-full h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-blue-500"
                     >
-                      <option value="Submitted">Submitted</option>
-                      <option value="Approved">Approved</option>
-                      <option value="In Progress">In Progress</option>
-                      <option value="Completed">Completed</option>
-                      <option value="Rejected">Rejected</option>
+                      <option value="Submitted">Submitted (Under Review)</option>
+                      <option value="Approved">Approved (Warranty Accepted)</option>
+                      <option value="In Progress">In Progress (Servicing / Under Repair)</option>
+                      <option value="Completed">Completed (Repaired / Replaced)</option>
+                      <option value="Rejected">Rejected (Not Covered)</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Resolution & Service Notes</label>
+                    <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Resolution & Technician Service Notes</label>
                     <Textarea
                       rows={3}
-                      placeholder="Add technician report, part replacements, or rejection reasons..."
+                      placeholder="Add technician report, replaced parts, repair details, or rejection reasons..."
                       value={resolutionNotes}
                       onChange={(e) => setResolutionNotes(e.target.value)}
                       className="rounded-xl border-slate-200"
@@ -283,8 +304,12 @@ export default function AdminWarrantyClaimsPage({ claims }: { claims: AdminWarra
 
               <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-end space-x-3">
                 <Button variant="outline" onClick={() => setSelectedClaim(null)} className="rounded-xl">Cancel</Button>
-                <Button onClick={handleSaveClaim} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg shadow-blue-600/20">
-                  <Send className="h-4 w-4 mr-2" /> Update Claim
+                <Button 
+                  onClick={handleSaveClaim} 
+                  disabled={isSaving}
+                  className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg shadow-blue-600/20"
+                >
+                  <Send className="h-4 w-4 mr-2" /> {isSaving ? "Saving..." : "Save & Update Status"}
                 </Button>
               </div>
             </div>

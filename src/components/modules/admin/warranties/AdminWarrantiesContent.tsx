@@ -1,28 +1,33 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
-import { Search, ShieldCheck, ShieldAlert, Award, Clock, Eye, AlertTriangle, CheckCircle, Ban, ArrowRight } from 'lucide-react';
+import { Search, ShieldCheck, ShieldAlert, Award, Clock, Eye, AlertTriangle, CheckCircle, Ban, Wrench } from 'lucide-react';
 import { updateWarrantyStatusAction } from '@/actions/admin.actions';
 import type { AdminWarranty } from '@/services/admin.service';
 import { toast } from 'sonner'; 
 import Link from 'next/link';
 
 export default function AdminWarrantiesPage({ warranties }: { warranties: AdminWarranty[] }) {
+  const [warrantiesList, setWarrantiesList] = useState<AdminWarranty[]>(warranties);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [selectedWarranty, setSelectedWarranty] = useState<any | null>(null);
 
-  const filteredWarranties = warranties.filter((w: any) => {
-    const matchesSearch = 
-      w.uniqueId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      w.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      w.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      w.customerPhone.includes(searchTerm);
+  useEffect(() => {
+    setWarrantiesList(warranties);
+  }, [warranties]);
 
-    const matchesStatus = statusFilter === 'ALL' || w.status.toUpperCase() === statusFilter.toUpperCase();
+  const filteredWarranties = warrantiesList.filter((w: any) => {
+    const matchesSearch = 
+      (w.uniqueId || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (w.productName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (w.customerName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (w.customerPhone || "").includes(searchTerm);
+
+    const matchesStatus = statusFilter === 'ALL' || (w.status || "").toUpperCase() === statusFilter.toUpperCase();
 
     return matchesSearch && matchesStatus;
   });
@@ -31,16 +36,17 @@ export default function AdminWarrantiesPage({ warranties }: { warranties: AdminW
     try {
       await updateWarrantyStatusAction({ id, status: newStatus });
       toast.success(`Warranty status updated to ${newStatus}`);
+      setWarrantiesList((prev) => prev.map((w: any) => w.id === id ? { ...w, status: newStatus } : w));
       if (selectedWarranty) {
         setSelectedWarranty((prev: any) => prev ? { ...prev, status: newStatus } : null);
       }
-    } catch (err) {
-      toast.error('Failed to update warranty status');
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to update warranty status');
     }
   };
 
   const getWarrantyBadge = (status: string) => {
-    switch (status.toUpperCase()) {
+    switch ((status || "").toUpperCase()) {
       case 'ACTIVE':
         return <Badge variant="success" className="rounded-full px-3 py-1 text-xs">Active</Badge>;
       case 'CLAIMED':
@@ -63,7 +69,7 @@ export default function AdminWarrantiesPage({ warranties }: { warranties: AdminW
           </div>
           <Link href="/admin/warranties/claims">
             <Button className="h-10 sm:h-12 rounded-xl sm:rounded-2xl bg-amber-600 hover:bg-amber-700 text-white shadow-lg shadow-amber-600/20">
-              <ShieldAlert className="mr-2 h-5 w-5" /> View Warranty Claims
+              <Wrench className="mr-2 h-5 w-5" /> Claims & Servicing Desk
             </Button>
           </Link>
         </div>
@@ -78,7 +84,7 @@ export default function AdminWarrantiesPage({ warranties }: { warranties: AdminW
                 </div>
                 <span className="text-xs font-semibold text-slate-500 uppercase">Active Warranties</span>
               </div>
-              <p className="text-2xl font-extrabold text-slate-900">{warranties.filter((w: any) => w.status === 'Active').length}</p>
+              <p className="text-2xl font-extrabold text-slate-900">{warrantiesList.filter((w: any) => (w.status || "").toUpperCase() === 'ACTIVE').length}</p>
             </CardContent>
           </Card>
           <Card className="rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white">
@@ -89,7 +95,7 @@ export default function AdminWarrantiesPage({ warranties }: { warranties: AdminW
                 </div>
                 <span className="text-xs font-semibold text-slate-500 uppercase">Claimed</span>
               </div>
-              <p className="text-2xl font-extrabold text-slate-900">{warranties.filter((w: any) => w.status === 'Claimed').length}</p>
+              <p className="text-2xl font-extrabold text-slate-900">{warrantiesList.filter((w: any) => (w.status || "").toUpperCase() === 'CLAIMED').length}</p>
             </CardContent>
           </Card>
           <Card className="rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white">
@@ -100,7 +106,7 @@ export default function AdminWarrantiesPage({ warranties }: { warranties: AdminW
                 </div>
                 <span className="text-xs font-semibold text-slate-500 uppercase">Expired</span>
               </div>
-              <p className="text-2xl font-extrabold text-slate-900">{warranties.filter((w: any) => w.status === 'Expired').length}</p>
+              <p className="text-2xl font-extrabold text-slate-900">{warrantiesList.filter((w: any) => (w.status || "").toUpperCase() === 'EXPIRED').length}</p>
             </CardContent>
           </Card>
           <Card className="rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white">
@@ -111,7 +117,7 @@ export default function AdminWarrantiesPage({ warranties }: { warranties: AdminW
                 </div>
                 <span className="text-xs font-semibold text-slate-500 uppercase">Void / Revoked</span>
               </div>
-              <p className="text-2xl font-extrabold text-slate-900">{warranties.filter((w: any) => w.status === 'Void').length}</p>
+              <p className="text-2xl font-extrabold text-slate-900">{warrantiesList.filter((w: any) => (w.status || "").toUpperCase() === 'VOID').length}</p>
             </CardContent>
           </Card>
         </div>
@@ -143,8 +149,6 @@ export default function AdminWarrantiesPage({ warranties }: { warranties: AdminW
 
           <div className="overflow-x-auto">
             {filteredWarranties.length === 0 ? (
-              <div className="p-8 text-center text-slate-500 font-medium">Loading warranty records...</div>
-            ) : filteredWarranties.length === 0 ? (
               <div className="p-12 text-center text-slate-500 font-medium">No warranty records found.</div>
             ) : (
               <table className="w-full text-sm text-left">
@@ -242,9 +246,16 @@ export default function AdminWarrantiesPage({ warranties }: { warranties: AdminW
 
                 {/* Status Update Buttons */}
                 <div className="pt-4 border-t border-slate-100 space-y-3">
-                  <h4 className="text-xs font-bold uppercase text-slate-400">Quick Actions</h4>
+                  <div className="flex justify-between items-center">
+                    <h4 className="text-xs font-bold uppercase text-slate-400">Quick Status Update</h4>
+                    <Link href={`/admin/warranties/claims`}>
+                      <span className="text-xs font-semibold text-amber-600 hover:text-amber-700 flex items-center">
+                        <Wrench className="h-3.5 w-3.5 mr-1" /> Go to Claims & Servicing Desk →
+                      </span>
+                    </Link>
+                  </div>
                   <div className="flex flex-wrap gap-3">
-                    {selectedWarranty.status !== 'Claimed' && (
+                    {(selectedWarranty.status || "").toUpperCase() !== 'CLAIMED' && (
                       <Button 
                         onClick={() => handleStatusChange(selectedWarranty.id, 'Claimed')}
                         className="bg-amber-600 hover:bg-amber-700 text-white rounded-xl"
@@ -252,7 +263,7 @@ export default function AdminWarrantiesPage({ warranties }: { warranties: AdminW
                         <Award className="h-4 w-4 mr-2" /> Mark as Claimed
                       </Button>
                     )}
-                    {selectedWarranty.status !== 'Active' && (
+                    {(selectedWarranty.status || "").toUpperCase() !== 'ACTIVE' && (
                       <Button 
                         onClick={() => handleStatusChange(selectedWarranty.id, 'Active')}
                         className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl"
@@ -260,7 +271,7 @@ export default function AdminWarrantiesPage({ warranties }: { warranties: AdminW
                         <CheckCircle className="h-4 w-4 mr-2" /> Set Active
                       </Button>
                     )}
-                    {selectedWarranty.status !== 'Void' && (
+                    {(selectedWarranty.status || "").toUpperCase() !== 'VOID' && (
                       <Button 
                         onClick={() => handleStatusChange(selectedWarranty.id, 'Void')}
                         variant="destructive"

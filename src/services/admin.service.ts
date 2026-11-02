@@ -272,22 +272,150 @@ export async function getAdminOrderDetails(id: string): Promise<AdminOrder> {
 }
 
 export async function getAdminWarranties(): Promise<AdminWarranty[]> {
-  return [
-    { id: 'WAR-101', uniqueId: 'FAN-001928', productName: 'Vision 56" Ceiling Fan', customerName: 'John Doe', customerPhone: '01711223344', sellerName: 'Vision Official Store', saleType: 'Offline', status: 'Active', startDate: '2026-01-15', endDate: '2027-01-15', claimsCount: 0 },
-    { id: 'WAR-102', uniqueId: 'AC-100293', productName: 'Vision AC 1.5 Ton', customerName: 'Alice Smith', customerPhone: '01899887766', sellerName: 'Electro Tech Dhaka', saleType: 'Online', status: 'Active', startDate: '2026-03-10', endDate: '2028-03-10', claimsCount: 1 },
-    { id: 'WAR-103', uniqueId: 'BULB-99212', productName: 'LED Bulb 15W', customerName: 'Karim Ahmed', customerPhone: '01900112233', sellerName: 'Direct Online', saleType: 'Expired', status: 'Expired', startDate: '2024-05-01', endDate: '2025-05-01', claimsCount: 0 },
-    { id: 'WAR-104', uniqueId: 'IRON-20211', productName: 'Dry Iron 1000W', customerName: 'Farid Hossain', customerPhone: '01511223344', sellerName: 'Bogra Smart Gadgets', saleType: 'Offline', status: 'Claimed', startDate: '2025-08-10', endDate: '2026-08-10', claimsCount: 2 },
-    { id: 'WAR-105', uniqueId: 'BLENDER-331', productName: 'Super Blender 750W', customerName: 'Sumaiya Begum', customerPhone: '01399887766', sellerName: 'Sylhet Digital', saleType: 'Offline', status: 'Void', startDate: '2025-10-01', endDate: '2026-10-01', claimsCount: 1 },
-  ];
+  try {
+    const authHeaders = await getAuthHeaders();
+    const res = await fetch(`${API_URL}/warranties?limit=100`, {
+      method: "GET",
+      headers: authHeaders,
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      console.error("Failed to fetch warranties from backend:", res.status, res.statusText);
+      return [];
+    }
+
+    const json = await res.json();
+    const rawWarranties: any[] = Array.isArray(json.data) ? json.data : [];
+
+    return rawWarranties.map((w) => {
+      const serial = w.productItem?.serialNumber || w.uniqueId || w.id;
+      const productName = w.productItem?.variant?.product?.name || "Product";
+      
+      let customerName = "Walk-in Customer";
+      let customerPhone = "N/A";
+      if (w.customer?.user?.name) {
+        customerName = w.customer.user.name;
+        customerPhone = w.customer.user.phone || "N/A";
+      } else if (w.productItem?.offlineSale?.customerName) {
+        customerName = w.productItem.offlineSale.customerName;
+        customerPhone = w.productItem.offlineSale.customerPhone || "N/A";
+      } else if (w.onlineOrder?.shippingAddress) {
+        try {
+          const addr = typeof w.onlineOrder.shippingAddress === 'string' 
+            ? JSON.parse(w.onlineOrder.shippingAddress) 
+            : w.onlineOrder.shippingAddress;
+          customerName = addr?.name || addr?.recipientName || "Online Customer";
+          customerPhone = addr?.phone || addr?.recipientPhone || "N/A";
+        } catch {
+          customerName = "Online Customer";
+        }
+      }
+
+      const sellerName = w.seller?.companyName || w.seller?.user?.name || (w.saleType === "ONLINE" ? "JEE Central Warehouse" : "Official Merchant");
+      const saleType = w.saleType ? (w.saleType.charAt(0).toUpperCase() + w.saleType.slice(1).toLowerCase()) : "Online";
+      
+      const rawStatus = (w.status || "ACTIVE").toUpperCase();
+      let status = "Active";
+      if (rawStatus === "CLAIMED") status = "Claimed";
+      else if (rawStatus === "EXPIRED") status = "Expired";
+      else if (rawStatus === "VOID") status = "Void";
+      else if (rawStatus === "ACTIVE") status = "Active";
+      else status = rawStatus.charAt(0) + rawStatus.slice(1).toLowerCase();
+
+      const startDate = w.startDate ? new Date(w.startDate).toISOString().split("T")[0] : "N/A";
+      const endDate = w.endDate ? new Date(w.endDate).toISOString().split("T")[0] : "N/A";
+      const claimsCount = Number(w._count?.claims ?? w.claims?.length ?? 0);
+
+      return {
+        id: w.id,
+        uniqueId: serial,
+        serialNumber: serial,
+        productName,
+        customerName,
+        customerPhone,
+        sellerName,
+        saleType,
+        status,
+        rawStatus,
+        startDate,
+        endDate,
+        claimsCount,
+        terms: w.terms || null,
+      };
+    });
+  } catch (error) {
+    console.error("[getAdminWarranties] error:", error);
+    return [];
+  }
 }
 
 export async function getAdminWarrantyClaims(): Promise<AdminWarrantyClaim[]> {
-  return [
-    { id: 'CLM-501', warrantyId: 'WAR-102', uniqueId: 'AC-100293', productName: 'Vision AC 1.5 Ton', customerName: 'Alice Smith', customerPhone: '01899887766', issueDescription: 'Cooling insufficient after 4 months of usage. Compressor making noise.', dateSubmitted: '2026-08-02', status: 'In Progress', resolutionNotes: 'Technician assigned for on-site inspection.' },
-    { id: 'CLM-502', warrantyId: 'WAR-104', uniqueId: 'IRON-20211', productName: 'Dry Iron 1000W', customerName: 'Farid Hossain', customerPhone: '01511223344', issueDescription: 'Heating element burnt out.', dateSubmitted: '2026-07-20', status: 'Completed', resolutionNotes: 'Replaced heating element under warranty terms.' },
-    { id: 'CLM-503', warrantyId: 'WAR-105', uniqueId: 'BLENDER-331', productName: 'Super Blender 750W', customerName: 'Sumaiya Begum', customerPhone: '01399887766', issueDescription: 'Motor damaged due to liquid entry.', dateSubmitted: '2026-07-15', status: 'Rejected', resolutionNotes: 'Physical & liquid damage not covered under warranty policy.' },
-    { id: 'CLM-504', warrantyId: 'WAR-101', uniqueId: 'FAN-001928', productName: 'Vision 56" Ceiling Fan', customerName: 'John Doe', customerPhone: '01711223344', issueDescription: 'Speed regulator coil defect.', dateSubmitted: '2026-08-09', status: 'Submitted', resolutionNotes: '' },
-  ];
+  try {
+    const authHeaders = await getAuthHeaders();
+    const res = await fetch(`${API_URL}/warranty-claims?limit=100`, {
+      method: "GET",
+      headers: authHeaders,
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      console.error("Failed to fetch warranty claims from backend:", res.status, res.statusText);
+      return [];
+    }
+
+    const json = await res.json();
+    const rawClaims: any[] = Array.isArray(json.data) ? json.data : [];
+
+    return rawClaims.map((claim) => {
+      const serial = claim.warranty?.productItem?.serialNumber || claim.uniqueId || "N/A";
+      const productName = claim.warranty?.productItem?.variant?.product?.name || "Product";
+      
+      let customerName = "Customer";
+      let customerPhone = "N/A";
+      if (claim.warranty?.customer?.user?.name) {
+        customerName = claim.warranty.customer.user.name;
+        customerPhone = claim.warranty.customer.user.phone || "N/A";
+      } else if (claim.warranty?.productItem?.offlineSale?.customerName) {
+        customerName = claim.warranty.productItem.offlineSale.customerName;
+        customerPhone = claim.warranty.productItem.offlineSale.customerPhone || "N/A";
+      }
+
+      const rawStatus = (claim.status || "SUBMITTED").toUpperCase();
+      let displayStatus = "Submitted";
+      if (rawStatus === "APPROVED") displayStatus = "Approved";
+      else if (rawStatus === "UNDER_REPAIR" || rawStatus === "UNDER_REVIEW" || rawStatus === "IN_PROGRESS") displayStatus = "In Progress";
+      else if (rawStatus === "COMPLETED") displayStatus = "Completed";
+      else if (rawStatus === "REJECTED") displayStatus = "Rejected";
+      else if (rawStatus === "CANCELLED") displayStatus = "Cancelled";
+      else displayStatus = rawStatus.charAt(0) + rawStatus.slice(1).toLowerCase();
+
+      const dateSubmitted = claim.submittedAt 
+        ? new Date(claim.submittedAt).toISOString().split("T")[0]
+        : claim.createdAt 
+          ? new Date(claim.createdAt).toISOString().split("T")[0] 
+          : "N/A";
+
+      return {
+        id: claim.id,
+        claimNumber: claim.claimNumber || `CLM-${claim.id.slice(-6).toUpperCase()}`,
+        warrantyId: claim.warrantyId,
+        uniqueId: serial,
+        productName,
+        customerName,
+        customerPhone,
+        issueDescription: claim.description || "No description provided",
+        dateSubmitted,
+        status: displayStatus,
+        rawStatus,
+        resolutionNotes: claim.resolution || "",
+        claimAmount: claim.claimAmount ? Number(claim.claimAmount) : undefined,
+      };
+    });
+  } catch (error) {
+    console.error("[getAdminWarrantyClaims] error:", error);
+    return [];
+  }
 }
 
 export async function updateAdminUserRole(id: string, role: string) {
@@ -350,9 +478,46 @@ export async function updateAdminOrderStatus(id: string, status: string) {
 }
 
 export async function updateAdminWarrantyStatus(id: string, status: string) {
-  return { success: true, message: `Warranty status updated to ${status}`, id };
+  const normalizedStatus = status.toUpperCase();
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_URL}/warranties/${id}`, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify({ status: normalizedStatus }),
+  });
+
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(json.message || `Failed to update warranty status to ${status}`);
+  }
+
+  return { success: true, message: json.message || `Warranty status updated to ${status}`, id };
 }
 
 export async function updateAdminWarrantyClaimStatus(id: string, status: string, resolutionNotes?: string) {
-  return { success: true, message: `Claim #${id} status updated to ${status}`, resolutionNotes };
+  let normalizedStatus = status.toUpperCase().replace(/\s+/g, '_');
+  if (normalizedStatus === "IN_PROGRESS") {
+    normalizedStatus = "UNDER_REPAIR";
+  }
+
+  const payload: Record<string, unknown> = {
+    status: normalizedStatus,
+  };
+  if (resolutionNotes !== undefined) {
+    payload.resolution = resolutionNotes;
+  }
+
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_URL}/warranty-claims/${id}`, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify(payload),
+  });
+
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(json.message || `Failed to update warranty claim #${id} status`);
+  }
+
+  return { success: true, message: json.message || `Claim status updated to ${status}`, id, resolutionNotes };
 }

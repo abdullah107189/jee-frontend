@@ -4,8 +4,8 @@ import WarrantyClaimsContent from "@/components/modules/admin/warranties/claims/
 import { getAdminWarrantyClaims } from "@/services/warranty.service";
 
 export const metadata: Metadata = {
-  title: "Warranty Claims | JEE Admin",
-  description: "Review and resolve customer warranty claims.",
+  title: "Claims & Servicing | JEE Admin",
+  description: "Review customer warranty claims, manage servicing/repairs, and update resolution status.",
 };
 
 export default async function AdminWarrantyClaimsPage() {

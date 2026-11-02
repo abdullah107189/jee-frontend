@@ -18,8 +18,8 @@ const USER_ROLES = new Set(['admin', 'seller', 'customer', 'ADMIN', 'SELLER', 'C
 const USER_STATUSES = new Set(['Active', 'Disabled', 'ACTIVE', 'DISABLED']);
 const SELLER_STATUSES = new Set(['Approved', 'Pending', 'Suspended', 'Disabled', 'APPROVED', 'PENDING', 'SUSPENDED', 'DISABLED']);
 const ORDER_STATUSES = new Set(['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED']);
-const WARRANTY_STATUSES = new Set(['Active', 'Claimed', 'Expired', 'Void', 'ACTIVE', 'CLAIMED', 'EXPIRED', 'VOID']);
-const CLAIM_STATUSES = new Set(['Submitted', 'In Progress', 'Approved', 'Completed', 'Rejected']);
+const WARRANTY_STATUSES = new Set(['Active', 'Claimed', 'Expired', 'Void', 'Transferred', 'ACTIVE', 'CLAIMED', 'EXPIRED', 'VOID', 'TRANSFERRED']);
+const CLAIM_STATUSES = new Set(['Submitted', 'In Progress', 'Approved', 'Completed', 'Rejected', 'Under Review', 'Under Repair', 'Cancelled', 'SUBMITTED', 'IN_PROGRESS', 'APPROVED', 'COMPLETED', 'REJECTED', 'UNDER_REVIEW', 'UNDER_REPAIR', 'CANCELLED']);
 
 function requiredText(value: unknown, field: string, maxLength = 120) {
   if (typeof value !== 'string' || value.trim().length === 0 || value.length > maxLength) {
@@ -93,7 +93,9 @@ export async function updateWarrantyStatusAction(input: { id: string; status: st
   const id = requiredText(input?.id, 'warranty id');
   const status = requiredText(input?.status, 'status');
   if (!WARRANTY_STATUSES.has(status)) throw new Error('Invalid warranty status');
-  return updateAdminWarrantyStatus(id, status);
+  const result = await updateAdminWarrantyStatus(id, status);
+  revalidatePath('/admin/warranties');
+  return result;
 }
 
 export async function updateWarrantyClaimStatusAction(input: { id: string; status: string; resolutionNotes?: string }): Promise<ActionResult> {
@@ -102,5 +104,8 @@ export async function updateWarrantyClaimStatusAction(input: { id: string; statu
   const status = requiredText(input?.status, 'status');
   if (!CLAIM_STATUSES.has(status)) throw new Error('Invalid claim status');
   if (input.resolutionNotes !== undefined) requiredText(input.resolutionNotes, 'resolution notes', 2000);
-  return updateAdminWarrantyClaimStatus(id, status, input.resolutionNotes);
+  const result = await updateAdminWarrantyClaimStatus(id, status, input.resolutionNotes);
+  revalidatePath('/admin/warranties/claims');
+  revalidatePath('/admin/warranties');
+  return result;
 }

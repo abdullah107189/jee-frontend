@@ -177,7 +177,7 @@ export function Sidebar({
         icon: ShieldCheck,
         subItems: [
           { name: "All Warranties", href: "/admin/warranties" },
-          { name: "Claims", href: "/admin/warranties/claims" },
+          { name: "Claims & Servicing", href: "/admin/warranties/claims" },
         ],
       },
 
