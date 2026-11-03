@@ -19,14 +19,14 @@ export default function LatestProductsClient({
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 mb-0.5">
               <Sparkles className="h-3.5 w-3.5 text-primary shrink-0" />
-              <span className="text-[10px] sm:text-xs font-bold text-primary uppercase tracking-wider">
+              <span className="typo-badge text-primary">
                 New Additions
               </span>
             </div>
-            <h2 className="text-lg font-black tracking-tight text-foreground sm:text-2xl lg:text-3xl">
+            <h2 className="section-title">
               Latest Arrivals
             </h2>
-            <p className="mt-0.5 text-xs font-medium text-muted-foreground sm:mt-1 sm:text-sm">
+            <p className="section-description">
               Newly listed electronics with official warranties
             </p>
           </div>

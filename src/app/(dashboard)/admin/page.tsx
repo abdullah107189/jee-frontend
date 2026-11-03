@@ -103,10 +103,10 @@ export default async function AdminDashboardPage() {
     <div className="space-y-6 sm:space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
+        <h1 className="page-header-title">
           Admin Dashboard
         </h1>
-        <p className="mt-1 text-sm font-medium text-muted-foreground sm:text-base">
+        <p className="page-header-desc">
           Live store metrics, platform inventory, and administrative actions.
         </p>
       </div>
@@ -118,7 +118,7 @@ export default async function AdminDashboardPage() {
             <Link key={label} href={href} className="group">
               <Card className="p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  <span className="typo-badge text-muted-foreground">
                     {label}
                   </span>
                   <div
@@ -128,10 +128,10 @@ export default async function AdminDashboardPage() {
                   </div>
                 </div>
                 <div className="mt-3">
-                  <div className="text-2xl font-black text-foreground">
+                  <div className="typo-h1 text-foreground">
                     {value}
                   </div>
-                  <p className="text-xs font-medium text-muted-foreground mt-0.5">
+                  <p className="typo-caption text-muted-foreground mt-0.5">
                     {subtext}
                   </p>
                 </div>

@@ -75,8 +75,8 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
     <div className="space-y-6 sm:space-y-8">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">Order Management</h1>
-          <p className="text-sm sm:text-base text-muted-foreground mt-1 font-medium">Track customer orders and manage fulfillment.</p>
+          <h1 className="page-header-title">Order Management</h1>
+          <p className="page-header-desc">Track customer orders and manage fulfillment.</p>
         </div>
       </div>
 
@@ -88,9 +88,9 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
               <div className="p-2.5 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 rounded-xl">
                 <ShoppingBag className="h-5 w-5" />
               </div>
-              <span className="text-xs font-semibold text-muted-foreground uppercase">Total Orders</span>
+              <span className="typo-badge text-muted-foreground">Total Orders</span>
             </div>
-            <p className="text-2xl font-extrabold text-foreground">{orders.length}</p>
+            <p className="typo-h2 font-extrabold text-foreground">{orders.length}</p>
           </CardContent>
         </Card>
         <Card>
@@ -99,9 +99,9 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
               <div className="p-2.5 bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 rounded-xl">
                 <Clock className="h-5 w-5" />
               </div>
-              <span className="text-xs font-semibold text-muted-foreground uppercase">Pending</span>
+              <span className="typo-badge text-muted-foreground">Pending</span>
             </div>
-            <p className="text-2xl font-extrabold text-foreground">{orders.filter((o: any) => o.status === 'Pending').length}</p>
+            <p className="typo-h2 font-extrabold text-foreground">{orders.filter((o: any) => o.status === 'Pending').length}</p>
           </CardContent>
         </Card>
         <Card>
@@ -110,9 +110,9 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
               <div className="p-2.5 bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 rounded-xl">
                 <Truck className="h-5 w-5" />
               </div>
-              <span className="text-xs font-semibold text-muted-foreground uppercase">Shipped</span>
+              <span className="typo-badge text-muted-foreground">Shipped</span>
             </div>
-            <p className="text-2xl font-extrabold text-foreground">{orders.filter((o: any) => o.status === 'Shipped' || o.status === 'Processing').length}</p>
+            <p className="typo-h2 font-extrabold text-foreground">{orders.filter((o: any) => o.status === 'Shipped' || o.status === 'Processing').length}</p>
           </CardContent>
         </Card>
         <Card>
@@ -121,9 +121,9 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
               <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-xl">
                 <CheckCircle className="h-5 w-5" />
               </div>
-              <span className="text-xs font-semibold text-muted-foreground uppercase">Delivered</span>
+              <span className="typo-badge text-muted-foreground">Delivered</span>
             </div>
-            <p className="text-2xl font-extrabold text-foreground">{orders.filter((o: any) => o.status === 'Delivered').length}</p>
+            <p className="typo-h2 font-extrabold text-foreground">{orders.filter((o: any) => o.status === 'Delivered').length}</p>
           </CardContent>
         </Card>
       </div>

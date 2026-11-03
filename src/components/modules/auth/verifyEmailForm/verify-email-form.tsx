@@ -121,7 +121,7 @@ export function VerifyEmailForm() {
                 <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
                     <ShieldCheck className="h-7 w-7 text-primary" />
                 </div>
-                <CardTitle className="text-2xl font-bold">Verify your email</CardTitle>
+                <CardTitle className="typo-h2 font-bold">Verify your email</CardTitle>
 
             </CardHeader>
 

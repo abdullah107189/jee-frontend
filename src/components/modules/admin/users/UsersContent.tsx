@@ -89,8 +89,8 @@ export default function AdminUsersPage({ users: initialUsers }: { users: AdminUs
     <div className="space-y-6 sm:space-y-8">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">User Management</h1>
-          <p className="text-sm sm:text-base text-muted-foreground mt-1 font-medium">Manage user accounts, roles, access permissions, and account statuses.</p>
+          <h1 className="page-header-title">User Management</h1>
+          <p className="page-header-desc">Manage user accounts, roles, access permissions, and account statuses.</p>
         </div>
       </div>
 
@@ -102,9 +102,9 @@ export default function AdminUsersPage({ users: initialUsers }: { users: AdminUs
               <div className="p-2.5 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 rounded-xl">
                 <Users className="h-5 w-5" />
               </div>
-              <span className="text-xs font-semibold text-muted-foreground uppercase">Total Users</span>
+              <span className="typo-badge text-muted-foreground">Total Users</span>
             </div>
-            <p className="text-2xl font-extrabold text-foreground">{users.length}</p>
+            <p className="typo-h2 font-extrabold text-foreground">{users.length}</p>
           </CardContent>
         </Card>
         <Card>
@@ -113,9 +113,9 @@ export default function AdminUsersPage({ users: initialUsers }: { users: AdminUs
               <div className="p-2.5 bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 rounded-xl">
                 <Shield className="h-5 w-5" />
               </div>
-              <span className="text-xs font-semibold text-muted-foreground uppercase">Admins</span>
+              <span className="typo-badge text-muted-foreground">Admins</span>
             </div>
-            <p className="text-2xl font-extrabold text-foreground">{adminCount}</p>
+            <p className="typo-h2 font-extrabold text-foreground">{adminCount}</p>
           </CardContent>
         </Card>
         <Card>
@@ -124,9 +124,9 @@ export default function AdminUsersPage({ users: initialUsers }: { users: AdminUs
               <div className="p-2.5 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 rounded-xl">
                 <Store className="h-5 w-5" />
               </div>
-              <span className="text-xs font-semibold text-muted-foreground uppercase">Sellers</span>
+              <span className="typo-badge text-muted-foreground">Sellers</span>
             </div>
-            <p className="text-2xl font-extrabold text-foreground">{sellerCount}</p>
+            <p className="typo-h2 font-extrabold text-foreground">{sellerCount}</p>
           </CardContent>
         </Card>
         <Card>
@@ -135,9 +135,9 @@ export default function AdminUsersPage({ users: initialUsers }: { users: AdminUs
               <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-xl">
                 <UserCheck className="h-5 w-5" />
               </div>
-              <span className="text-xs font-semibold text-muted-foreground uppercase">Customers</span>
+              <span className="typo-badge text-muted-foreground">Customers</span>
             </div>
-            <p className="text-2xl font-extrabold text-foreground">{customerCount}</p>
+            <p className="typo-h2 font-extrabold text-foreground">{customerCount}</p>
           </CardContent>
         </Card>
       </div>

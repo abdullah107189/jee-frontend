@@ -41,10 +41,10 @@ export function FiltersList({ groups }: FiltersListProps) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          <h1 className="page-header-title">
             Filters
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="page-header-desc mt-1">
             Manage category-specific filters (Brand, Color, Size, etc.)
           </p>
         </div>

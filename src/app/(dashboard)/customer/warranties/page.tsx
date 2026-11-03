@@ -18,10 +18,10 @@ export default async function WarrantiesPage() {
     <div className="container mx-auto px-4 py-6 sm:py-8 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
+          <h1 className="page-header-title">
             My Warranties
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="page-header-desc">
             Track active protection terms, expiration dates, and submit service claims for your devices.
           </p>
         </div>

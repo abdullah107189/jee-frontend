@@ -50,6 +50,12 @@ DONE = build পাস + প্রমাণ | PARTIAL = কী বাকি ল�
 - [x] Apple Gadgets BD আদলে প্রিমিয়াম ফুটার রিডিজাইন: হটলাইন কার্ড (+880 9612-345678), শোরুম ঠিকানা, ইমেইল সাপোর্ট, কাস্টমার কেয়ার লিংক, এক্সপ্লোর লিংক, সোশ্যাল কানেক্টিভিটি এবং পেমেন্ট মেথড ব্যাজ (বিকাশ, নগদ, রকেট, ভিসা/মাস্টারকার্ড, ক্যাশ অন ডেলিভারি) — DONE
 - [x] ডেডিকেটেড Homepage Manager রাউট (`/admin/homepage`): হিরো ব্যানার স্লাইডার (ইমেজ, টেক্সট, লিংক), সাইড ব্যানার, ট্রাস্ট ব্যাজ স্ট্রিপ, ও সেকশন টাইটেল অ্যাডমিন কর্তৃক নিয়ন্ত্রণ — DONE
 - [x] Products টেবিল (`/admin/products`)-এ লাইভ Featured কলাম ও ১-ক্লিক টগল: অ্যাডমিন সরাসরি দেখতে পারবেন কোন কোন প্রোডাক্ট ওয়েবসাইটে ফিচারড আছে এবং সর্বোচ্চ ৮টি সীমা বজায় রেখে ১-ক্লিকে ফিচারড বা আনফিচারড করতে পারবেন — DONE
+### M7 Global Fluid Typography System (সম্পূর্ণ সম্পন্ন ✅)
+- [x] CSS Custom Properties ও mathematical `clamp()` ভিত্তিক গ্লোবাল টাইপোগ্রাফি স্কেল তৈরি (`--text-display`, `--text-h1`, `--text-h2`, `--text-h3`, `--text-h4`, `--text-body-lg`, `--text-body`, `--text-body-sm`, `--text-caption`, `--text-badge`) — DONE
+- [x] ইউনিফাইড ক্লাস সিস্টেম: `.page-header-title`, `.page-header-desc`, `.section-title`, `.section-description`, `.typo-price`, `.typo-badge`, `.typo-lead`, `.typo-caption` — DONE
+- [x] সম্পূর্ণ প্রজেক্টের ৬৩+ টি পেজ ও রিইউজেবল কম্পোনেন্টে টাইপোগ্রাফি প্রয়োগ (Storefront, Cards, Admin, Customer, Seller, Auth, Error Boundaries) — DONE
+- [x] Mobile (320px–480px), Tablet (768px–1024px) ও Desktop (1280px+) এ ফ্লুইড স্কেলিং ও কাট-অফ/ওভারফ্লো মুক্ত বাস্তব টেস্ট — DONE
+- [x] 60-30-10 কালার ব্যালান্স ও স্পেসিং লেআউট অক্ষুণ্ণ রেখে হার্ডকোডেড সাইজ এবং ডিসক্রিপেন্সি মুক্তকরণ — DONE
 - [ ] 5K-10K কনকারেন্ট ট্রাফিক লোড টেস্টিং, রেট-লিমিট ও সিকিউরিটি টেস্ট — TODO (পরে করা হবে)
 - [x] অনেকক্ষণ PENDING অর্ডার (MVP: admin হাতে cancel) — DONE
 - [ ] deploy, migrate deploy, DB backup — TODO
@@ -62,3 +68,7 @@ DONE = build পাস + প্রমাণ | PARTIAL = কী বাকি ল�
      - `FeaturedProducts`: ট্যাবলেটের জন্য `sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5` গ্রিড তৈরি, যাতে ট্যাবলেটে অপ্রয়োজনীয় বড় ২ কলাম না থাকে।
      - `ProductCard` & `HorizontalProductCard`: মোবাইলের জন্য অপ্টিমাইজড ইমেজ সাইজ, টেক্সট ক্ল্যাম্প ও টাচ বাটন।
      - `AGENTS.md`: Storefront Mobile & Tablet Responsiveness Standard রুল যুক্ত।
+  2. `Project-Wide Typography Audit & Global Fluid Scale Standardization`:
+     - `src/app/globals.css`: গ্লোবাল CSS ভেরিয়েবল এবং ম্যাথমেটিকাল `clamp()` দিয়ে fluid typography scale এবং ইউনিফাইড রিয়ুজেবল টাইপোগ্রাফি ইউটিলিটি ক্লাস ডিফাইন।
+     - ৬৩টি ফাইল অডিট ও আপডেট (সব পেজ এবং কম্পোনেন্টের হেডিং, সাব-টাইটেল, কার্ড টাইটেল, প্রাইসিং ও ব্যাজ সুষম)।
+     - TypeScript `tsc --noEmit` পাস (Exit code 0)।

@@ -191,24 +191,24 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           </div>
 
           {/* Title */}
-          <h1 className="text-xl font-bold tracking-tight sm:text-2xl lg:text-3xl">
+          <h1 className="typo-h1 text-foreground">
             {product.name}
           </h1>
 
           {/* Price */}
           <div className="mt-3 flex flex-wrap items-center gap-2 sm:gap-3">
-            <span className="text-2xl font-bold text-primary sm:text-3xl">
+            <span className="typo-h1 font-black text-primary">
               ৳{selectedVariant.price.toLocaleString()}
             </span>
 
             {selectedVariant.comparePrice && (
               <>
-                <span className="text-base text-muted-foreground line-through sm:text-lg">
+                <span className="typo-h3 text-muted-foreground line-through">
                   ৳{selectedVariant.comparePrice.toLocaleString()}
                 </span>
 
                 {discount > 0 && (
-                  <Badge variant="destructive" className="text-xs font-bold">
+                  <Badge variant="destructive" className="typo-badge">
                     -{discount}%
                   </Badge>
                 )}

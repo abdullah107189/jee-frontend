@@ -30,22 +30,22 @@ export default function FeaturedProductCard({
 
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
-          <span className="absolute left-4 top-4 rounded-full bg-background/90 px-3 py-1 text-xs font-bold text-foreground backdrop-blur">
+          <span className="absolute left-4 top-4 rounded-full bg-background/90 px-3 py-1 typo-badge text-foreground backdrop-blur">
             Featured
           </span>
 
           <div className="absolute inset-x-0 bottom-0 p-4 text-white sm:p-5">
-            <h3 className="line-clamp-2 text-lg font-bold sm:text-xl">
+            <h3 className="line-clamp-2 typo-h3 text-white">
               {data.name}
             </h3>
 
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-xl font-black sm:text-2xl">
+              <span className="typo-h2 font-black text-white">
                 ৳{data.price.toLocaleString()}
               </span>
 
               {hasDiscount && (
-                <del className="text-sm text-white/70">
+                <del className="typo-caption text-white/70">
                   ৳{data.comparePrice!.toLocaleString()}
                 </del>
               )}

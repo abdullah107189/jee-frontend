@@ -213,11 +213,11 @@ export default function AdminBrandsPage({ brands }: AdminBrandsPageProps) {
             </div>
 
             <div>
-              <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
+              <h1 className="page-header-title">
                 Brands
               </h1>
 
-              <p className="mt-1 text-sm font-medium text-muted-foreground sm:text-base">
+              <p className="page-header-desc">
                 Manage product brands, logos, and manufacturer details.
               </p>
             </div>

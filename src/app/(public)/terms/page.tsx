@@ -16,21 +16,20 @@ export default function TermsPage() {
             <div className="container mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:py-16">
                 {/* Header */}
                 <div className="mb-10">
-                    <p className="mb-3 text-sm font-medium text-primary">
+                    <p className="mb-3 typo-badge text-primary">
                         Legal
                     </p>
 
-                    <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                    <h1 className="page-header-title">
                         Terms & Conditions
                     </h1>
 
-                    <p className="mt-4 text-muted-foreground">
-                        Please read these terms carefully before placing an order
-                        with us.
+                    <p className="page-header-desc mt-2">
+                        Please read these terms carefully before placing an order with us.
                     </p>
 
-                    <p className="mt-2 text-sm text-muted-foreground">
-                        Last updated: September 20, 2026
+                    <p className="mt-2 typo-caption">
+                        Last updated: 20 Sep 2026
                     </p>
                 </div>
 

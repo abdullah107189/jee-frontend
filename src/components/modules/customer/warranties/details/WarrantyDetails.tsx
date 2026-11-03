@@ -84,12 +84,12 @@ export function WarrantyDetails({ warranty }: { warranty: CustomerWarrantyDetail
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-bold text-primary uppercase tracking-wider">
+            <span className="typo-badge text-primary">
               Warranty Details
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground">{warranty.productName}</h1>
-          <p className="text-sm text-muted-foreground font-mono mt-0.5">
+          <h1 className="page-header-title">{warranty.productName}</h1>
+          <p className="page-header-desc font-mono mt-0.5">
             Serial: {warranty.uniqueId}
           </p>
         </div>

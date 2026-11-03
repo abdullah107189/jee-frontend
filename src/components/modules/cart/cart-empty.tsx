@@ -13,11 +13,11 @@ export function CartEmpty() {
           <ShoppingBag className="h-9 w-9 text-primary" />
         </div>
 
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+        <h1 className="page-header-title">
           Your cart is empty
         </h1>
 
-        <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">
+        <p className="mt-3 typo-body text-muted-foreground">
           Looks like you haven&apos;t added anything yet. Start exploring and
           find something you love.
         </p>

@@ -29,8 +29,8 @@ export default function AdminCategoriesPage({ categories }: { categories: AdminC
     <div className="space-y-6 sm:space-y-8">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">Categories</h1>
-          <p className="text-sm sm:text-base text-muted-foreground mt-1 font-medium">Manage product categories and taxonomy.</p>
+          <h1 className="page-header-title">Categories</h1>
+          <p className="page-header-desc">Manage product categories and taxonomy.</p>
         </div>
         <Button className="h-10 sm:h-12 rounded-xl sm:rounded-2xl shadow-lg shadow-blue-500/20 font-bold">
           <Plus className="mr-2 h-4 w-4 sm:h-5 sm:w-5" /> Add Category

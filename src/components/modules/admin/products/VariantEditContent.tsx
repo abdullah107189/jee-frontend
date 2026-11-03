@@ -185,7 +185,7 @@ export default function VariantEditContent({
 
                 <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-3">
-                        <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
+                        <h1 className="page-header-title">
                             Edit Variant
                         </h1>
                         <span className="font-mono text-xs rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 border border-blue-200 dark:border-blue-900/50">

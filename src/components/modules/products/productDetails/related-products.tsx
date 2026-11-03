@@ -12,7 +12,7 @@ export function RelatedProducts({ products }: RelatedProductsProps) {
 
   return (
     <div className="rounded-2xl border border-border bg-card p-4 mb-5">
-      <h2 className="mb-4 text-lg font-bold">Similar Products</h2>
+      <h2 className="mb-4 typo-h3 font-bold text-foreground">Similar Products</h2>
 
       <div className="flex flex-col divide-y divide-border">
         {products.map((item) => (

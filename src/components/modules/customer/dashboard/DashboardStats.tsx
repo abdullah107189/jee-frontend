@@ -49,8 +49,8 @@ export function DashboardStats({ stats }: { stats: CustomerStats }) {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">{config.label}</p>
-                  <p className="text-2xl font-bold">{displayValue}</p>
+                  <p className="typo-caption text-muted-foreground">{config.label}</p>
+                  <p className="typo-h2 font-bold tabular-nums">{displayValue}</p>
                 </div>
                 <div className={`p-3 rounded-full ${config.iconBg}`}>
                   <Icon className={`w-5 h-5 ${config.iconColor}`} />

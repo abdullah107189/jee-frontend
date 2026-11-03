@@ -47,8 +47,8 @@ export default function AdminPendingSellersPage({ pendingSellers }: { pendingSel
             <span>/</span>
             <span className="text-foreground font-semibold">Pending Approvals</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">Pending Seller Approvals</h1>
-          <p className="text-sm sm:text-base text-muted-foreground mt-1 font-medium">Review submitted business credentials before granting merchant access.</p>
+          <h1 className="page-header-title">Pending Seller Approvals</h1>
+          <p className="page-header-desc mt-1">Review submitted business credentials before granting merchant access.</p>
         </div>
       </div>
 

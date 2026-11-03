@@ -115,8 +115,8 @@ export default function AdminWarrantyClaimsPage({ claims }: { claims: AdminWarra
               <span>/</span>
               <span className="text-foreground font-semibold">Claims & Servicing Desk</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">Warranty Claims & Servicing Desk</h1>
-            <p className="text-sm sm:text-base text-muted-foreground mt-1 font-medium">Process customer reported defects, assign servicing/repairs, update claim status, and enter technician resolution reports.</p>
+            <h1 className="page-header-title">Warranty Claims & Servicing Desk</h1>
+            <p className="page-header-desc mt-1">Process customer reported defects, assign servicing/repairs, update claim status, and enter technician resolution reports.</p>
           </div>
         </div>
 
@@ -128,9 +128,9 @@ export default function AdminWarrantyClaimsPage({ claims }: { claims: AdminWarra
                 <div className="p-2.5 bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 rounded-xl">
                   <Clock className="h-5 w-5" />
                 </div>
-                <span className="text-xs font-semibold text-muted-foreground uppercase">Submitted</span>
+                <span className="typo-badge text-muted-foreground">Submitted</span>
               </div>
-              <p className="text-2xl font-extrabold text-foreground">{claimsList.filter((c: any) => (c.status || "").toLowerCase() === 'submitted').length}</p>
+              <p className="typo-h2 font-extrabold text-foreground">{claimsList.filter((c: any) => (c.status || "").toLowerCase() === 'submitted').length}</p>
             </CardContent>
           </Card>
           <Card className="rounded-2xl border border-border/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-card">
@@ -139,9 +139,9 @@ export default function AdminWarrantyClaimsPage({ claims }: { claims: AdminWarra
                 <div className="p-2.5 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-xl">
                   <Wrench className="h-5 w-5" />
                 </div>
-                <span className="text-xs font-semibold text-muted-foreground uppercase">In Progress / Approved</span>
+                <span className="typo-badge text-muted-foreground">In Progress / Approved</span>
               </div>
-              <p className="text-2xl font-extrabold text-foreground">{claimsList.filter((c: any) => ['in progress', 'approved'].includes((c.status || "").toLowerCase())).length}</p>
+              <p className="typo-h2 font-extrabold text-foreground">{claimsList.filter((c: any) => ['in progress', 'approved'].includes((c.status || "").toLowerCase())).length}</p>
             </CardContent>
           </Card>
           <Card className="rounded-2xl border border-border/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-card">
@@ -150,9 +150,9 @@ export default function AdminWarrantyClaimsPage({ claims }: { claims: AdminWarra
                 <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 rounded-xl">
                   <CheckCircle className="h-5 w-5" />
                 </div>
-                <span className="text-xs font-semibold text-muted-foreground uppercase">Completed</span>
+                <span className="typo-badge text-muted-foreground">Completed</span>
               </div>
-              <p className="text-2xl font-extrabold text-foreground">{claimsList.filter((c: any) => (c.status || "").toLowerCase() === 'completed').length}</p>
+              <p className="typo-h2 font-extrabold text-foreground">{claimsList.filter((c: any) => (c.status || "").toLowerCase() === 'completed').length}</p>
             </CardContent>
           </Card>
           <Card className="rounded-2xl border border-border/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-card">
@@ -161,9 +161,9 @@ export default function AdminWarrantyClaimsPage({ claims }: { claims: AdminWarra
                 <div className="p-2.5 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 rounded-xl">
                   <XCircle className="h-5 w-5" />
                 </div>
-                <span className="text-xs font-semibold text-muted-foreground uppercase">Rejected</span>
+                <span className="typo-badge text-muted-foreground">Rejected</span>
               </div>
-              <p className="text-2xl font-extrabold text-foreground">{claimsList.filter((c: any) => (c.status || "").toLowerCase() === 'rejected').length}</p>
+              <p className="typo-h2 font-extrabold text-foreground">{claimsList.filter((c: any) => (c.status || "").toLowerCase() === 'rejected').length}</p>
             </CardContent>
           </Card>
         </div>

@@ -72,17 +72,17 @@ export default async function LoginPage() {
               />
             </Link>
 
-            <div className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
+            <div className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 typo-badge text-primary">
               <Sparkles className="h-4 w-4" />
               <span>Welcome back to Jee Store</span>
             </div>
 
-            <h1 className="mb-4 text-4xl font-extrabold leading-tight tracking-tight text-foreground xl:text-5xl">
+            <h1 className="mb-4 typo-display font-extrabold text-foreground">
               Sign in and continue
               <span className="block jee-gradient-text">shopping smarter.</span>
             </h1>
 
-            <p className="mb-8 max-w-md text-base text-muted-foreground">
+            <p className="mb-8 max-w-md typo-lead text-muted-foreground">
               Access your orders, warranties, wishlist and exclusive member
               deals — all in one place.
             </p>

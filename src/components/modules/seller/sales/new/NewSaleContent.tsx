@@ -299,11 +299,11 @@ export default function SellerNewSalePage() {
             <span className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-xl bg-blue-600 text-white font-black text-sm">
               ⚡
             </span>
-            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">
+            <h1 className="page-header-title">
               Showroom POS Terminal
             </h1>
           </div>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1 font-medium">
+          <p className="page-header-desc mt-1">
             Fast multi-unit scanner with auto-pricing and instant warranty.
           </p>
         </div>
@@ -679,13 +679,13 @@ export default function SellerNewSalePage() {
             {/* Grand Total Summary Box */}
             <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="space-y-1 text-center sm:text-left w-full sm:w-auto">
-                <span className="text-[11px] sm:text-xs font-bold text-muted-foreground uppercase tracking-wider block">
+                <span className="typo-badge text-muted-foreground block">
                   Grand Total ({scannedItems.length} items)
                 </span>
-                <div className="text-2xl sm:text-3xl font-black text-foreground tabular-nums">
+                <div className="typo-h1 font-black text-foreground tabular-nums">
                   ৳ {grandTotal.toLocaleString()}
                   {discountNum > 0 && (
-                    <span className="text-xs font-normal text-emerald-600 ml-2 block sm:inline">
+                    <span className="typo-caption font-normal text-emerald-600 ml-2 block sm:inline">
                       (৳{discountNum.toLocaleString()} discount)
                     </span>
                   )}

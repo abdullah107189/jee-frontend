@@ -29,16 +29,16 @@ export function CartHeader({ itemCount, onClear }: CartHeaderProps) {
     <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+          <h1 className="page-header-title">
             Shopping Cart
           </h1>
 
-          <Badge variant="destructive" className="rounded-full">
+          <Badge variant="destructive" className="rounded-full typo-badge">
             {itemCount} {itemCount === 1 ? "item" : "items"}
           </Badge>
         </div>
 
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="page-header-desc">
           Review your items before checkout.
         </p>
       </div>

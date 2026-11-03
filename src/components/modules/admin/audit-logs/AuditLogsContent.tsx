@@ -156,14 +156,14 @@ export default function AdminAuditLogsPage({ logs = [] }: { logs: AuditLog[] }) 
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
+            <h1 className="page-header-title">
               System Audit Logs
             </h1>
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 typo-badge text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
               <ShieldCheck className="h-3 w-3" /> Live Tracking
             </span>
           </div>
-          <p className="text-sm sm:text-base text-muted-foreground mt-1 font-medium">
+          <p className="page-header-desc">
             Immutable security trails, administrative decisions, and data state modifications.
           </p>
         </div>

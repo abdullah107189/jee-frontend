@@ -201,10 +201,10 @@ export function CheckoutForm({ user, savedAddress }: CheckoutFormProps) {
             </button>
 
             <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                <h1 className="page-header-title">
                     Checkout
                 </h1>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="page-header-desc">
                     Review your information and place your order.
                 </p>
             </div>

@@ -161,10 +161,10 @@ export function CustomerWarrantyCheckClient({ initialSerial = "" }: Props) {
               Customer Warranty Desk
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
+          <h1 className="page-header-title">
             Verify Product Warranty
           </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
+          <p className="page-header-desc">
             Verify authentic coverage, check remaining days, and file claims for any JEE device.
           </p>
         </div>

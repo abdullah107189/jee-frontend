@@ -20,10 +20,10 @@ export default function ErrorPage({
         <TriangleAlert className="h-7 w-7 text-destructive" />
       </div>
 
-      <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground">
+      <h1 className="mt-4 typo-h1 font-bold text-foreground">
         Something went wrong
       </h1>
-      <p className="mx-auto mt-3 max-w-md text-base text-muted-foreground">
+      <p className="mx-auto mt-3 max-w-md typo-body text-muted-foreground">
         An unexpected error occurred while rendering this page. Please try
         again, and contact support if the problem persists.
       </p>

@@ -145,10 +145,10 @@ export default function SettingsContent({ initialSettings, availableProducts = [
     <div className="space-y-6 sm:space-y-8">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
+          <h1 className="page-header-title">
             System Settings
           </h1>
-          <p className="text-sm sm:text-base text-muted-foreground mt-1 font-medium">
+          <p className="page-header-desc">
             Configure store parameters, payment gateway integration, and warranty rules.
           </p>
         </div>

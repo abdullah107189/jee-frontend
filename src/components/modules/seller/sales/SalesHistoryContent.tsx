@@ -111,11 +111,11 @@ export default function SalesHistoryContent({
             <span className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-xl bg-blue-600 text-white font-black text-sm">
               📋
             </span>
-            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">
+            <h1 className="page-header-title">
               Sales History
             </h1>
           </div>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1 font-medium">
+          <p className="page-header-desc">
             View all recorded offline sales, printed invoices, and active warranties.
           </p>
         </div>

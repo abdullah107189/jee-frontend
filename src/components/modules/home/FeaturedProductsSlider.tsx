@@ -65,10 +65,10 @@ export default function FeaturedProductsSlider({
             <Flame className="h-5 w-5 sm:h-6 sm:w-6" />
           </div>
           <div className="min-w-0">
-            <h2 className="text-lg font-black tracking-tight text-foreground sm:text-2xl lg:text-3xl truncate">
+            <h2 className="section-title truncate">
               {title}
             </h2>
-            <p className="mt-0.5 text-xs font-medium text-muted-foreground sm:mt-1 sm:text-sm truncate">
+            <p className="section-description truncate">
               {subtitle}
             </p>
           </div>

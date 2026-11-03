@@ -75,8 +75,8 @@ export default function AdminWarrantiesPage({ warranties }: { warranties: AdminW
       <div className="space-y-6 sm:space-y-8">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">Warranty Registry</h1>
-            <p className="text-sm sm:text-base text-muted-foreground mt-1 font-medium">Verify registered digital warranties, customer claims, and physical unit statuses.</p>
+            <h1 className="page-header-title">Warranty Registry</h1>
+            <p className="page-header-desc">Verify registered digital warranties, customer claims, and physical unit statuses.</p>
           </div>
           <Link href="/admin/warranties/claims">
             <Button className="h-10 sm:h-12 rounded-xl sm:rounded-2xl bg-amber-600 hover:bg-amber-700 text-white shadow-lg shadow-amber-600/20">
@@ -93,9 +93,9 @@ export default function AdminWarrantiesPage({ warranties }: { warranties: AdminW
                 <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 rounded-xl">
                   <ShieldCheck className="h-5 w-5" />
                 </div>
-                <span className="text-xs font-semibold text-muted-foreground uppercase">Active Warranties</span>
+                <span className="typo-badge text-muted-foreground">Active Warranties</span>
               </div>
-              <p className="text-2xl font-extrabold text-foreground">{warrantiesList.filter((w: any) => (w.status || "").toUpperCase() === 'ACTIVE').length}</p>
+              <p className="typo-h2 font-extrabold text-foreground">{warrantiesList.filter((w: any) => (w.status || "").toUpperCase() === 'ACTIVE').length}</p>
             </CardContent>
           </Card>
           <Card className="rounded-2xl border border-border/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-card">
@@ -104,9 +104,9 @@ export default function AdminWarrantiesPage({ warranties }: { warranties: AdminW
                 <div className="p-2.5 bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 rounded-xl">
                   <Award className="h-5 w-5" />
                 </div>
-                <span className="text-xs font-semibold text-muted-foreground uppercase">Claimed</span>
+                <span className="typo-badge text-muted-foreground">Claimed</span>
               </div>
-              <p className="text-2xl font-extrabold text-foreground">{warrantiesList.filter((w: any) => (w.status || "").toUpperCase() === 'CLAIMED').length}</p>
+              <p className="typo-h2 font-extrabold text-foreground">{warrantiesList.filter((w: any) => (w.status || "").toUpperCase() === 'CLAIMED').length}</p>
             </CardContent>
           </Card>
           <Card className="rounded-2xl border border-border/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-card">
@@ -115,9 +115,9 @@ export default function AdminWarrantiesPage({ warranties }: { warranties: AdminW
                 <div className="p-2.5 bg-muted text-muted-foreground rounded-xl">
                   <Clock className="h-5 w-5" />
                 </div>
-                <span className="text-xs font-semibold text-muted-foreground uppercase">Expired</span>
+                <span className="typo-badge text-muted-foreground">Expired</span>
               </div>
-              <p className="text-2xl font-extrabold text-foreground">{warrantiesList.filter((w: any) => (w.status || "").toUpperCase() === 'EXPIRED').length}</p>
+              <p className="typo-h2 font-extrabold text-foreground">{warrantiesList.filter((w: any) => (w.status || "").toUpperCase() === 'EXPIRED').length}</p>
             </CardContent>
           </Card>
           <Card className="rounded-2xl border border-border/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-card">
@@ -126,9 +126,9 @@ export default function AdminWarrantiesPage({ warranties }: { warranties: AdminW
                 <div className="p-2.5 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 rounded-xl">
                   <AlertTriangle className="h-5 w-5" />
                 </div>
-                <span className="text-xs font-semibold text-muted-foreground uppercase">Void / Revoked</span>
+                <span className="typo-badge text-muted-foreground">Void / Revoked</span>
               </div>
-              <p className="text-2xl font-extrabold text-foreground">{warrantiesList.filter((w: any) => (w.status || "").toUpperCase() === 'VOID').length}</p>
+              <p className="typo-h2 font-extrabold text-foreground">{warrantiesList.filter((w: any) => (w.status || "").toUpperCase() === 'VOID').length}</p>
             </CardContent>
           </Card>
         </div>

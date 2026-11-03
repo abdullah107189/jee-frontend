@@ -41,7 +41,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           )}
 
           {hasDiscount && !isOutOfStock && (
-            <span className="absolute top-2 left-2 rounded-md bg-destructive text-destructive-foreground px-1.5 py-0.5 text-[10px] font-bold shadow-2xs">
+            <span className="absolute top-2 left-2 rounded-md bg-destructive text-destructive-foreground px-1.5 py-0.5 typo-badge shadow-2xs">
               Save ৳{discountAmount.toLocaleString()}
             </span>
           )}
@@ -49,24 +49,24 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         {/* Card Body */}
         <div className="p-2.5 sm:p-3.5 lg:p-4 space-y-1 sm:space-y-1.5">
-          <h3 className="line-clamp-2 min-h-8 sm:min-h-10 text-xs sm:text-sm font-bold leading-snug sm:leading-5 text-foreground transition-colors group-hover:text-primary">
+          <h3 className="line-clamp-2 min-h-8 sm:min-h-10 typo-h4 font-bold text-foreground transition-colors group-hover:text-primary">
             {data.name}
           </h3>
 
           {/* Pricing */}
           <div className="flex flex-wrap items-baseline gap-1.5">
-            <span className="text-sm sm:text-base lg:text-lg font-black text-foreground">
+            <span className="typo-price text-foreground">
               ৳{data?.price?.toLocaleString()}
             </span>
             {hasDiscount && (
-              <del className="text-[10px] sm:text-xs text-muted-foreground">
+              <del className="typo-caption text-muted-foreground">
                 ৳{data.comparePrice!.toLocaleString()}
               </del>
             )}
           </div>
 
           {/* Digital Warranty Indicator */}
-          <div className="pt-0.5 flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+          <div className="pt-0.5 flex items-center gap-1 sm:gap-1.5 typo-caption font-semibold text-emerald-600 dark:text-emerald-400">
             <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
             <span className="truncate">
               {data.warrantyMonths >= 12

@@ -15,10 +15,10 @@ export default async function CategoriesSection() {
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-3.5 sm:mb-5 lg:mb-6">
-          <h2 className="text-lg font-black tracking-tight text-foreground sm:text-2xl lg:text-3xl">
+          <h2 className="section-title">
             Explore Categories
           </h2>
-          <p className="mt-0.5 text-xs font-medium text-muted-foreground sm:mt-1 sm:text-sm">
+          <p className="section-description">
             Find the right products for your home
           </p>
         </div>

@@ -96,13 +96,13 @@ export default async function RegisterPage() {
             </Link>
 
             {/* Badge */}
-            <div className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
+            <div className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 typo-badge text-primary">
               <Sparkles className="h-4 w-4" />
               <span>Join 10,000+ Happy Customers</span>
             </div>
 
             {/* Headline */}
-            <h1 className="mb-4 text-4xl font-extrabold leading-tight tracking-tight text-foreground xl:text-5xl">
+            <h1 className="mb-4 typo-display font-extrabold text-foreground">
               Create your account
               <span className="block bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                 Start shopping smarter.
@@ -110,7 +110,7 @@ export default async function RegisterPage() {
             </h1>
 
             {/* Description */}
-            <p className="mb-8 max-w-md text-base text-muted-foreground">
+            <p className="mb-8 max-w-md typo-lead text-muted-foreground">
               Get access to exclusive deals, order tracking, warranty
               management, and a seamless shopping experience across Bangladesh.
             </p>

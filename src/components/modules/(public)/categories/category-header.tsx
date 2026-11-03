@@ -11,11 +11,11 @@ export function CategoryHeader({
 }: CategoryHeaderProps) {
   return (
     <div className="mb-6">
-      <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{name}</h1>
+      <h1 className="page-header-title">{name}</h1>
       {description && (
-        <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+        <p className="page-header-desc mt-1">{description}</p>
       )}
-      <p className="mt-2 text-xs text-muted-foreground">
+      <p className="typo-caption text-muted-foreground mt-2">
         {productCount} {productCount === 1 ? "product" : "products"}
       </p>
     </div>

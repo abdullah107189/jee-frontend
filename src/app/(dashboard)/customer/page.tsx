@@ -22,8 +22,8 @@ export default async function CustomerDashboardPage() {
       {/* Welcome Section - Server Component */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold">Welcome back! 👋</h1>
-          <p className="text-muted-foreground">
+          <h1 className="page-header-title">Welcome back! 👋</h1>
+          <p className="page-header-desc">
             Here's what's happening with your orders
           </p>
         </div>

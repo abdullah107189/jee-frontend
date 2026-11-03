@@ -88,7 +88,7 @@ export function RegisterForm() {
           </div>
           <span className="text-2xl font-black tracking-tight">Jee</span>
         </Link>
-        <CardTitle className="text-2xl font-bold sm:text-3xl">
+        <CardTitle className="typo-h2 font-bold text-center">
           Create an account
         </CardTitle>
       </CardHeader>

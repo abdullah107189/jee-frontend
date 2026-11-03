@@ -74,8 +74,8 @@ export default function AdminSellersPage({ sellers }: { sellers: AdminSeller[] }
     <div className="space-y-6 sm:space-y-8">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">Sellers Management</h1>
-          <p className="text-sm sm:text-base text-muted-foreground mt-1 font-medium">Manage merchant accounts, approvals, and sales histories.</p>
+          <h1 className="page-header-title">Sellers Management</h1>
+          <p className="page-header-desc">Manage merchant accounts, approvals, and sales histories.</p>
         </div>
       </div>
 
@@ -87,9 +87,9 @@ export default function AdminSellersPage({ sellers }: { sellers: AdminSeller[] }
               <div className="p-2.5 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 rounded-xl">
                 <Users className="h-5 w-5" />
               </div>
-              <span className="text-xs font-semibold text-muted-foreground uppercase">Total Sellers</span>
+              <span className="typo-badge text-muted-foreground">Total Sellers</span>
             </div>
-            <p className="text-2xl font-extrabold text-foreground">{sellers.length}</p>
+            <p className="typo-h2 font-extrabold text-foreground">{sellers.length}</p>
           </CardContent>
         </Card>
         <Card>
@@ -98,9 +98,9 @@ export default function AdminSellersPage({ sellers }: { sellers: AdminSeller[] }
               <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-xl">
                 <CheckCircle className="h-5 w-5" />
               </div>
-              <span className="text-xs font-semibold text-muted-foreground uppercase">Approved</span>
+              <span className="typo-badge text-muted-foreground">Approved</span>
             </div>
-            <p className="text-2xl font-extrabold text-foreground">{approvedCount}</p>
+            <p className="typo-h2 font-extrabold text-foreground">{approvedCount}</p>
           </CardContent>
         </Card>
         <Card>
@@ -109,9 +109,9 @@ export default function AdminSellersPage({ sellers }: { sellers: AdminSeller[] }
               <div className="p-2.5 bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 rounded-xl">
                 <Clock className="h-5 w-5" />
               </div>
-              <span className="text-xs font-semibold text-muted-foreground uppercase">Pending</span>
+              <span className="typo-badge text-muted-foreground">Pending</span>
             </div>
-            <p className="text-2xl font-extrabold text-foreground">{pendingCount}</p>
+            <p className="typo-h2 font-extrabold text-foreground">{pendingCount}</p>
           </CardContent>
         </Card>
         <Card>
@@ -120,9 +120,9 @@ export default function AdminSellersPage({ sellers }: { sellers: AdminSeller[] }
               <div className="p-2.5 bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 rounded-xl">
                 <ShieldAlert className="h-5 w-5" />
               </div>
-              <span className="text-xs font-semibold text-muted-foreground uppercase">Suspended</span>
+              <span className="typo-badge text-muted-foreground">Suspended</span>
             </div>
-            <p className="text-2xl font-extrabold text-foreground">{suspendedCount}</p>
+            <p className="typo-h2 font-extrabold text-foreground">{suspendedCount}</p>
           </CardContent>
         </Card>
       </div>

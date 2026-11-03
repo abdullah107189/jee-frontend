@@ -117,7 +117,7 @@ export default function HorizontalProductCard({
         <div className="min-w-0 space-y-1">
           {/* Warranty */}
           {data.warrantyMonths > 0 && (
-            <div className="flex items-center gap-1 text-[10px] sm:text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+            <div className="flex items-center gap-1 typo-caption font-semibold text-emerald-600 dark:text-emerald-400">
               <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
               <span className="truncate">
                 {data.warrantyMonths >= 12
@@ -129,20 +129,7 @@ export default function HorizontalProductCard({
 
           {/* Product Name */}
           <Link href={`/products/${data.slug}`}>
-            <h3
-              className="
-                line-clamp-2
-                text-xs
-                sm:text-sm
-                lg:text-base
-                font-bold
-                leading-snug
-                sm:leading-5
-                text-foreground
-                transition-colors
-                group-hover:text-primary
-              "
-            >
+            <h3 className="line-clamp-2 typo-h4 font-bold text-foreground transition-colors group-hover:text-primary">
               {data.name}
             </h3>
           </Link>
@@ -153,12 +140,12 @@ export default function HorizontalProductCard({
           <div className="min-w-0">
             {/* Price */}
             <div className="flex flex-wrap items-baseline gap-1.5">
-              <span className="text-sm sm:text-base lg:text-lg font-black text-foreground">
+              <span className="typo-price text-foreground">
                 ৳{data.price.toLocaleString()}
               </span>
 
               {hasDiscount && (
-                <del className="text-[10px] sm:text-xs text-muted-foreground">
+                <del className="typo-caption text-muted-foreground">
                   ৳{data.comparePrice!.toLocaleString()}
                 </del>
               )}
@@ -166,7 +153,7 @@ export default function HorizontalProductCard({
 
             {/* Discount Amount */}
             {hasDiscount && (
-              <p className="text-[10px] font-bold text-destructive">
+              <p className="typo-caption font-bold text-destructive">
                 Save ৳{discountAmount.toLocaleString()}
               </p>
             )}

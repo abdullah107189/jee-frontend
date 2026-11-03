@@ -39,14 +39,14 @@ export default async function SellerDashboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border pb-6">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
+            <h1 className="page-header-title">
               {profile.companyName || "Merchant Store"}
             </h1>
-            <Badge variant="success" className="rounded-full px-2.5 py-0.5 text-xs font-bold uppercase">
+            <Badge variant="success" className="rounded-full px-2.5 py-0.5 typo-badge">
               {profile.status}
             </Badge>
           </div>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="page-header-desc mt-1">
             Welcome back, {user.name} · Outlet ID: <span className="font-mono">{profile.id ? profile.id.slice(0, 10) : "SELLER"}</span>
           </p>
         </div>
@@ -139,8 +139,8 @@ export default async function SellerDashboardPage() {
       <Card className="rounded-2xl sm:rounded-[2rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-card overflow-hidden">
         <div className="p-6 border-b border-border flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-foreground">Recent Transactions</h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <h2 className="typo-h3 text-foreground">Recent Transactions</h2>
+            <p className="typo-caption text-muted-foreground mt-0.5">
               Latest offline customer sales and issued digital warranties.
             </p>
           </div>

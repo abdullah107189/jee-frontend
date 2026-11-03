@@ -295,7 +295,7 @@ export default function VariantDetailsContent({
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-1">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-foreground break-words">
+          <h1 className="page-header-title break-words">
             {variant.product?.name || "Unnamed Variant"}
           </h1>
           <p className="text-xs sm:text-sm font-mono text-muted-foreground font-semibold">{variant.sku}</p>

@@ -9,10 +9,10 @@ export function ProductListingHeader({
 }: ProductListingHeaderProps) {
   return (
     <header className="mt-5">
-      <h1 className="text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
+      <h1 className="page-header-title">
         {title}
       </h1>
-      <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+      <p className="page-header-desc max-w-2xl">
         {description}
       </p>
     </header>

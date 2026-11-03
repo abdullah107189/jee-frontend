@@ -38,14 +38,14 @@ export default function SaleDetailsContent({ sale }: { sale: SellerSaleDetail })
             Back to Sales History
           </Link>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
+            <h1 className="page-header-title">
               Invoice #{sale.invoiceNumber}
             </h1>
-            <Badge variant="success" className="rounded-full px-2.5 py-0.5 text-xs font-bold uppercase">
+            <Badge variant="success" className="rounded-full px-2.5 py-0.5 typo-badge">
               Completed
             </Badge>
           </div>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="page-header-desc">
             Registered on{" "}
             {new Date(sale.date || sale.createdAt).toLocaleDateString("en-GB", {
               day: "2-digit",

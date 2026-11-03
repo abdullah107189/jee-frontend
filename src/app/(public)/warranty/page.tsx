@@ -164,14 +164,14 @@ function WarrantyTrackerContent() {
     <section className="section-padding max-w-6xl mx-auto space-y-6 sm:space-y-8 px-4">
       {/* Hero Header */}
       <div className="text-center space-y-3.5 max-w-2xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-wide shadow-2xs">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary typo-badge shadow-2xs">
           <BadgeCheck className="h-4 w-4 text-primary" />
           Official JEE Product Authenticity & Digital Warranty
         </div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+        <h1 className="typo-h1 text-foreground">
           Product Authenticity & Warranty Tracker
         </h1>
-        <p className="text-sm sm:text-base text-muted-foreground font-medium leading-relaxed">
+        <p className="typo-lead">
           Scan the QR code on your product box or enter the serial number below to verify genuine factory authenticity and view live warranty protection.
         </p>
       </div>

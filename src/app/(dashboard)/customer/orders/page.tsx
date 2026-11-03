@@ -32,10 +32,10 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl text-foreground">
+          <h1 className="page-header-title">
             My Orders
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="page-header-desc">
             Track, manage, and view your purchase history
           </p>
         </div>

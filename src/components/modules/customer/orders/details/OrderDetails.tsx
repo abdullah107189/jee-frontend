@@ -201,19 +201,19 @@ export function OrderDetails({ order }: OrderDetailsProps) {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2.5">
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-mono">
+              <h1 className="page-header-title font-mono">
                 #{order.orderNumber}
               </h1>
-              <Badge variant={statusBadgeVariant(order.status)} className="text-xs px-3 py-1">
+              <Badge variant={statusBadgeVariant(order.status)} className="typo-badge px-3 py-1">
                 {order.status === "RETURNED" ? "ডেলিভারি ব্যর্থ/ফেরত" : order.status}
               </Badge>
               {order.paymentStatus && (
-                <Badge variant={paymentBadgeVariant(order.paymentStatus)} className="text-xs px-3 py-1">
+                <Badge variant={paymentBadgeVariant(order.paymentStatus)} className="typo-badge px-3 py-1">
                   Payment: {order.paymentStatus}
                 </Badge>
               )}
             </div>
-            <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1.5">
+            <p className="page-header-desc flex items-center gap-1.5">
               <Calendar className="h-3.5 w-3.5 text-primary" />
               Placed on {formattedPlacedDate}
             </p>

@@ -83,7 +83,7 @@ export function LoginForm() {
         <Link href="/" className="flex items-center justify-center gap-2.5 group shrink-0 p-1">
           <Image src="/JEE.png" alt="JEE Logo" width={100} height={200} className="w-25 h-auto" />
         </Link>
-        <CardTitle className="text-2xl font-bold sm:text-3xl">Welcome back</CardTitle>
+        <CardTitle className="typo-h2 font-bold text-center">Welcome back</CardTitle>
       </CardHeader>
 
       <CardContent className="space-y-4">

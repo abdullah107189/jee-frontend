@@ -172,10 +172,10 @@ export default function ProductsListContent({
             <Package className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
+            <h1 className="page-header-title">
               Products
             </h1>
-            <p className="mt-1 text-sm font-medium text-muted-foreground">
+            <p className="page-header-desc">
               Manage your product catalog and inventory.
             </p>
           </div>

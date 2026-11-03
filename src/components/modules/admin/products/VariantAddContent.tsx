@@ -152,7 +152,7 @@ export default function VariantAddContent({ product }: VariantAddContentProps) {
                 </Link>
 
                 <div className="flex flex-col gap-2">
-                    <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
+                    <h1 className="page-header-title">
                         Add Product Variant
                     </h1>
                     <p className="text-sm text-muted-foreground">
