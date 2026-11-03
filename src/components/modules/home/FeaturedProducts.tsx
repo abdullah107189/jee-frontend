@@ -9,9 +9,11 @@ const API_URL =
 
 export default async function FeaturedProducts() {
   let featuredProducts: ProductCardData[] = [];
+  let sectionTitle = "Featured Products";
+  let sectionSubtitle = "Best-selling electronics with long-term digital warranties";
 
   try {
-    // 1. Try to fetch public settings to check for designated featured product IDs
+    // 1. Try to fetch public settings to check for designated featured product IDs & titles
     const res = await fetch(`${API_URL}/settings/public`, {
       next: { revalidate: 60 },
     }).catch(() => null);
@@ -19,6 +21,12 @@ export default async function FeaturedProducts() {
     if (res && res.ok) {
       const json = await res.json().catch(() => null);
       const featuredIds: string[] = json?.data?.featuredProductIds || [];
+      if (json?.data?.featuredSectionTitle) {
+        sectionTitle = json.data.featuredSectionTitle;
+      }
+      if (json?.data?.featuredSectionSubtitle) {
+        sectionSubtitle = json.data.featuredSectionSubtitle;
+      }
 
       if (featuredIds.length > 0) {
         const designatedRes = await productServices.getProducts({
@@ -56,5 +64,11 @@ export default async function FeaturedProducts() {
 
   if (displayProducts.length === 0) return null;
 
-  return <FeaturedProductsSlider products={displayProducts} />;
+  return (
+    <FeaturedProductsSlider
+      products={displayProducts}
+      title={sectionTitle}
+      subtitle={sectionSubtitle}
+    />
+  );
 }

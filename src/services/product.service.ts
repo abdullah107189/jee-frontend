@@ -105,7 +105,7 @@ async function getProducts(
 ): Promise<ProductsResponse<ProductCardData>> {
   const page = options.page ?? 1;
 
-  const limit = Math.min(options.limit ?? PRODUCT_PAGE_SIZE, PRODUCT_PAGE_SIZE);
+  const limit = Math.min(options.limit ?? PRODUCT_PAGE_SIZE, 100);
 
   const fallback: ProductsResponse<ProductCardData> = {
     success: false,

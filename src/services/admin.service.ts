@@ -457,6 +457,29 @@ export async function deleteAdminProductItem(itemId: string) {
   return { success: true, message: "Product item deleted successfully", itemId };
 }
 
+export interface HeroSlideItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+  imageSrc: string;
+  imageAlt?: string;
+}
+
+export interface HeroSideBannerItem {
+  imageSrc: string;
+  alt?: string;
+  link?: string;
+}
+
+export interface TrustBadgeSettingItem {
+  id: string;
+  title: string;
+  desc: string;
+  icon?: string;
+}
+
 export interface SystemSettings {
   storeName: string;
   supportEmail: string;
@@ -467,6 +490,11 @@ export interface SystemSettings {
   warrantyTerms: string;
   auditLoggingEnabled: boolean;
   featuredProductIds?: string[];
+  heroSlides?: HeroSlideItem[];
+  heroSideBanner?: HeroSideBannerItem;
+  trustBadges?: TrustBadgeSettingItem[];
+  featuredSectionTitle?: string;
+  featuredSectionSubtitle?: string;
   updatedAt?: string;
 }
 

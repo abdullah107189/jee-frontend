@@ -7,9 +7,15 @@ import type { ProductCardData } from "@/lib/types/product.types";
 
 interface Props {
   products: ProductCardData[];
+  title?: string;
+  subtitle?: string;
 }
 
-export default function FeaturedProductsSlider({ products }: Props) {
+export default function FeaturedProductsSlider({
+  products,
+  title = "Featured Products",
+  subtitle = "Best-selling electronics with long-term digital warranties",
+}: Props) {
   const sliderRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -60,10 +66,10 @@ export default function FeaturedProductsSlider({ products }: Props) {
           </div>
           <div className="min-w-0">
             <h2 className="text-lg font-black tracking-tight text-foreground sm:text-2xl lg:text-3xl truncate">
-              Featured Products
+              {title}
             </h2>
             <p className="mt-0.5 text-xs font-medium text-muted-foreground sm:mt-1 sm:text-sm truncate">
-              Best-selling electronics with long-term digital warranties
+              {subtitle}
             </p>
           </div>
         </div>

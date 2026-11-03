@@ -19,6 +19,7 @@ import {
   ChevronDown,
   User,
   PackageSearch,
+  LayoutTemplate,
 } from "lucide-react";
 import { logoutAction } from "@/actions/auth.actions";
 import Link from "next/link";
@@ -184,6 +185,7 @@ export function Sidebar({
       { name: "Analytics", href: "/admin/analytics", icon: BarChart },
       { name: "Audit Logs", href: "/admin/audit-logs", icon: FileText },
       { name: "Users", href: "/admin/users", icon: UserCog },
+      { name: "Homepage Manager", href: "/admin/homepage", icon: LayoutTemplate },
       { name: "Settings", href: "/admin/settings", icon: Settings },
     ],
 

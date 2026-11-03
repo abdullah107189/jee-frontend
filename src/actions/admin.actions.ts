@@ -119,6 +119,8 @@ export async function updateSystemSettingsAction(
   await requireRole('ADMIN');
   const result = await updateSystemSettings(input);
   revalidatePath('/admin/settings');
+  revalidatePath('/admin/homepage');
+  revalidatePath('/admin/products');
   revalidatePath('/');
   return {
     success: true,

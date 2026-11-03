@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
   Edit, Package, Plus, Search, Trash2, PackageOpen, Eye,
-  CheckCircle2, XCircle, ChevronLeft, ChevronRight,
+  CheckCircle2, XCircle, ChevronLeft, ChevronRight, Star, Flame,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -18,6 +18,7 @@ import { ConfirmDeleteModal } from "@/components/ui/ConfirmDeleteModal";
 
 import type { AdminProductListItem } from "@/lib/types/admin.types";
 import { deleteProductAction } from "@/actions/product.action";
+import { updateSystemSettingsAction } from "@/actions/admin.actions";
 
 type Meta = {
   page: number;
@@ -31,6 +32,7 @@ type Meta = {
 interface Props {
   products: AdminProductListItem[];
   meta: Meta;
+  initialFeaturedProductIds?: string[];
   initialFilters: {
     search: string;
     status: string;
@@ -43,12 +45,16 @@ interface Props {
 export default function ProductsListContent({
   products,
   meta,
+  initialFeaturedProductIds = [],
   initialFilters,
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+
+  const [featuredIds, setFeaturedIds] = useState<string[]>(initialFeaturedProductIds);
+  const [isTogglingFeatured, setIsTogglingFeatured] = useState<string | null>(null);
 
   const [search, setSearch] = useState(initialFilters.search);
 
@@ -57,6 +63,37 @@ export default function ProductsListContent({
     id: string;
     name: string;
   } | null>(null);
+
+  const handleToggleFeatured = async (productId: string) => {
+    setIsTogglingFeatured(productId);
+    try {
+      const isCurrentlyFeatured = featuredIds.includes(productId);
+      let updated: string[];
+      if (isCurrentlyFeatured) {
+        updated = featuredIds.filter((id) => id !== productId);
+      } else {
+        if (featuredIds.length >= 8) {
+          toast.error("Maximum 8 featured products allowed! Remove one from Homepage Manager first.");
+          setIsTogglingFeatured(null);
+          return;
+        }
+        updated = [...featuredIds, productId];
+      }
+
+      setFeaturedIds(updated);
+      await updateSystemSettingsAction({ featuredProductIds: updated.slice(0, 8) });
+      toast.success(
+        isCurrentlyFeatured
+          ? "Removed from homepage featured carousel."
+          : "Added to homepage featured carousel (live on homepage!)."
+      );
+    } catch (err: any) {
+      console.error("Toggle featured error:", err);
+      toast.error(err.message || "Failed to update featured status.");
+    } finally {
+      setIsTogglingFeatured(null);
+    }
+  };
 
   /* ─────── URL update ─────── */
   const updateURL = (
@@ -143,12 +180,23 @@ export default function ProductsListContent({
             </p>
           </div>
         </div>
-        <Link href="/admin/products/new">
-          <Button className="h-10 rounded-xl px-4 shadow-lg shadow-blue-500/20 sm:h-12 sm:rounded-2xl">
-            <Plus className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-            Add New Product
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link href="/admin/homepage">
+            <Button
+              variant="outline"
+              className="h-10 rounded-xl px-4 sm:h-12 sm:rounded-2xl border-border bg-card text-foreground hover:bg-muted"
+            >
+              <Flame className="mr-2 h-4 w-4 text-red-500" />
+              Homepage Slots: {featuredIds.length}/8
+            </Button>
+          </Link>
+          <Link href="/admin/products/new">
+            <Button className="h-10 rounded-xl px-4 shadow-lg shadow-blue-500/20 sm:h-12 sm:rounded-2xl">
+              <Plus className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+              Add New Product
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Card */}
@@ -255,6 +303,9 @@ export default function ProductsListContent({
                     </th>
                     <th className="whitespace-nowrap px-4 py-4 font-semibold text-muted-foreground sm:px-6">
                       Status
+                    </th>
+                    <th className="whitespace-nowrap px-4 py-4 font-semibold text-muted-foreground sm:px-6">
+                      Featured (Max 8)
                     </th>
                     <th className="whitespace-nowrap px-4 py-4 font-semibold text-muted-foreground sm:px-6">
                       Date
@@ -389,6 +440,33 @@ export default function ProductsListContent({
                               {product.isActive ? "Active" : "Inactive"}
                             </Badge>
                           </div>
+                        </td>
+
+                        {/* Featured (1-click toggle with Max 8 constraint) */}
+                        <td className="px-4 py-4 sm:px-6">
+                          {featuredIds.includes(product.id) ? (
+                            <button
+                              type="button"
+                              onClick={() => handleToggleFeatured(product.id)}
+                              disabled={isTogglingFeatured === product.id}
+                              title="Click to remove from homepage carousel"
+                              className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-bold text-amber-600 dark:text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition cursor-pointer"
+                            >
+                              <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
+                              Featured
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => handleToggleFeatured(product.id)}
+                              disabled={isTogglingFeatured === product.id}
+                              title="Click to feature on homepage carousel"
+                              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition cursor-pointer"
+                            >
+                              <Star className="h-3.5 w-3.5 text-muted-foreground/60" />
+                              Feature
+                            </button>
+                          )}
                         </td>
 
                         {/* Date */}

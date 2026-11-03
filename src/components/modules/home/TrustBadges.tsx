@@ -1,6 +1,11 @@
 import { Truck, ShieldCheck, RotateCcw, Headphones } from "lucide-react";
 
-const badges = [
+const API_URL =
+  process.env.API_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://localhost:5000/api/v1";
+
+const defaultBadges = [
   {
     icon: Truck,
     title: "Nationwide Delivery",
@@ -27,11 +32,32 @@ const badges = [
   },
 ];
 
-export default function TrustBadges() {
+export default async function TrustBadges() {
+  let displayBadges = defaultBadges;
+
+  try {
+    const res = await fetch(`${API_URL}/settings/public`, {
+      next: { revalidate: 60 },
+    }).catch(() => null);
+
+    if (res && res.ok) {
+      const json = await res.json().catch(() => null);
+      if (json?.data?.trustBadges && json.data.trustBadges.length >= 4) {
+        displayBadges = defaultBadges.map((badge, idx) => ({
+          ...badge,
+          title: json.data.trustBadges[idx]?.title || badge.title,
+          desc: json.data.trustBadges[idx]?.desc || badge.desc,
+        }));
+      }
+    }
+  } catch (err) {
+    console.error("[TrustBadges] error fetching settings:", err);
+  }
+
   return (
     <section aria-label="Why shop with us" className="mt-3 sm:mt-4 lg:mt-5">
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 rounded-xl sm:rounded-2xl border border-border bg-card p-2.5 sm:p-3.5 lg:p-4 shadow-2xs">
-        {badges.map(({ icon: Icon, title, desc, color }) => (
+        {displayBadges.map(({ icon: Icon, title, desc, color }) => (
           <div key={title} className="flex items-center gap-2 sm:gap-3 min-w-0">
             <div className={`rounded-xl sm:rounded-2xl p-2 sm:p-2.5 lg:p-3 shrink-0 ${color}`}>
               <Icon className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6" />

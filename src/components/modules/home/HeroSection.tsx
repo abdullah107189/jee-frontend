@@ -1,11 +1,48 @@
 import Image from "next/image";
 import { HeroSlider } from "./HeroSlider";
 import QuickWarrantyCheck from "./QuickWarrantyCheck";
-import { TrustBadgeStrip } from "./TrustBadgeStrip";
-import { heroSlides, trustBadges } from "@/dammyData/HeroSlide";
+import { heroSlides } from "@/dammyData/HeroSlide";
 import TrustBadges from "./TrustBadges";
+import type { HeroSlide } from "@/lib/types/hero.types";
 
-export function HeroSection() {
+const API_URL =
+  process.env.API_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://localhost:5000/api/v1";
+
+export async function HeroSection() {
+  let slides: HeroSlide[] = heroSlides;
+  let sideBannerImage = "/images/hero/ac_hero.webp";
+  let sideBannerAlt = "Air conditioner offer";
+
+  try {
+    const res = await fetch(`${API_URL}/settings/public`, {
+      next: { revalidate: 60 },
+    }).catch(() => null);
+
+    if (res && res.ok) {
+      const json = await res.json().catch(() => null);
+      if (json?.data?.heroSlides && json.data.heroSlides.length > 0) {
+        slides = json.data.heroSlides.map((s: any, idx: number) => ({
+          id: s.id || `slide-${idx}`,
+          title: s.title,
+          subtitle: s.subtitle,
+          ctaLabel: s.ctaLabel || "Shop now",
+          ctaHref: s.ctaHref || "/products",
+          imageSrc: s.imageSrc,
+          imageAlt: s.imageAlt || s.title,
+          theme: idx % 2 === 0 ? "indigo" : "coral",
+        }));
+      }
+      if (json?.data?.heroSideBanner?.imageSrc) {
+        sideBannerImage = json.data.heroSideBanner.imageSrc;
+        sideBannerAlt = json.data.heroSideBanner.alt || sideBannerAlt;
+      }
+    }
+  } catch (err) {
+    console.error("[HeroSection] error fetching hero settings:", err);
+  }
+
   return (
     <section
       aria-label="Featured deals and offers"
@@ -22,7 +59,7 @@ export function HeroSection() {
         {/* Main Banner */}
         <div className="min-w-0 lg:col-span-2">
           <div className="relative aspect-video overflow-hidden rounded-xl">
-            <HeroSlider slides={heroSlides} />
+            <HeroSlider slides={slides} />
           </div>
         </div>
 
@@ -36,8 +73,8 @@ export function HeroSection() {
           {/* Second Banner */}
           <div className="relative aspect-video min-w-0 overflow-hidden rounded-xl">
             <Image
-              src="/images/hero/ac_hero.webp"
-              alt="Air conditioner offer"
+              src={sideBannerImage}
+              alt={sideBannerAlt}
               fill
               sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 33vw"
               className="object-cover"
@@ -45,8 +82,6 @@ export function HeroSection() {
           </div>
         </div>
       </div>
-
-      {/* <TrustBadgeStrip items={trustBadges} /> */}
 
       <TrustBadges />
     </section>

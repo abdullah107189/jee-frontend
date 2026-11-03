@@ -23,6 +23,7 @@ import {
   BarChart3,
   PlusCircle,
   Receipt,
+  LayoutTemplate,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -113,6 +114,7 @@ export function Navbar({ user }: { user: AuthUser | null }) {
         { name: "Warranty Registry", path: "/admin/warranties", icon: ShieldCheck },
         { name: "Merchant / Sellers", path: "/admin/sellers", icon: Store },
         { name: "Users & Customers", path: "/admin/users", icon: Users },
+        { name: "Homepage Manager", path: "/admin/homepage", icon: LayoutTemplate },
         { name: "Analytics & Reports", path: "/admin/analytics", icon: BarChart3 },
         { name: "System Settings", path: "/admin/settings", icon: Settings },
       ];
