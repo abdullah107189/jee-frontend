@@ -1,5 +1,6 @@
 'use server';
  
+import { revalidatePath } from 'next/cache';
 import { requireRole } from '@/lib/auth/session';
 import {
   changeCustomerPassword,
@@ -23,29 +24,49 @@ export async function createOrderAction(input: Record<string, any>) {
   });
   const address = input.shippingAddress;
   const shippingAddress = {
-    fullName: text(address?.fullName, 'full name'), phone: text(address?.phone, 'phone'), address: text(address?.address, 'address'), city: text(address?.city, 'city'), zipCode: address?.zipCode ? text(address.zipCode, 'zip code', 20) : undefined,
+    fullName: text(address?.fullName, 'full name'),
+    phone: text(address?.phone, 'phone'),
+    address: text(address?.address, 'address'),
+    city: text(address?.city, 'city'),
+    zipCode: address?.zipCode ? text(address.zipCode, 'zip code', 20) : undefined,
   };
-  return createCustomerOrder({ ...input, items, shippingAddress, paymentMethod: 'COD' });
+  const res = await createCustomerOrder({ ...input, items, shippingAddress, paymentMethod: 'COD' });
+  revalidatePath('/customer/orders');
+  return res;
 }
 
 export async function updateCustomerProfileAction(input: Record<string, string>) {
   await requireRole('CUSTOMER');
-  const profile = { name: text(input?.name, 'name'), email: text(input?.email, 'email'), phone: text(input?.phone, 'phone'), address: text(input?.address, 'address'), city: text(input?.city, 'city'), zipCode: input?.zipCode ? text(input.zipCode, 'zip code', 20) : '' };
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(profile.email) || !/^01[3-9]\d{8}$/.test(profile.phone)) throw new Error('Invalid profile fields');
-  return updateCustomerProfile(profile);
+  const profile = {
+    name: text(input?.name, 'name'),
+    email: text(input?.email, 'email'),
+    phone: text(input?.phone, 'phone'),
+    address: text(input?.address, 'address'),
+    city: text(input?.city, 'city'),
+    zipCode: input?.zipCode ? text(input.zipCode, 'zip code', 20) : '',
+  };
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(profile.email) || !/^01[3-9]\d{8}$/.test(profile.phone)) {
+    throw new Error('Invalid profile fields');
+  }
+  const res = await updateCustomerProfile(profile);
+  revalidatePath('/customer/profile');
+  return res;
 }
 
 export async function changeCustomerPasswordAction(input: { currentPassword: string; newPassword: string }) {
   await requireRole('CUSTOMER');
-  text(input?.currentPassword, 'current password', 200);
+  const currentPassword = text(input?.currentPassword, 'current password', 200);
   const newPassword = text(input?.newPassword, 'new password', 200);
   if (newPassword.length < 6) throw new Error('Password must be at least 6 characters');
-  return changeCustomerPassword();
+  return changeCustomerPassword({ currentPassword, newPassword });
 }
 
 export async function claimWarrantyAction(input: Record<string, any>) {
   await requireRole('CUSTOMER');
-  text(input?.warrantyId, 'warranty id');
-  text(input?.issueDescription || input?.description, 'claim description', 2000);
-  return submitCustomerWarrantyClaim();
+  const warrantyId = text(input?.warrantyId, 'warranty id');
+  const description = text(input?.issueDescription || input?.description, 'claim description', 2000);
+  const res = await submitCustomerWarrantyClaim({ warrantyId, description });
+  revalidatePath('/customer/warranties');
+  revalidatePath(`/customer/warranties/${warrantyId}`);
+  return res;
 }

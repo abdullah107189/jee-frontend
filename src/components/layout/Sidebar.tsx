@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   Package,
   PlusCircle,
+  Shield,
   ShieldCheck,
   Users,
   ShoppingCart,
@@ -197,7 +198,9 @@ export function Sidebar({
     CUSTOMER: [
       { name: "Dashboard", href: "/customer", icon: LayoutDashboard },
       { name: "My Orders", href: "/customer/orders", icon: ShoppingCart },
-      { name: "Warranty Check", href: "/warranty", icon: ShieldCheck },
+      { name: "My Warranties", href: "/customer/warranties", icon: ShieldCheck },
+      { name: "Verify Warranty", href: "/customer/warranties/check", icon: Shield },
+      { name: "Profile", href: "/customer/profile", icon: User },
     ],
   };
 

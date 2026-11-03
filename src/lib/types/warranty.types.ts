@@ -20,6 +20,9 @@ export interface PublicWarrantyCheckResult {
   sku?: string;
   price?: number;
   brandName?: string;
+  categoryName?: string;
+  images?: string[];
+  manufacturedAt?: string | null;
   message?: string;
 }
 

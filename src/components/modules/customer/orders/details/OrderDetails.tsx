@@ -38,6 +38,7 @@ import {
 } from "lucide-react";
 import { cancelOrderAction } from "@/actions/order.actions";
 import type { Order, OrderStatus, PaymentStatus } from "@/lib/types/order.types";
+import { formatAppDate, formatAppDateTime } from "@/lib/utils";
 
 interface OrderDetailsProps {
   order: Order | null;
@@ -164,15 +165,7 @@ export function OrderDetails({ order }: OrderDetailsProps) {
     }
   };
 
-  const formattedPlacedDate = order.createdAt
-    ? new Date(order.createdAt).toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    : "N/A";
+  const formattedPlacedDate = formatAppDateTime(order.createdAt);
 
   const handlePrint = () => {
     if (typeof window !== "undefined") {
@@ -256,7 +249,7 @@ export function OrderDetails({ order }: OrderDetailsProps) {
                   {order.status === "RETURNED"
                     ? "অর্ডারটির ডেলিভারি সম্পন্ন হয়নি অথবা ফেরত দেওয়া হয়েছে।"
                     : order.cancelledAt
-                    ? `Cancelled on ${new Date(order.cancelledAt).toLocaleDateString("en-GB")}`
+                    ? `Cancelled on ${formatAppDate(order.cancelledAt)}`
                     : "This order is no longer in progress."}
                 </p>
               </div>

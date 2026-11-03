@@ -1,26 +1,23 @@
-// app/(dashboard)/customer/profile/components/ProfileForm.tsx
 'use client';
 
 import { useForm } from 'react-hook-form';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { updateCustomerProfileAction } from '@/actions/customer.actions';
 import type { CustomerProfile } from '@/services/customer.service';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
- 
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { Loader2, User, Mail, Phone, MapPin } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
-  phone: z.string().regex(/^(01)[3-9]\d{8}$/, 'Invalid phone number'),
-  address: z.string().min(5, 'Address must be at least 5 characters'),
+  phone: z.string().regex(/^(01)[3-9]\d{8}$/, 'Invalid phone number (must be 01XXXXXXXXX)'),
+  address: z.string().min(3, 'Address must be at least 3 characters'),
   city: z.string().min(2, 'City is required'),
   zipCode: z.string().optional(),
 });
@@ -28,51 +25,52 @@ const profileSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export function ProfileForm({ profile }: { profile: CustomerProfile }) {
-  const { toast } = useToast();
   const [isUpdating, setIsUpdating] = useState(false);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
+    defaultValues: {
+      name: profile?.name || profile?.fullName || '',
+      email: profile?.email || '',
+      phone: profile?.phone || '',
+      address: profile?.address || '',
+      city: profile?.city || '',
+      zipCode: profile?.zipCode || '',
+    },
   });
 
-  // Set form values when data loads
-  if (profile && !form.formState.isDirty) {
-    form.reset({
-      name: profile.name || '',
-      email: profile.email || '',
-      phone: profile.phone || '',
-      address: profile.address || '',
-      city: profile.city || '',
-      zipCode: profile.zipCode || '',
-    });
-  }
+  useEffect(() => {
+    if (profile) {
+      form.reset({
+        name: profile.name || profile.fullName || '',
+        email: profile.email || '',
+        phone: profile.phone || '',
+        address: profile.address || '',
+        city: profile.city || '',
+        zipCode: profile.zipCode || '',
+      });
+    }
+  }, [profile, form]);
 
   const onSubmit = async (values: ProfileFormValues) => {
     try {
       setIsUpdating(true);
       await updateCustomerProfileAction(values);
-      toast({
-        title: 'Profile Updated ✅',
-        description: 'Your profile has been updated successfully',
-      });
+      toast.success('Your profile has been updated successfully!');
       form.reset(values);
     } catch (error: any) {
-      toast({
-        title: 'Failed to Update Profile',
-        description: error?.data?.message || 'Please try again',
-        variant: 'destructive',
-      });
+      toast.error(error?.message || 'Failed to update profile. Please try again.');
     } finally {
       setIsUpdating(false);
     }
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Profile Information</CardTitle>
+    <Card className="rounded-2xl border-border bg-card shadow-xs">
+      <CardHeader className="pb-3 border-b border-border">
+        <CardTitle className="text-base font-bold text-foreground">Profile Information</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -80,11 +78,11 @@ export function ProfileForm({ profile }: { profile: CustomerProfile }) {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                  <FormLabel className="text-xs font-semibold text-muted-foreground">Full Name</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input {...field} className="pl-9" />
+                      <Input {...field} className="pl-9 h-11 rounded-xl bg-card border-border" />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -97,11 +95,11 @@ export function ProfileForm({ profile }: { profile: CustomerProfile }) {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="text-xs font-semibold text-muted-foreground">Email Address</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input {...field} type="email" className="pl-9" disabled />
+                      <Input {...field} type="email" className="pl-9 h-11 rounded-xl bg-muted/50 border-border" disabled />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -114,11 +112,11 @@ export function ProfileForm({ profile }: { profile: CustomerProfile }) {
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phone</FormLabel>
+                  <FormLabel className="text-xs font-semibold text-muted-foreground">Phone Number</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input {...field} className="pl-9" />
+                      <Input {...field} className="pl-9 h-11 rounded-xl bg-card border-border" />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -131,11 +129,11 @@ export function ProfileForm({ profile }: { profile: CustomerProfile }) {
               name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address</FormLabel>
+                  <FormLabel className="text-xs font-semibold text-muted-foreground">Delivery Address</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input {...field} className="pl-9" />
+                      <Input {...field} className="pl-9 h-11 rounded-xl bg-card border-border" />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -149,9 +147,9 @@ export function ProfileForm({ profile }: { profile: CustomerProfile }) {
                 name="city"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>City</FormLabel>
+                    <FormLabel className="text-xs font-semibold text-muted-foreground">City</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} className="h-11 rounded-xl bg-card border-border" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -163,9 +161,9 @@ export function ProfileForm({ profile }: { profile: CustomerProfile }) {
                 name="zipCode"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Zip Code</FormLabel>
+                    <FormLabel className="text-xs font-semibold text-muted-foreground">Postal / Zip Code</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} className="h-11 rounded-xl bg-card border-border" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -173,14 +171,18 @@ export function ProfileForm({ profile }: { profile: CustomerProfile }) {
               />
             </div>
 
-            <Button type="submit" className="w-full" disabled={isUpdating}>
+            <Button
+              type="submit"
+              className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-xs"
+              disabled={isUpdating}
+            >
               {isUpdating ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Updating...
+                  Updating Profile...
                 </>
               ) : (
-                'Update Profile'
+                'Save Profile Changes'
               )}
             </Button>
           </form>

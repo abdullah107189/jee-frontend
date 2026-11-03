@@ -27,6 +27,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import type { Order, OrderStatus, PaymentStatus } from "@/lib/types/order.types";
+import { formatAppDate } from "@/lib/utils";
 
 interface OrdersListProps {
   orders: Order[];
@@ -232,13 +233,8 @@ export function OrdersList({
       ) : (
         <div className="space-y-4">
           {displayOrders.map((order) => {
-            const formattedDate = order.createdAt
-              ? new Date(order.createdAt).toLocaleDateString("en-GB", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                })
-              : "N/A";
+            const formattedDate = formatAppDate(order.createdAt);
+            
 
             const totalItemCount = order.items?.reduce(
               (acc, item) => acc + (item.quantity || 1),

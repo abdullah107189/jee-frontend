@@ -60,6 +60,14 @@
   - **30% Secondary/Structural**: Muted surfaces, borders, dividers, secondary text (`bg-muted/40`, `border-border`, `text-muted-foreground`).
   - **10% Accent/Focal Highlight**: Key action buttons, active tabs, status indicators, badges (`bg-primary`, `text-primary-foreground`, `text-primary`, `hover:bg-primary/90`).
 
+### Warranty Architecture & Verification (Hard Rule)
+- **Separation of Concerns (Dashboard vs Public)**:
+  - **In-Dashboard Warranty Check**: When authenticated customers check/verify a warranty from their customer dashboard, they MUST remain inside the dashboard layout at `/customer/warranties/check`. Never navigate them out of the customer dashboard to the public page.
+  - **Public Authenticity Tracker (`/warranty`)**: Serves public QR scans, retail buyers, and external lookups. Must display the genuine certified seal, product image showcase, brand, category, specifications badges, and direct actions.
+- **Live Countdown & Certificate UI**:
+  - All verified active warranties must feature a live visual countdown timer (days, hours, minutes, seconds) with a progress percentage meter.
+  - All dates displayed on certificates MUST strictly adhere to the Day-First Date Standard (`formatAppDate`).
+
 ### Structure
 ```
 src/

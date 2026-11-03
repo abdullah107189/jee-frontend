@@ -2,7 +2,7 @@
 শেষ আপডেট: 2026-11-03 | Repo: frontend & backend
 
 ## এখন কোন কাজ চলছে
-- M4 Admin সম্পূর্ণ সম্পন্ন! সিস্টেম সেটিংস পারসিস্টেন্স (`/admin/settings`) ও রিয়েল ডাটাবেজ ব্যাকআপ সম্পন্ন। পরবর্তী কাজ: M5 Customer Dashboard (রিয়েল API, প্রোফাইল, ওয়ারেন্টি ট্র্যাকিং ও ক্লেইম)।
+- M5 Customer Dashboard ও Warranty ভেরিফিকেশন সম্পূর্ণ সম্পন্ন! ইন-ড্যাশবোর্ড ওয়ারেন্টি চেক (`/customer/warranties/check`) এবং পাবলিক অথেন্টিসিটি ট্র্যাকার (`/warranty`) লাইভ কাউন্টডাউন ও রিয়েল ইমেজ সহ আপগ্রেডেড। পরবর্তী কাজ: M6 লঞ্চ পূর্ববর্তী প্রস্তুতি ও লোড অপটিমাইজেশন।
 
 ## নিয়ম
 DONE = build পাস + প্রমাণ | PARTIAL = কী বাকি লেখো | TODO | UNVERIFIED
@@ -19,8 +19,8 @@ DONE = build পাস + প্রমাণ | PARTIAL = কী বাকি ল�
 - [x] frontend: admin status dropdown (বৈধ ধাপ, RETURNED, confirm dialog) — DONE
 - [x] frontend: customer order list/details real API; Cancel শুধু PENDING — DONE
 ### M2 Public warranty check
-- [x] backend: GET /warranties/check/:serial — DONE
-- [x] frontend: /warranty real API — DONE
+- [x] backend: GET /warranties/check/:serial (রিয়েল ইমেজ, ব্র্যান্ড, ক্যাটাগরি, ম্যানুফ্যাকচার ডেট সহ) — DONE
+- [x] frontend: /warranty রিয়েল API, লাইভ কালেকশন কাউন্টডাউন, টু-কলাম রেসপনসিভ UI ও সার্টিফাইড সিল — DONE
 ### M3 Seller
 - [x] seller নতুন বিক্রি UI, বিক্রির ইতিহাস, নিজের warranty তালিকা — DONE
 - [x] admin দিয়ে seller approve; seller এর serial দিয়ে item খোঁজার endpoint — DONE
@@ -35,8 +35,11 @@ DONE = build পাস + প্রমাণ | PARTIAL = কী বাকি ল�
 - [x] Global Date Format Hard Rule (Day first: DD MMM YYYY / DD/MM/YYYY) — DONE
 - [x] Analytics (`/admin/analytics`) real insights/charts — DONE
 - [x] System Settings (`/admin/settings`) persistence & DB snapshot backup — DONE
-### M5 Customer dashboard
-- [ ] orders, warranties, profile real API (mock বাদ) — PARTIAL (orders DONE; profile/warranty বাকি)
+### M5 Customer dashboard (সম্পূর্ণ সম্পন্ন ✅)
+- [x] orders, warranties, profile, claims: real API (mock data সম্পূর্ণ অপসারিত) — DONE
+- [x] কাস্টমার ড্যাশবোর্ড ডেডিকেটেড ওয়ারেন্টি ভেরিফিকেশন পেজ (`/customer/warranties/check`) — ড্যাশবোর্ড থেকে বের না হয়ে চেক — DONE
+- [x] লাইভ কাউন্টডাউন টাইমার (দিন, ঘণ্টা, মিনিট, সেকেন্ড), প্রগ্রেস মিটার ও রিয়েল ইমেজ ডিসপ্লে — DONE
+- [x] ডে-ফার্স্ট ডেট ফরম্যাটিং স্ট্যান্ডার্ড (`formatAppDate`, `formatAppDateTime`) সর্বত্র প্রযোজ্য — DONE
 ### M6 লঞ্চের আগে
 - [ ] 5K-10K কনকারেন্ট ট্রাফিক লোড টেস্টিং, রেট-লিমিট ও সিকিউরিটি টেস্ট — TODO
 - [x] অনেকক্ষণ PENDING অর্ডার (MVP: admin হাতে cancel) — DONE
@@ -44,8 +47,7 @@ DONE = build পাস + প্রমাণ | PARTIAL = কী বাকি ল�
 
 ## Done log
 - 2026-11-03:
-  1. `JEE backend`: নতুন `/api/v1/settings` মডিউল যুক্ত করা হয়েছে (`setting.service.ts`, `setting.controller.ts`, `setting.route.ts`)। স্টোর প্রোফাইল, COD পেমেন্ট অপশন, ডিফল্ট ওয়ারেন্টি পলিসি ও অডিট সেটিংস পারসিস্টেন্টলি সেভ হয় এবং অডিট লগে রেকর্ড হয়।
-  2. `JEE backend`: `GET /api/v1/settings/backup` এন্ডপয়েন্ট তৈরি করা হয়েছে যা সম্পূর্ণ ডাটাবেজ (ক্যাটাগরি, ব্র্যান্ড, প্রোডাক্ট, ভ্যারিয়েন্ট, আইটেম, অর্ডার, সেলস, ওয়ারেন্টি, সেলার ও কাস্টমার) থেকে রিয়েলটাইম JSON স্ন্যাপশট তৈরি করে।
-  3. `Jee frontend`: `admin.service.ts`-এ `getSystemSettings()`, `updateSystemSettings()`, এবং `getDatabaseBackup()` যুক্ত করা হয়েছে।
-  4. `SettingsContent.tsx`: Shadcn UI ও 60-30-10 কালার নিয়মে রিফ্যাক্টর করা হয়েছে; লাইভ ফর্ম সেভ এবং "Backup Now" বাটনে এক ক্লিকে রিয়েল JSON ব্যাকআপ ফাইল ডাউনলোড চালু করা হয়েছে।
-  5. `bun run build` (backend) ও `bun run lint` (frontend) সফলভাবে পাস (0 errors)।
+  1. `Customer Dashboard In-Layout Warranty Check`: `/customer/warranties/check` পেজ তৈরি করা হয়েছে, যাতে কাস্টমার ড্যাশবোর্ড ছেড়ে না গিয়ে সরাসরি সিরিয়াল বা QR কোড স্ক্যান করে লাইভ কাউন্টডাউন সহ ওয়ারেন্টি স্ট্যাটাস দেখতে পারে।
+  2. `Public Warranty UI Refactor` (`/warranty`): পিসি, ট্যাবলেট ও মোবাইলের জন্য অত্যাধুনিক ২-কলাম রেসপনসিভ লেআউট, প্রোডাক্টের রিয়েল ইমেজ, ব্র্যান্ড, ক্যাটাগরি, ভ্যারিয়েন্ট স্পেসিফিকেশন ও দিন-ঘণ্টা-মিনিট-সেকেন্ডের লাইভ কাউন্টডাউন টিকিং যুক্ত করা হয়েছে।
+  3. `customer.service.ts`: সমস্ত মক ডাটা বাদ দিয়ে ব্যাকএন্ডের রিয়েল API কল সংযুক্ত করা হয়েছে (`/warranties`, `/customers/me`, `/users/me`, `/orders`, `/warranty-claims`)।
+  4. `AGENTS.md`: ওয়ারেন্টি নেভিগেশন সেপারেশন ও লাইভ কাউন্টডাউন সম্পর্কিত হার্ড রুল সংরক্ষিত।
