@@ -4,12 +4,15 @@ import { revalidatePath } from 'next/cache';
 import { requireRole } from '@/lib/auth/session';
 import {
   bulkAddAdminProductItems,
+  getDatabaseBackup,
+  type SystemSettings,
   updateAdminOrderStatus,
   updateAdminSellerStatus,
   updateAdminUserRole,
   updateAdminUserStatus,
   updateAdminWarrantyClaimStatus,
   updateAdminWarrantyStatus,
+  updateSystemSettings,
 } from '@/services/admin.service';
 
 type ActionResult = { success: boolean; message: string };
@@ -108,4 +111,26 @@ export async function updateWarrantyClaimStatusAction(input: { id: string; statu
   revalidatePath('/admin/warranties/claims');
   revalidatePath('/admin/warranties');
   return result;
+}
+
+export async function updateSystemSettingsAction(
+  input: Partial<SystemSettings>
+): Promise<ActionResult & { data?: SystemSettings }> {
+  await requireRole('ADMIN');
+  const result = await updateSystemSettings(input);
+  revalidatePath('/admin/settings');
+  return {
+    success: true,
+    message: result.message || 'System configuration saved successfully',
+    data: result.data,
+  };
+}
+
+export async function getDatabaseBackupAction(): Promise<{
+  success: boolean;
+  data: Record<string, unknown>;
+}> {
+  await requireRole('ADMIN');
+  const data = await getDatabaseBackup();
+  return { success: true, data };
 }

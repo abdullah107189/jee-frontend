@@ -457,12 +457,95 @@ export async function deleteAdminProductItem(itemId: string) {
   return { success: true, message: "Product item deleted successfully", itemId };
 }
 
+export interface SystemSettings {
+  storeName: string;
+  supportEmail: string;
+  supportPhone: string;
+  currency: string;
+  codEnabled: boolean;
+  defaultWarrantyMonths: number;
+  warrantyTerms: string;
+  auditLoggingEnabled: boolean;
+  updatedAt?: string;
+}
+
+export async function getSystemSettings(): Promise<SystemSettings> {
+  const defaultSettings: SystemSettings = {
+    storeName: "JEE Bangladesh",
+    supportEmail: "support@JEE.bd",
+    supportPhone: "+880 1700-000000",
+    currency: "BDT (৳)",
+    codEnabled: true,
+    defaultWarrantyMonths: 12,
+    warrantyTerms:
+      "Covers manufacturing defects for motor and mainboard components. Physical, liquid or accidental damage voids warranty automatically.",
+    auditLoggingEnabled: true,
+  };
+
+  try {
+    const authHeaders = await getAuthHeaders();
+    const res = await fetch(`${API_URL}/settings`, {
+      method: "GET",
+      headers: authHeaders,
+      cache: "no-store",
+    });
+
+    if (!res.ok) return defaultSettings;
+    const json = await res.json();
+    return json?.data || defaultSettings;
+  } catch (error) {
+    console.error("[getSystemSettings] error:", error);
+    return defaultSettings;
+  }
+}
+
+export async function updateSystemSettings(
+  input: Partial<SystemSettings>
+): Promise<{ success: boolean; data?: SystemSettings; message?: string }> {
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_URL}/settings`, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify(input),
+  });
+
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(json.message || "Failed to update system settings");
+  }
+
+  return { success: true, data: json.data, message: json.message };
+}
+
+export async function getDatabaseBackup(): Promise<Record<string, unknown>> {
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_URL}/settings/backup`, {
+    method: "GET",
+    headers,
+    cache: "no-store",
+  });
+
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(json.message || "Failed to generate database backup");
+  }
+
+  return json.data;
+}
+
 export async function getAdminCategories(): Promise<AdminCategory[]> {
-  return [
-    { categoryId: '1', name: 'Electronics', slug: 'electronics', level: 'Parent', status: 'Active' },
-    { categoryId: '2', name: 'Mobile Phones', slug: 'mobile-phones', level: 'Child (Electronics)', status: 'Active' },
-    { categoryId: '3', name: 'Furniture', slug: 'furniture', level: 'Parent', status: 'Active' },
-  ];
+  try {
+    const res = await fetch(`${API_URL}/categories`, {
+      method: "GET",
+      cache: "no-store",
+    });
+    if (!res.ok) return [];
+    const json = await res.json();
+    return Array.isArray(json.data) ? json.data : [];
+  } catch (error) {
+    console.error("[getAdminCategories] error:", error);
+    return [];
+  }
 }
 
 export async function getAdminOrders(): Promise<AdminOrder[]> {

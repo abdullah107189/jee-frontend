@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import SettingsContent from "@/components/modules/admin/settings/SettingsContent";
+import { getSystemSettings } from "@/services/admin.service";
 
 export const metadata: Metadata = {
   title: "Settings | JEE Admin",
-  description: "Platform configuration and settings.",
+  description: "Platform configuration, payment options, and warranty rules.",
 };
 
-export default function AdminSettingsPage() {
-  return <SettingsContent />;
+export default async function AdminSettingsPage() {
+  const settings = await getSystemSettings();
+
+  return <SettingsContent initialSettings={settings} />;
 }
