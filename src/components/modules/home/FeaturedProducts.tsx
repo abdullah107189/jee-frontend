@@ -1,39 +1,60 @@
-import { Flame } from "lucide-react";
-import ProductCard from "@/components/shared/productCard/ProductCard";
+import FeaturedProductsSlider from "./FeaturedProductsSlider";
 import { productServices } from "@/services/product.service";
+import type { ProductCardData } from "@/lib/types/product.types";
+
+const API_URL =
+  process.env.API_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://localhost:5000/api/v1";
 
 export default async function FeaturedProducts() {
-  const featuredResponse = await productServices.getProducts({
-    limit: 8,
-    isPublished: true,
-    isActive: true,
-  });
+  let featuredProducts: ProductCardData[] = [];
 
-  const featuredProducts = featuredResponse.data;
+  try {
+    // 1. Try to fetch public settings to check for designated featured product IDs
+    const res = await fetch(`${API_URL}/settings/public`, {
+      next: { revalidate: 60 },
+    }).catch(() => null);
 
-  return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div className="mb-8 flex items-end justify-between">
-        <div className="flex items-center gap-3">
-          <div className="rounded-xl bg-red-50 p-2 text-red-600 ring-1 ring-red-100 dark:bg-red-500/10 dark:text-red-400 dark:ring-red-500/20">
-            <Flame className="h-6 w-6" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-              Featured Products
-            </h2>
-            <p className="mt-1 text-sm font-medium text-muted-foreground">
-              Best-selling electronics with long-term warranties
-            </p>
-          </div>
-        </div>
-      </div>
+    if (res && res.ok) {
+      const json = await res.json().catch(() => null);
+      const featuredIds: string[] = json?.data?.featuredProductIds || [];
 
-      <div className="grid grid-cols-2 gap-2 md:gap-6 md:grid-cols-4 lg:grid-cols-5">
-        {featuredProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
-    </section>
-  );
+      if (featuredIds.length > 0) {
+        const designatedRes = await productServices.getProducts({
+          ids: featuredIds.slice(0, 8),
+          limit: 8,
+          isPublished: true,
+          isActive: true,
+        });
+
+        if (designatedRes.data && designatedRes.data.length > 0) {
+          // Sort according to admin's selected order
+          const idOrderMap = new Map(featuredIds.map((id, index) => [id, index]));
+          featuredProducts = designatedRes.data.sort(
+            (a, b) => (idOrderMap.get(a.id) ?? 99) - (idOrderMap.get(b.id) ?? 99)
+          );
+        }
+      }
+    }
+  } catch (err) {
+    console.error("[FeaturedProducts] error fetching designated products:", err);
+  }
+
+  // 2. Fallback: If no products selected or fetch returned empty, fetch latest published products (max 8)
+  if (featuredProducts.length === 0) {
+    const fallbackResponse = await productServices.getProducts({
+      limit: 8,
+      isPublished: true,
+      isActive: true,
+    });
+    featuredProducts = fallbackResponse.data || [];
+  }
+
+  // Strictly enforce max 8 products
+  const displayProducts = featuredProducts.slice(0, 8);
+
+  if (displayProducts.length === 0) return null;
+
+  return <FeaturedProductsSlider products={displayProducts} />;
 }

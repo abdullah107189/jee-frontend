@@ -1,6 +1,6 @@
 // app/page.tsx — Home (SLIM NOW!)
-import type { Metadata } from "next"; 
-import { HeroSection } from "@/components/modules/home/HeroSection"; 
+import type { Metadata } from "next";
+import { HeroSection } from "@/components/modules/home/HeroSection";
 import CategoriesSection from "@/components/modules/home/CategoriesSection";
 import FeaturedProducts from "@/components/modules/home/FeaturedProducts";
 import LatestProducts from "@/components/modules/home/LatestProducts";
@@ -33,7 +33,7 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="space-y-12 pb-16 sm:space-y-16">
+      <div className="space-y-8 sm:space-y-12 lg:space-y-16 pb-12 sm:pb-16">
         <HeroSection />
         <CategoriesSection />
         <FeaturedProducts />

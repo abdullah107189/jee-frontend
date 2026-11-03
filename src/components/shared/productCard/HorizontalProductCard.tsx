@@ -24,6 +24,7 @@ export default function HorizontalProductCard({
 
   const isOutOfStock = data.stockQuantity <= 0;
   const addToCart = useAddToCart();
+
   return (
     <article
       className="
@@ -31,17 +32,17 @@ export default function HorizontalProductCard({
         flex
         w-full
         overflow-hidden
-        rounded-2xl
+        rounded-xl
+        sm:rounded-2xl
         border
         border-border
         bg-card
-        shadow-sm
+        shadow-2xs
         transition-all
         duration-300
         active:scale-[0.99]
-
         sm:hover:-translate-y-0.5
-        sm:hover:shadow-lg
+        sm:hover:shadow-md
       "
     >
       {/* Product Image */}
@@ -51,16 +52,17 @@ export default function HorizontalProductCard({
         className="
           relative
           block
-          h-32
-          w-32
-          shrink-0
-          overflow-hidden
-          bg-muted
-
+          h-28
+          w-28
+          xs:h-32
+          xs:w-32
           sm:h-40
           sm:w-40
           lg:h-44
           lg:w-44
+          shrink-0
+          overflow-hidden
+          bg-muted/40
         "
       >
         <Image
@@ -68,7 +70,7 @@ export default function HorizontalProductCard({
           alt={data.name}
           fill
           sizes="
-            (max-width: 639px) 128px,
+            (max-width: 639px) 120px,
             (max-width: 1023px) 160px,
             176px
           "
@@ -80,36 +82,10 @@ export default function HorizontalProductCard({
           "
         />
 
-        {/* Discount */}
-        {/* {hasDiscount && !isOutOfStock && (
-          <span
-            className="
-              absolute
-              left-2
-              top-2
-              rounded-full
-              bg-destructive
-              px-2
-              py-1
-              text-[9px]
-              font-bold
-              text-destructive-foreground
-              shadow-sm
-
-              sm:left-3
-              sm:top-3
-              sm:text-[10px]
-            "
-          >
-            -{Math.round((discountAmount / data.comparePrice!) * 100)}%
-          </span>
-        )} */}
-
-        {/* Out of Stock */}
+        {/* Out of Stock Overlay */}
         {isOutOfStock && (
           <>
-            <div className="absolute inset-0 bg-background/60" />
-
+            <div className="absolute inset-0 bg-background/60 backdrop-blur-[1px]" />
             <span
               className="
                 absolute
@@ -120,12 +96,11 @@ export default function HorizontalProductCard({
                 whitespace-nowrap
                 rounded-full
                 bg-foreground
-                px-2.5
-                py-1
+                px-2
+                py-0.5
                 text-[9px]
                 font-bold
                 text-background
-
                 sm:px-3
                 sm:py-1.5
                 sm:text-[10px]
@@ -138,17 +113,16 @@ export default function HorizontalProductCard({
       </Link>
 
       {/* Content */}
-      <div className="flex min-w-0 flex-1 flex-col justify-between p-3 sm:p-4">
-        <div className="min-w-0">
+      <div className="flex min-w-0 flex-1 flex-col justify-between p-2.5 sm:p-3.5 lg:p-4">
+        <div className="min-w-0 space-y-1">
           {/* Warranty */}
           {data.warrantyMonths > 0 && (
-            <div className="mb-1.5 flex items-center gap-1 text-[10px] font-medium text-muted-foreground sm:text-xs">
-              <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-primary" />
-
-              <span>
+            <div className="flex items-center gap-1 text-[10px] sm:text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+              <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate">
                 {data.warrantyMonths >= 12
                   ? `${Math.floor(data.warrantyMonths / 12)} Year Warranty`
-                  : `${data.warrantyMonths} Month Warranty`}
+                  : `${data.warrantyMonths} Mo. Warranty`}
               </span>
             </div>
           )}
@@ -158,14 +132,15 @@ export default function HorizontalProductCard({
             <h3
               className="
                 line-clamp-2
-                text-sm
+                text-xs
+                sm:text-sm
+                lg:text-base
                 font-bold
-                leading-5
+                leading-snug
+                sm:leading-5
                 text-foreground
                 transition-colors
-                hover:text-primary
-
-                sm:text-base
+                group-hover:text-primary
               "
             >
               {data.name}
@@ -173,17 +148,17 @@ export default function HorizontalProductCard({
           </Link>
         </div>
 
-        {/* Bottom */}
-        <div className="mt-3 flex items-end justify-between gap-2">
+        {/* Pricing and Action */}
+        <div className="mt-2.5 flex items-end justify-between gap-2">
           <div className="min-w-0">
             {/* Price */}
-            <div className="flex flex-wrap items-baseline gap-1.5 sm:gap-2">
-              <span className="text-base font-black text-foreground sm:text-lg">
+            <div className="flex flex-wrap items-baseline gap-1.5">
+              <span className="text-sm sm:text-base lg:text-lg font-black text-foreground">
                 ৳{data.price.toLocaleString()}
               </span>
 
               {hasDiscount && (
-                <del className="text-[10px] text-muted-foreground sm:text-xs">
+                <del className="text-[10px] sm:text-xs text-muted-foreground">
                   ৳{data.comparePrice!.toLocaleString()}
                 </del>
               )}
@@ -191,13 +166,13 @@ export default function HorizontalProductCard({
 
             {/* Discount Amount */}
             {hasDiscount && (
-              <p className="mt-0.5 text-[10px] font-medium text-muted-foreground">
+              <p className="text-[10px] font-bold text-destructive">
                 Save ৳{discountAmount.toLocaleString()}
               </p>
             )}
           </div>
 
-          {/* Add Button */}
+          {/* Add to Cart Button */}
           {!isOutOfStock && (
             <button
               type="button"
@@ -205,30 +180,31 @@ export default function HorizontalProductCard({
               aria-label={`Add ${data.name} to cart`}
               className="
                 flex
-                h-8
+                h-7.5
+                xs:h-8
+                sm:h-9
                 shrink-0
                 items-center
                 justify-center
                 gap-1.5
                 rounded-lg
                 bg-primary
-                px-2.5
+                px-2
+                xs:px-2.5
+                sm:px-3
                 text-[10px]
+                sm:text-xs
                 font-bold
                 text-primary-foreground
                 transition-all
-
-                hover:opacity-90
+                hover:bg-primary/90
                 active:scale-95
-
-                sm:h-9
-                sm:px-3
-                sm:text-xs
+                shadow-2xs
                 cursor-pointer
               "
             >
               <ShoppingCart className="h-3.5 w-3.5" />
-              <span className="hidden xs:inline sm:inline">Add</span>
+              <span>Add</span>
             </button>
           )}
         </div>

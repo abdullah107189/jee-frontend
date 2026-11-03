@@ -63,6 +63,10 @@ function buildProductQuery(options: GetProductsOptions) {
     params.set("isActive", String(options.isActive));
   }
 
+  if (options.ids?.length) {
+    params.set("ids", options.ids.join(","));
+  }
+
   return params;
 }
 

@@ -43,7 +43,7 @@ import { toast } from "sonner";
 
 function WarrantyTrackerContent() {
   const searchParams = useSearchParams();
-  const serialParam = searchParams.get("serial");
+  const serialParam = searchParams.get("serial") || searchParams.get("id");
 
   const [serialNumber, setSerialNumber] = useState(
     serialParam ? serialParam.trim().toUpperCase() : "",

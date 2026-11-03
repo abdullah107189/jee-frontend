@@ -466,6 +466,7 @@ export interface SystemSettings {
   defaultWarrantyMonths: number;
   warrantyTerms: string;
   auditLoggingEnabled: boolean;
+  featuredProductIds?: string[];
   updatedAt?: string;
 }
 
@@ -480,6 +481,7 @@ export async function getSystemSettings(): Promise<SystemSettings> {
     warrantyTerms:
       "Covers manufacturing defects for motor and mainboard components. Physical, liquid or accidental damage voids warranty automatically.",
     auditLoggingEnabled: true,
+    featuredProductIds: [],
   };
 
   try {

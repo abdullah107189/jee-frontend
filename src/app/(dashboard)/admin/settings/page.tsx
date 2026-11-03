@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import SettingsContent from "@/components/modules/admin/settings/SettingsContent";
 import { getSystemSettings } from "@/services/admin.service";
+import { productServices } from "@/services/product.service";
 
 export const metadata: Metadata = {
   title: "Settings | JEE Admin",
@@ -8,7 +9,15 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminSettingsPage() {
-  const settings = await getSystemSettings();
+  const [settings, productsRes] = await Promise.all([
+    getSystemSettings(),
+    productServices.getProducts({ limit: 50, isPublished: true, isActive: true }),
+  ]);
 
-  return <SettingsContent initialSettings={settings} />;
+  return (
+    <SettingsContent
+      initialSettings={settings}
+      availableProducts={productsRes.data || []}
+    />
+  );
 }

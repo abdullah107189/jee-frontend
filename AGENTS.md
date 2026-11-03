@@ -68,6 +68,17 @@
   - All verified active warranties must feature a live visual countdown timer (days, hours, minutes, seconds) with a progress percentage meter.
   - All dates displayed on certificates MUST strictly adhere to the Day-First Date Standard (`formatAppDate`).
 
+### Storefront Mobile & Tablet Responsiveness Standard
+- **Consistent Gutters**: All home and storefront section containers MUST use `px-4 sm:px-6 lg:px-8` with `max-w-7xl mx-auto`. Never mix `px-3` or `px-5`.
+- **Harmonious Section Headings**: All section titles on the storefront MUST scale identically:
+  - Title: `text-lg sm:text-2xl lg:text-3xl font-black tracking-tight text-foreground`
+  - Subtitle: `text-xs sm:text-sm font-medium text-muted-foreground mt-0.5 sm:mt-1`
+  - Section Header Bottom Margin: `mb-3.5 sm:mb-5 lg:mb-6`
+- **Product Card Grids Progression**:
+  - `grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 sm:gap-4 md:gap-5 lg:gap-6`
+  - Always provide `sm:` (tablet 640px-768px) breakpoints to avoid 2 massive cards on tablets before jumping to 4 columns.
+- **Proportional Vertical Spacing**: `space-y-8 sm:space-y-12 lg:space-y-16` between major storefront sections.
+
 ### Structure
 ```
 src/

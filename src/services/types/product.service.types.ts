@@ -17,6 +17,7 @@ export interface GetProductsOptions {
 
   isPublished?: boolean;
   isActive?: boolean;
+  ids?: string[];
 
   options?: ServiceOptions;
 }

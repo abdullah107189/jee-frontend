@@ -119,6 +119,7 @@ export async function updateSystemSettingsAction(
   await requireRole('ADMIN');
   const result = await updateSystemSettings(input);
   revalidatePath('/admin/settings');
+  revalidatePath('/');
   return {
     success: true,
     message: result.message || 'System configuration saved successfully',

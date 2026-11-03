@@ -46,7 +46,7 @@ export default async function CheckoutPage() {
 
     if (res.ok) {
       const json = await res.json();
-      savedAddress = json?.data?.shippingAddress ?? null;
+      const cust = json?.data; if (cust) { savedAddress = { fullName: cust.user?.name || user.name, phone: cust.user?.phone || user.phone || "", email: cust.user?.email || user.email, addressLine1: cust.address || "", city: cust.city || "", zipCode: cust.zipCode || "", country: "Bangladesh" }; }
     }
   } catch {
     // ignore — fallback to manual fill

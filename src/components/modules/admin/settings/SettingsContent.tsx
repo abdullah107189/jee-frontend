@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -14,8 +15,14 @@ import {
   RefreshCw,
   CheckCircle2,
   Lock,
+  Flame,
+  Plus,
+  Trash2,
+  Sparkles,
+  AlertCircle,
 } from "lucide-react";
 import type { SystemSettings } from "@/services/admin.service";
+import type { ProductCardData } from "@/lib/types/product.types";
 import {
   updateSystemSettingsAction,
   getDatabaseBackupAction,
@@ -24,11 +31,12 @@ import { toast } from "sonner";
 
 interface Props {
   initialSettings: SystemSettings;
+  availableProducts?: ProductCardData[];
 }
 
-export default function SettingsContent({ initialSettings }: Props) {
+export default function SettingsContent({ initialSettings, availableProducts = [] }: Props) {
   const [activeTab, setActiveTab] = useState<
-    "general" | "payment" | "warranty" | "security"
+    "general" | "payment" | "warranty" | "security" | "featured"
   >("general");
 
   // Form states
@@ -51,8 +59,36 @@ export default function SettingsContent({ initialSettings }: Props) {
     initialSettings?.auditLoggingEnabled ?? true
   );
 
+  const [featuredProductIds, setFeaturedProductIds] = useState<string[]>(
+    initialSettings?.featuredProductIds || []
+  );
+  const [selectedProductIdToAdd, setSelectedProductIdToAdd] = useState<string>("");
+
   const [isSaving, setIsSaving] = useState(false);
   const [isBackingUp, setIsBackingUp] = useState(false);
+
+  const handleAddFeaturedProduct = () => {
+    if (!selectedProductIdToAdd) {
+      toast.error("Please select a product to add.");
+      return;
+    }
+    if (featuredProductIds.length >= 8) {
+      toast.error("Maximum 8 featured products allowed! Remove an item first.");
+      return;
+    }
+    if (featuredProductIds.includes(selectedProductIdToAdd)) {
+      toast.error("This product is already in the featured showcase!");
+      return;
+    }
+    setFeaturedProductIds([...featuredProductIds, selectedProductIdToAdd]);
+    setSelectedProductIdToAdd("");
+    toast.success("Product added to featured showcase.");
+  };
+
+  const handleRemoveFeaturedProduct = (productId: string) => {
+    setFeaturedProductIds(featuredProductIds.filter((id) => id !== productId));
+    toast.info("Product removed from featured showcase.");
+  };
 
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,6 +103,7 @@ export default function SettingsContent({ initialSettings }: Props) {
         defaultWarrantyMonths: Number(defaultWarrantyMonths) || 12,
         warrantyTerms: warrantyTerms.trim(),
         auditLoggingEnabled,
+        featuredProductIds: featuredProductIds.slice(0, 8),
       });
 
       toast.success(res.message || "System configuration saved successfully!");
@@ -165,6 +202,27 @@ export default function SettingsContent({ initialSettings }: Props) {
           }`}
         >
           <Database className="h-4 w-4 mr-2" /> Security & Backup
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("featured")}
+          className={`px-4 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center cursor-pointer ${
+            activeTab === "featured"
+              ? "bg-primary text-primary-foreground shadow-sm"
+              : "bg-card border border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+          }`}
+        >
+          <Flame className="h-4 w-4 mr-2 text-red-500" /> Featured Showcase
+          <span
+            className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
+              activeTab === "featured"
+                ? "bg-primary-foreground/20 text-primary-foreground"
+                : "bg-muted text-muted-foreground"
+            }`}
+          >
+            {featuredProductIds.length}/8
+          </span>
         </button>
       </div>
 
@@ -360,6 +418,144 @@ export default function SettingsContent({ initialSettings }: Props) {
                       {isBackingUp ? "Generating Snapshot..." : "Backup Now"}
                     </Button>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "featured" && (
+              <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                  <div>
+                    <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                      <Flame className="h-5 w-5 text-red-500" /> Homepage Featured Showcase
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Select up to 8 products to display in the homepage sliding carousel (5 on desktop, 3 on tablet, 2 on mobile).
+                    </p>
+                  </div>
+                  <div className="shrink-0">
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border ${
+                        featuredProductIds.length >= 8
+                          ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                          : "bg-primary/10 text-primary border-primary/20"
+                      }`}
+                    >
+                      <Sparkles className="h-3.5 w-3.5" />
+                      {featuredProductIds.length} / 8 Featured Products
+                    </span>
+                  </div>
+                </div>
+
+                {/* Add Product Selector Box */}
+                <div className="p-4 sm:p-5 rounded-2xl border border-border bg-muted/40 space-y-3">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Add Product to Featured Showcase
+                  </label>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <select
+                      value={selectedProductIdToAdd}
+                      onChange={(e) => setSelectedProductIdToAdd(e.target.value)}
+                      disabled={featuredProductIds.length >= 8}
+                      className="flex-1 h-10 px-3 rounded-xl border border-border bg-background text-sm font-medium text-foreground focus:outline-hidden focus:ring-2 focus:ring-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <option value="">-- Choose a product to feature --</option>
+                      {availableProducts
+                        .filter((p) => !featuredProductIds.includes(p.id))
+                        .map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.name} ({p.categoryName || "Catalog"} • ৳{p.price.toLocaleString()})
+                          </option>
+                        ))}
+                    </select>
+
+                    <Button
+                      type="button"
+                      onClick={handleAddFeaturedProduct}
+                      disabled={!selectedProductIdToAdd || featuredProductIds.length >= 8}
+                      className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold px-5 h-10 cursor-pointer disabled:opacity-50"
+                    >
+                      <Plus className="h-4 w-4 mr-1.5" /> Add to Showcase
+                    </Button>
+                  </div>
+
+                  {featuredProductIds.length >= 8 ? (
+                    <div className="flex items-center gap-2 text-xs font-semibold text-amber-600 dark:text-amber-400 pt-1">
+                      <AlertCircle className="h-4 w-4 shrink-0" />
+                      Maximum limit reached (8 products). Remove a product before adding another.
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">
+                      You can add {8 - featuredProductIds.length} more {featuredProductIds.length === 7 ? "product" : "products"}.
+                    </p>
+                  )}
+                </div>
+
+                {/* Current Featured Products List */}
+                <div>
+                  <h4 className="text-sm font-bold text-foreground mb-3">
+                    Currently Selected Products ({featuredProductIds.length})
+                  </h4>
+
+                  {featuredProductIds.length === 0 ? (
+                    <div className="text-center py-10 px-4 rounded-2xl border border-dashed border-border bg-card/50">
+                      <Sparkles className="h-8 w-8 mx-auto text-muted-foreground/60 mb-2" />
+                      <p className="text-sm font-bold text-foreground">
+                        No specific products featured yet
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1 max-w-md mx-auto">
+                        The homepage is currently displaying the latest 8 published products by default. Select products above to customize your showcase!
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                      {featuredProductIds.map((id, index) => {
+                        const product = availableProducts.find((p) => p.id === id);
+                        return (
+                          <div
+                            key={id}
+                            className="relative flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:border-primary/40 transition group"
+                          >
+                            <span className="absolute -top-2 -left-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-black text-primary-foreground shadow-2xs">
+                              {index + 1}
+                            </span>
+
+                            <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center overflow-hidden shrink-0 border border-border/50 relative">
+                              {product?.image ? (
+                                <Image
+                                  src={product.image}
+                                  alt={product.name}
+                                  width={48}
+                                  height={48}
+                                  className="object-cover h-full w-full"
+                                />
+                              ) : (
+                                <Flame className="h-5 w-5 text-muted-foreground/40" />
+                              )}
+                            </div>
+
+                            <div className="min-w-0 flex-1">
+                              <p className="text-xs font-bold text-foreground truncate">
+                                {product?.name || `Product ID: ${id.slice(0, 10)}...`}
+                              </p>
+                              <p className="text-[11px] font-semibold text-primary mt-0.5">
+                                {product?.price ? `৳${product.price.toLocaleString()}` : "Active"}
+                              </p>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveFeaturedProduct(id)}
+                              title="Remove from showcase"
+                              className="h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-red-600 hover:bg-red-500/10 transition cursor-pointer shrink-0"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
