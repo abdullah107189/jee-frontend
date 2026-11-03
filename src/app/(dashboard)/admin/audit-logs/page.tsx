@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import AuditLogsContent from "@/components/modules/admin/audit-logs/AuditLogsContent";
 import { getAuditLogs } from "@/services/admin.service";
 
