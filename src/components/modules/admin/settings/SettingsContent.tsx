@@ -36,34 +36,38 @@ export default function AdminSettingsPage() {
       <div className="space-y-6 sm:space-y-8">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">System Settings</h1>
-            <p className="text-sm sm:text-base text-slate-500 mt-1 font-medium">Configure store parameters, payment gateway integration, and warranty rules.</p>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">System Settings</h1>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1 font-medium">Configure store parameters, payment gateway integration, and warranty rules.</p>
           </div>
         </div>
 
         {/* Settings Tab Navigation */}
-        <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-2">
+        <div className="flex flex-wrap gap-2 border-b border-border/60 pb-2">
           <button
+            type="button"
             onClick={() => setActiveTab('general')}
-            className={`px-4 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center ${activeTab === 'general' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'bg-white text-slate-600 hover:bg-slate-100'}`}
+            className={`px-4 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center ${activeTab === 'general' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'bg-card border border-border/60 text-muted-foreground hover:bg-muted/60 hover:text-foreground'}`}
           >
             <Settings className="h-4 w-4 mr-2" /> General
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('payment')}
-            className={`px-4 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center ${activeTab === 'payment' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'bg-white text-slate-600 hover:bg-slate-100'}`}
+            className={`px-4 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center ${activeTab === 'payment' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'bg-card border border-border/60 text-muted-foreground hover:bg-muted/60 hover:text-foreground'}`}
           >
             <CreditCard className="h-4 w-4 mr-2" /> Payment Gateway
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('warranty')}
-            className={`px-4 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center ${activeTab === 'warranty' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'bg-white text-slate-600 hover:bg-slate-100'}`}
+            className={`px-4 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center ${activeTab === 'warranty' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'bg-card border border-border/60 text-muted-foreground hover:bg-muted/60 hover:text-foreground'}`}
           >
             <ShieldCheck className="h-4 w-4 mr-2" /> Warranty Rules
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('security')}
-            className={`px-4 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center ${activeTab === 'security' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'bg-white text-slate-600 hover:bg-slate-100'}`}
+            className={`px-4 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center ${activeTab === 'security' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'bg-card border border-border/60 text-muted-foreground hover:bg-muted/60 hover:text-foreground'}`}
           >
             <Database className="h-4 w-4 mr-2" /> Security & Backup
           </button>
@@ -71,14 +75,14 @@ export default function AdminSettingsPage() {
 
         {/* Tab Contents */}
         <form onSubmit={handleSaveSettings}>
-          <Card className="rounded-2xl sm:rounded-[2rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white overflow-hidden">
+          <Card className="rounded-2xl sm:rounded-[2rem] border border-border/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-card overflow-hidden">
             <CardContent className="p-6 sm:p-8 space-y-6">
               {activeTab === 'general' && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-bold text-slate-900 border-b pb-3">General Store Profile</h3>
+                  <h3 className="text-lg font-bold text-foreground border-b border-border/60 pb-3">General Store Profile</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Store Name</label>
+                      <label className="block text-xs font-bold uppercase text-muted-foreground mb-1">Store Name</label>
                       <Input 
                         value={storeName} 
                         onChange={(e) => setStoreName(e.target.value)} 
@@ -86,7 +90,7 @@ export default function AdminSettingsPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Display Currency</label>
+                      <label className="block text-xs font-bold uppercase text-muted-foreground mb-1">Display Currency</label>
                       <Input 
                         value={currency} 
                         onChange={(e) => setCurrency(e.target.value)} 
@@ -94,7 +98,7 @@ export default function AdminSettingsPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Support Email</label>
+                      <label className="block text-xs font-bold uppercase text-muted-foreground mb-1">Support Email</label>
                       <Input 
                         type="email"
                         value={supportEmail} 
@@ -103,7 +107,7 @@ export default function AdminSettingsPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Support Phone Hotline</label>
+                      <label className="block text-xs font-bold uppercase text-muted-foreground mb-1">Support Phone Hotline</label>
                       <Input 
                         value={supportPhone} 
                         onChange={(e) => setSupportPhone(e.target.value)} 
@@ -116,11 +120,11 @@ export default function AdminSettingsPage() {
 
               {activeTab === 'payment' && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-bold text-slate-900 border-b pb-3">Payment Settings</h3>
+                  <h3 className="text-lg font-bold text-foreground border-b border-border/60 pb-3">Payment Settings</h3>
                   <div className="space-y-4">
-                    <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50/50 text-emerald-800 text-sm">
+                    <div className="p-4 rounded-xl border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-300 text-sm">
                       <p className="font-bold">MVP: Cash on Delivery Only</p>
-                      <p className="text-xs text-emerald-700 mt-1">Online payment gateway integration will be configured in future releases.</p>
+                      <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-1">Online payment gateway integration will be configured in future releases.</p>
                     </div>
                     <div className="pt-2">
                       <label className="flex items-center space-x-3 cursor-pointer">
@@ -130,7 +134,7 @@ export default function AdminSettingsPage() {
                           onChange={(e) => setCodEnabled(e.target.checked)} 
                           className="h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
                         />
-                        <span className="text-sm font-bold text-slate-800">Enable Cash on Delivery (COD) Option</span>
+                        <span className="text-sm font-bold text-foreground">Enable Cash on Delivery (COD) Option</span>
                       </label>
                     </div>
                   </div>
@@ -139,10 +143,10 @@ export default function AdminSettingsPage() {
 
               {activeTab === 'warranty' && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-bold text-slate-900 border-b pb-3">Default Warranty Policy Configuration</h3>
+                  <h3 className="text-lg font-bold text-foreground border-b border-border/60 pb-3">Default Warranty Policy Configuration</h3>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Default Warranty Period (Months)</label>
+                      <label className="block text-xs font-bold uppercase text-muted-foreground mb-1">Default Warranty Period (Months)</label>
                       <Input 
                         type="number"
                         value={defaultWarrantyMonths} 
@@ -151,12 +155,12 @@ export default function AdminSettingsPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Standard Terms & Conditions Clause</label>
+                      <label className="block text-xs font-bold uppercase text-muted-foreground mb-1">Standard Terms & Conditions Clause</label>
                       <Textarea 
                         rows={4}
                         value={warrantyTerms} 
                         onChange={(e) => setWarrantyTerms(e.target.value)} 
-                        className="rounded-xl"
+                        className="rounded-xl border-border bg-background"
                       />
                     </div>
                   </div>
@@ -165,7 +169,7 @@ export default function AdminSettingsPage() {
 
               {activeTab === 'security' && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-bold text-slate-900 border-b pb-3">Security & System Maintenance</h3>
+                  <h3 className="text-lg font-bold text-foreground border-b border-border/60 pb-3">Security & System Maintenance</h3>
                   <div className="space-y-6">
                     <label className="flex items-center space-x-3 cursor-pointer">
                       <input 
@@ -175,17 +179,17 @@ export default function AdminSettingsPage() {
                         className="h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
                       />
                       <div>
-                        <span className="text-sm font-bold text-slate-800">Enable Comprehensive Audit Logging</span>
-                        <p className="text-xs text-slate-500">Record all seller activations, product edits, and order updates to audit log.</p>
+                        <span className="text-sm font-bold text-foreground">Enable Comprehensive Audit Logging</span>
+                        <p className="text-xs text-muted-foreground">Record all seller activations, product edits, and order updates to audit log.</p>
                       </div>
                     </label>
 
-                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex justify-between items-center">
+                    <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 flex justify-between items-center">
                       <div>
-                        <h4 className="text-sm font-bold text-slate-900">Database Snapshot & Backup</h4>
-                        <p className="text-xs text-slate-500">Download snapshot of all products, items, and sales records.</p>
+                        <h4 className="text-sm font-bold text-foreground">Database Snapshot & Backup</h4>
+                        <p className="text-xs text-muted-foreground">Download snapshot of all products, items, and sales records.</p>
                       </div>
-                      <Button type="button" onClick={handleBackupDatabase} variant="outline" className="rounded-xl bg-white">
+                      <Button type="button" onClick={handleBackupDatabase} variant="outline" className="rounded-xl bg-card border-border">
                         <RefreshCw className="h-4 w-4 mr-2" /> Backup Now
                       </Button>
                     </div>
@@ -193,7 +197,7 @@ export default function AdminSettingsPage() {
                 </div>
               )}
 
-              <div className="pt-6 border-t border-slate-100 flex justify-end">
+              <div className="pt-6 border-t border-border/60 flex justify-end">
                 <Button type="submit" className="h-12 px-8 rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 font-bold">
                   <Save className="h-4 w-4 mr-2" /> Save Configuration
                 </Button>

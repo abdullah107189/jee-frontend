@@ -19,7 +19,7 @@ export async function DashboardLayout({
   if (user.role !== allowedRole) redirect(roleDashboard(user.role));
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#eef2f6]">
+    <div className="flex h-screen overflow-hidden bg-[#eef2f6] dark:bg-background">
       <DashboardLayoutClient user={user}>{children}</DashboardLayoutClient>
     </div>
   );

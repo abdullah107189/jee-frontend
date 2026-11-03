@@ -105,7 +105,7 @@ export default function ProductEditContent({
             <div>
                 <Link
                     href={`/admin/products/${product.id}`}
-                    className="mb-4 inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-700"
+                    className="mb-4 inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground"
                 >
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Product
@@ -113,10 +113,10 @@ export default function ProductEditContent({
 
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="text-2xl font-extrabold text-slate-800 sm:text-3xl">
+                        <h1 className="text-2xl font-extrabold text-foreground sm:text-3xl">
                             Edit Product
                         </h1>
-                        <p className="mt-1 text-sm text-slate-500">
+                        <p className="mt-1 text-sm text-muted-foreground">
                             Update product info. Variant edit separate page e.
                         </p>
                     </div>
@@ -132,46 +132,46 @@ export default function ProductEditContent({
             </div>
 
             {/* Basic Info */}
-            <Card className="rounded-2xl border-none p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-                <h2 className="mb-4 text-lg font-bold text-slate-800">Basic Info</h2>
+            <Card className="rounded-2xl border border-border/60 bg-card p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-[2rem] sm:p-8">
+                <h2 className="mb-4 text-lg font-bold text-foreground">Basic Info</h2>
 
                 <div className="space-y-4">
                     <div className="grid gap-4 sm:grid-cols-2">
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-700">Name *</label>
+                            <label className="text-sm font-semibold text-foreground/90">Name *</label>
                             <Input
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="h-11 rounded-xl bg-slate-50"
+                                className="h-11 rounded-xl"
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-700">Slug</label>
+                            <label className="text-sm font-semibold text-foreground/90">Slug</label>
                             <Input
                                 value={slug}
                                 onChange={(e) => setSlug(e.target.value)}
-                                className="h-11 rounded-xl bg-slate-50 font-mono text-xs"
+                                className="h-11 rounded-xl font-mono text-xs"
                             />
                         </div>
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-700">Description</label>
+                        <label className="text-sm font-semibold text-foreground/90">Description</label>
                         <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             rows={3}
-                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                            className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                         />
                     </div>
 
                     <div className="grid gap-4 sm:grid-cols-2">
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-700">Category *</label>
+                            <label className="text-sm font-semibold text-foreground/90">Category *</label>
                             <select
                                 value={categoryId}
                                 onChange={(e) => setCategoryId(e.target.value)}
-                                className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm"
+                                className="h-11 w-full rounded-xl border border-border bg-card px-4 text-sm text-foreground outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="">Select Category</option>
                                 {categories.map((c) => (
@@ -183,11 +183,11 @@ export default function ProductEditContent({
                             </select>
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-700">Brand</label>
+                            <label className="text-sm font-semibold text-foreground/90">Brand</label>
                             <select
                                 value={brandId}
                                 onChange={(e) => setBrandId(e.target.value)}
-                                className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm"
+                                className="h-11 w-full rounded-xl border border-border bg-card px-4 text-sm text-foreground outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="">Select Brand</option>
                                 {brands.map((b) => (
@@ -202,14 +202,14 @@ export default function ProductEditContent({
             </Card>
 
             {/* Specs */}
-            <Card className="rounded-2xl border-none p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <Card className="rounded-2xl border border-border/60 bg-card p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-[2rem] sm:p-8">
                 <div className="mb-4 flex items-center justify-between">
-                    <h2 className="text-lg font-bold text-slate-800">Specifications</h2>
+                    <h2 className="text-lg font-bold text-foreground">Specifications</h2>
                     <Button
                         variant="outline"
                         size="sm"
                         onClick={() => setSpecs([...specs, { key: "", value: "" }])}
-                        className="rounded-xl"
+                        className="rounded-xl border-border"
                     >
                         <Plus className="mr-2 h-4 w-4" /> Add
                     </Button>
@@ -226,7 +226,7 @@ export default function ProductEditContent({
                                     setSpecs(next);
                                 }}
                                 placeholder="Material"
-                                className="h-11 flex-1 rounded-xl bg-slate-50"
+                                className="h-11 flex-1 rounded-xl"
                             />
                             <Input
                                 value={s.value}
@@ -236,14 +236,14 @@ export default function ProductEditContent({
                                     setSpecs(next);
                                 }}
                                 placeholder="Plastic"
-                                className="h-11 flex-1 rounded-xl bg-slate-50"
+                                className="h-11 flex-1 rounded-xl"
                             />
                             <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => setSpecs(specs.filter((_, x) => x !== i))}
                                 disabled={specs.length === 1}
-                                className="h-11 w-11 rounded-xl p-0 text-red-500 hover:bg-red-50"
+                                className="h-11 w-11 rounded-xl p-0 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40"
                             >
                                 <Trash2 className="h-4 w-4" />
                             </Button>
@@ -253,43 +253,43 @@ export default function ProductEditContent({
             </Card>
 
             {/* Warranty */}
-            <Card className="rounded-2xl border-none p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-                <h2 className="mb-4 text-lg font-bold text-slate-800">Warranty</h2>
+            <Card className="rounded-2xl border border-border/60 bg-card p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-[2rem] sm:p-8">
+                <h2 className="mb-4 text-lg font-bold text-foreground">Warranty</h2>
                 <div className="space-y-4">
                     <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-700">Months *</label>
+                        <label className="text-sm font-semibold text-foreground/90">Months *</label>
                         <Input
                             type="number"
                             value={warrantyMonths}
                             onChange={(e) => setWarrantyMonths(e.target.value)}
-                            className="h-11 rounded-xl bg-slate-50"
+                            className="h-11 rounded-xl"
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-700">Terms</label>
+                        <label className="text-sm font-semibold text-foreground/90">Terms</label>
                         <textarea
                             value={warrantyTerms}
                             onChange={(e) => setWarrantyTerms(e.target.value)}
                             rows={2}
-                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                            className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                         />
                     </div>
                 </div>
             </Card>
 
             {/* Variants (read-only) */}
-            <Card className="rounded-2xl border-none p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <Card className="rounded-2xl border border-border/60 bg-card p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-[2rem] sm:p-8">
                 <div className="mb-4 flex items-center justify-between">
                     <div>
-                        <h2 className="text-lg font-bold text-slate-800">
+                        <h2 className="text-lg font-bold text-foreground">
                             Variants ({variantCount})
                         </h2>
-                        <p className="mt-1 text-xs text-slate-500">
+                        <p className="mt-1 text-xs text-muted-foreground">
                             Variant edit korte product details page e jao.
                         </p>
                     </div>
                     <Link href={`/admin/products/${product.id}`}>
-                        <Button variant="outline" size="sm" className="rounded-xl">
+                        <Button variant="outline" size="sm" className="rounded-xl border-border">
                             View Variants
                         </Button>
                     </Link>
@@ -297,24 +297,24 @@ export default function ProductEditContent({
             </Card>
 
             {/* Status */}
-            <Card className="rounded-2xl border-none p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-                <h2 className="mb-4 text-lg font-bold text-slate-800">Status</h2>
-                <div className="flex gap-6">
-                    <label className="flex items-center gap-2 text-sm">
+            <Card className="rounded-2xl border border-border/60 bg-card p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-[2rem] sm:p-8">
+                <h2 className="mb-4 text-lg font-bold text-foreground">Status</h2>
+                <div className="flex gap-6 text-foreground">
+                    <label className="flex items-center gap-2 text-sm cursor-pointer">
                         <input
                             type="checkbox"
                             checked={isPublished}
                             onChange={(e) => setIsPublished(e.target.checked)}
-                            className="h-4 w-4"
+                            className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500"
                         />
                         Published
                     </label>
-                    <label className="flex items-center gap-2 text-sm">
+                    <label className="flex items-center gap-2 text-sm cursor-pointer">
                         <input
                             type="checkbox"
                             checked={isActive}
                             onChange={(e) => setIsActive(e.target.checked)}
-                            className="h-4 w-4"
+                            className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500"
                         />
                         Active
                     </label>
@@ -324,7 +324,7 @@ export default function ProductEditContent({
             {/* Submit */}
             <div className="flex justify-end gap-3">
                 <Link href={`/admin/products/${product.id}`}>
-                    <Button variant="outline" className="h-11 rounded-xl">
+                    <Button variant="outline" className="h-11 rounded-xl border-border">
                         Cancel
                     </Button>
                 </Link>

@@ -11,8 +11,8 @@ export default function Error({
 }) {
     return (
         <div className="flex min-h-[50vh] flex-col items-center justify-center text-center">
-            <h2 className="text-xl font-bold text-slate-900">Failed to load variant</h2>
-            <p className="mt-2 text-sm text-slate-500 max-w-md">{error.message || "An unexpected error occurred."}</p>
+            <h2 className="text-xl font-bold text-foreground">Failed to load variant for edit</h2>
+            <p className="mt-2 text-sm text-muted-foreground max-w-md">{error.message || "An unexpected error occurred."}</p>
             <Button onClick={reset} className="mt-6 rounded-xl">
                 Try again
             </Button>

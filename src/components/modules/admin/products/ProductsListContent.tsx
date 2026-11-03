@@ -135,10 +135,10 @@ export default function ProductsListContent({
             <Package className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+            <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
               Products
             </h1>
-            <p className="mt-1 text-sm font-medium text-slate-500">
+            <p className="mt-1 text-sm font-medium text-muted-foreground">
               Manage your product catalog and inventory.
             </p>
           </div>
@@ -152,16 +152,16 @@ export default function ProductsListContent({
       </div>
 
       {/* Card */}
-      <Card className="overflow-hidden rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-[2rem]">
+      <Card className="overflow-hidden rounded-2xl border border-border/60 bg-card shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-[2rem]">
         {/* Toolbar */}
-        <div className="flex flex-col gap-3 border-b border-slate-100 bg-white p-4 sm:p-6 lg:flex-row lg:items-center">
+        <div className="flex flex-col gap-3 border-b border-border bg-card p-4 sm:p-6 lg:flex-row lg:items-center">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search products, SKU, brand..."
-              className="h-10 w-full rounded-xl border-transparent bg-slate-50 pl-10 focus:border-blue-500 focus:bg-white focus:ring-blue-500/20 sm:h-12"
+              className="h-10 w-full rounded-xl border border-input bg-background dark:bg-muted/30 pl-10 focus:border-blue-500 focus:ring-blue-500/20 sm:h-12"
             />
           </div>
 
@@ -169,7 +169,7 @@ export default function ProductsListContent({
           <select
             value={initialFilters.status}
             onChange={(e) => updateURL({ status: e.target.value })}
-            className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 sm:h-12"
+            className="h-10 rounded-xl border border-input bg-background dark:bg-muted/40 px-4 text-sm font-medium text-foreground sm:h-12 outline-none focus:ring-2 focus:ring-ring"
           >
             <option value="all">All Publish</option>
             <option value="published">Published</option>
@@ -180,7 +180,7 @@ export default function ProductsListContent({
           <select
             value={initialFilters.active}
             onChange={(e) => updateURL({ active: e.target.value })}
-            className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 sm:h-12"
+            className="h-10 rounded-xl border border-input bg-background dark:bg-muted/40 px-4 text-sm font-medium text-foreground sm:h-12 outline-none focus:ring-2 focus:ring-ring"
           >
             <option value="all">All Active</option>
             <option value="active">Active</option>
@@ -191,7 +191,7 @@ export default function ProductsListContent({
           <select
             value={initialFilters.stock}
             onChange={(e) => updateURL({ stock: e.target.value })}
-            className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 sm:h-12"
+            className="h-10 rounded-xl border border-input bg-background dark:bg-muted/40 px-4 text-sm font-medium text-foreground sm:h-12 outline-none focus:ring-2 focus:ring-ring"
           >
             <option value="all">All Stock</option>
             <option value="in">In Stock</option>
@@ -203,7 +203,7 @@ export default function ProductsListContent({
           <select
             value={initialFilters.sort}
             onChange={(e) => updateURL({ sort: e.target.value })}
-            className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 sm:h-12"
+            className="h-10 rounded-xl border border-input bg-background dark:bg-muted/40 px-4 text-sm font-medium text-foreground sm:h-12 outline-none focus:ring-2 focus:ring-ring"
           >
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
@@ -214,7 +214,7 @@ export default function ProductsListContent({
           </select>
 
           {/* Count */}
-          <div className="flex h-10 items-center justify-center rounded-xl bg-slate-50 px-4 text-sm font-medium text-slate-500 sm:h-12">
+          <div className="flex h-10 items-center justify-center rounded-xl bg-muted/50 px-4 text-sm font-medium text-muted-foreground sm:h-12">
             {meta.total} {meta.total === 1 ? "product" : "products"}
           </div>
         </div>
@@ -223,13 +223,13 @@ export default function ProductsListContent({
         {products.length === 0 ? (
           <div className="flex min-h-[320px] items-center justify-center px-6">
             <div className="text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
                 <PackageOpen className="h-7 w-7" />
               </div>
-              <h3 className="font-semibold text-slate-900">
+              <h3 className="font-semibold text-foreground">
                 No products found
               </h3>
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Try changing your search or filter.
               </p>
             </div>
@@ -239,7 +239,7 @@ export default function ProductsListContent({
             {/* Table */}
             <div className="overflow-x-auto">
               <table className="w-full min-w-[1100px] text-left text-sm">
-                <thead className="border-b border-slate-100 bg-slate-50/80">
+                <thead className="border-b border-border bg-muted/40">
                   <tr>
                     <th className="whitespace-nowrap px-4 py-4 font-semibold text-slate-500 sm:px-6">
                       Product
@@ -264,7 +264,7 @@ export default function ProductsListContent({
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-50">
+                <tbody className="divide-y divide-border/40">
                   {products.map((product) => {
                     const stock = product.stockQuantity;
                     const stockStatus =
@@ -283,7 +283,7 @@ export default function ProductsListContent({
                     return (
                       <tr
                         key={product.id}
-                        className="bg-white hover:bg-slate-50/70"
+                        className="bg-card hover:bg-muted/30 transition-colors"
                       >
                         {/* Product */}
                         <td className="px-4 py-4 sm:px-6">
@@ -304,7 +304,7 @@ export default function ProductsListContent({
                               )}
                             </div>
                             <div className="min-w-0">
-                              <p className="max-w-[260px] truncate font-semibold text-slate-900">
+                              <p className="max-w-[260px] truncate font-semibold text-foreground">
                                 {product.name}
                               </p>
                               <div className="mt-0.5 flex items-center gap-2">
@@ -336,7 +336,7 @@ export default function ProductsListContent({
                         {/* Price */}
                         <td className="px-4 py-4 sm:px-6">
                           <div className="flex flex-col">
-                            <span className="font-bold text-slate-900">
+                            <span className="font-bold text-foreground">
                               ৳{Number(product.price).toLocaleString()}
                             </span>
                             {product.comparePrice !== null &&
@@ -446,8 +446,8 @@ export default function ProductsListContent({
 
             {/* Pagination */}
             {meta.totalPages > 1 && (
-              <div className="flex flex-col items-center justify-between gap-4 border-t border-slate-100 bg-slate-50/50 px-4 py-4 sm:flex-row sm:px-6">
-                <p className="text-xs text-slate-500 sm:text-sm">
+              <div className="flex flex-col items-center justify-between gap-4 border-t border-border/60 bg-muted/30 px-4 py-4 sm:flex-row sm:px-6">
+                <p className="text-xs text-muted-foreground sm:text-sm">
                   Page <span className="font-semibold">{meta.page}</span> of{" "}
                   <span className="font-semibold">{meta.totalPages}</span> (
                   {meta.total} items)

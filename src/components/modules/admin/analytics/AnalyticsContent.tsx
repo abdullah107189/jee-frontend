@@ -25,20 +25,20 @@ export default function AdminAnalyticsPage({ analytics }: { analytics: AdminAnal
       <div className="space-y-6 sm:space-y-8">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">Analytics & Reports</h1>
-            <p className="text-sm sm:text-base text-slate-500 mt-1 font-medium">Deep-dive into store performance, stock levels, seller metrics, and warranty claims.</p>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">Analytics & Reports</h1>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1 font-medium">Deep-dive into store performance, stock levels, seller metrics, and warranty claims.</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <select 
               value={period}
               onChange={(e) => setPeriod(e.target.value)}
-              className="h-10 sm:h-12 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/20"
+              className="h-10 sm:h-12 rounded-xl border border-border bg-card px-4 text-sm font-semibold text-foreground outline-none focus:ring-2 focus:ring-blue-500/20"
             >
               <option value="MONTH">This Month</option>
               <option value="QUARTER">This Quarter</option>
               <option value="YEAR">This Year</option>
             </select>
-            <Button onClick={handleExportCSV} variant="outline" className="h-10 sm:h-12 bg-white rounded-xl">
+            <Button onClick={handleExportCSV} variant="outline" className="h-10 sm:h-12 bg-card rounded-xl border-border">
               <Download className="mr-2 h-4 w-4" /> Export CSV
             </Button>
             <Button onClick={handleExportPDF} className="h-10 sm:h-12 rounded-xl shadow-lg shadow-blue-500/20">
@@ -48,28 +48,28 @@ export default function AdminAnalyticsPage({ analytics }: { analytics: AdminAnal
         </div>
 
         {!analytics ? (
-          <div className="p-12 text-center text-slate-500 font-medium">Loading analytics reports...</div>
+          <div className="p-12 text-center text-muted-foreground font-medium">Loading analytics reports...</div>
         ) : (
           <>
             {/* 1️⃣ Sales Overview Section */}
             <div className="space-y-6">
-              <h2 className="text-xl font-bold text-slate-900 flex items-center">
+              <h2 className="text-xl font-bold text-foreground flex items-center">
                 <TrendingUp className="h-5 w-5 mr-2 text-blue-600" /> Sales & Revenue Overview
               </h2>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Sales Line Chart */}
-                <Card className="rounded-2xl sm:rounded-[2rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white lg:col-span-2 flex flex-col">
-                  <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                    <h3 className="text-base font-bold text-slate-800">Monthly Sales (Online vs Offline)</h3>
+                <Card className="rounded-2xl sm:rounded-[2rem] border border-border/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-card lg:col-span-2 flex flex-col">
+                  <div className="p-6 border-b border-border/60 flex justify-between items-center">
+                    <h3 className="text-base font-bold text-foreground">Monthly Sales (Online vs Offline)</h3>
                   </div>
                   <div className="p-6 flex-1 min-h-[300px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={analytics.salesTrend}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                        <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} />
-                        <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} />
-                        <Tooltip contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px -5px rgb(0 0 0 / 0.1)'}} />
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="text-border/40" />
+                        <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fill: '#888888', fontSize: 12}} />
+                        <YAxis axisLine={false} tickLine={false} tick={{fill: '#888888', fontSize: 12}} />
+                        <Tooltip contentStyle={{borderRadius: '12px', border: '1px solid var(--border)', backgroundColor: 'var(--card)', color: 'var(--foreground)', boxShadow: '0 10px 25px -5px rgb(0 0 0 / 0.1)'}} />
                         <Legend iconType="circle" />
                         <Line type="monotone" dataKey="online" name="Online Store" stroke="#3b82f6" strokeWidth={3} dot={{r: 4}} />
                         <Line type="monotone" dataKey="offline" name="Offline Sellers" stroke="#10b981" strokeWidth={3} dot={{r: 4}} />
@@ -79,17 +79,17 @@ export default function AdminAnalyticsPage({ analytics }: { analytics: AdminAnal
                 </Card>
 
                 {/* Sales by Category */}
-                <Card className="rounded-2xl sm:rounded-[2rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white flex flex-col">
-                  <div className="p-6 border-b border-slate-100">
-                    <h3 className="text-base font-bold text-slate-800">Sales by Category</h3>
+                <Card className="rounded-2xl sm:rounded-[2rem] border border-border/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-card flex flex-col">
+                  <div className="p-6 border-b border-border/60">
+                    <h3 className="text-base font-bold text-foreground">Sales by Category</h3>
                   </div>
                   <div className="p-6 flex-1 min-h-[300px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <RechartsBarChart data={analytics.categorySales} layout="vertical">
-                        <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+                        <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="currentColor" className="text-border/40" />
                         <XAxis type="number" hide />
-                        <YAxis dataKey="category" type="category" axisLine={false} tickLine={false} tick={{fill: '#475569', fontSize: 11}} width={100} />
-                        <Tooltip contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
+                        <YAxis dataKey="category" type="category" axisLine={false} tickLine={false} tick={{fill: '#888888', fontSize: 11}} width={100} />
+                        <Tooltip contentStyle={{borderRadius: '12px', border: '1px solid var(--border)', backgroundColor: 'var(--card)', color: 'var(--foreground)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
                         <Bar dataKey="sales" name="Units" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={18} />
                       </RechartsBarChart>
                     </ResponsiveContainer>
@@ -100,19 +100,19 @@ export default function AdminAnalyticsPage({ analytics }: { analytics: AdminAnal
 
             {/* 2️⃣ Product & Stock Analytics */}
             <div className="space-y-6 pt-4">
-              <h2 className="text-xl font-bold text-slate-900 flex items-center">
-                <Package className="h-5 w-5 mr-2 text-indigo-600" /> Inventory & Product Intelligence
+              <h2 className="text-xl font-bold text-foreground flex items-center">
+                <Package className="h-5 w-5 mr-2 text-indigo-500" /> Inventory & Product Intelligence
               </h2>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Best Selling Products */}
-                <Card className="rounded-2xl sm:rounded-[2rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white overflow-hidden">
-                  <div className="p-6 border-b border-slate-100">
-                    <h3 className="text-base font-bold text-slate-800">Best Selling Products</h3>
+                <Card className="rounded-2xl sm:rounded-[2rem] border border-border/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-card overflow-hidden">
+                  <div className="p-6 border-b border-border/60">
+                    <h3 className="text-base font-bold text-foreground">Best Selling Products</h3>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                      <thead className="bg-slate-50 text-xs font-semibold text-slate-500 uppercase">
+                      <thead className="bg-muted/50 text-xs font-semibold text-muted-foreground uppercase border-b border-border/60">
                         <tr>
                           <th className="p-4">Product Name</th>
                           <th className="p-4">Category</th>
@@ -120,13 +120,13 @@ export default function AdminAnalyticsPage({ analytics }: { analytics: AdminAnal
                           <th className="p-4 text-right">Total Revenue</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y divide-border/40">
                         {analytics.bestSellingProducts?.map((item: any) => (
-                          <tr key={item.id} className="hover:bg-slate-50/50">
-                            <td className="p-4 font-semibold text-slate-900">{item.name}</td>
-                            <td className="p-4 text-xs text-slate-500">{item.category}</td>
-                            <td className="p-4 text-right font-bold text-slate-800">{item.sold}</td>
-                            <td className="p-4 text-right font-extrabold text-blue-600">৳{item.revenue.toLocaleString()}</td>
+                          <tr key={item.id} className="hover:bg-muted/40 transition-colors">
+                            <td className="p-4 font-semibold text-foreground">{item.name}</td>
+                            <td className="p-4 text-xs text-muted-foreground">{item.category}</td>
+                            <td className="p-4 text-right font-bold text-foreground">{item.sold}</td>
+                            <td className="p-4 text-right font-extrabold text-blue-600 dark:text-blue-400">৳{item.revenue.toLocaleString()}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -135,16 +135,16 @@ export default function AdminAnalyticsPage({ analytics }: { analytics: AdminAnal
                 </Card>
 
                 {/* Low Stock Alerts Table */}
-                <Card className="rounded-2xl sm:rounded-[2rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white overflow-hidden">
-                  <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-rose-50/30">
-                    <h3 className="text-base font-bold text-rose-900 flex items-center">
-                      <AlertTriangle className="h-5 w-5 mr-2 text-rose-600" /> Low Stock Alerts
+                <Card className="rounded-2xl sm:rounded-[2rem] border border-border/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-card overflow-hidden">
+                  <div className="p-6 border-b border-border/60 flex justify-between items-center bg-rose-50/50 dark:bg-rose-950/20">
+                    <h3 className="text-base font-bold text-rose-900 dark:text-rose-300 flex items-center">
+                      <AlertTriangle className="h-5 w-5 mr-2 text-rose-600 dark:text-rose-400" /> Low Stock Alerts
                     </h3>
                     <Badge variant="destructive" className="rounded-full">Requires Re-stock</Badge>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                      <thead className="bg-slate-50 text-xs font-semibold text-slate-500 uppercase">
+                      <thead className="bg-muted/50 text-xs font-semibold text-muted-foreground uppercase border-b border-border/60">
                         <tr>
                           <th className="p-4">Product Name</th>
                           <th className="p-4">Category</th>
@@ -152,12 +152,12 @@ export default function AdminAnalyticsPage({ analytics }: { analytics: AdminAnal
                           <th className="p-4">Status</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y divide-border/40">
                         {analytics.lowStockProducts?.map((item: any) => (
-                          <tr key={item.id} className="hover:bg-slate-50/50">
-                            <td className="p-4 font-semibold text-slate-900">{item.name}</td>
-                            <td className="p-4 text-xs text-slate-500">{item.category}</td>
-                            <td className="p-4 font-bold text-rose-600">{item.stock} units left</td>
+                          <tr key={item.id} className="hover:bg-muted/40 transition-colors">
+                            <td className="p-4 font-semibold text-foreground">{item.name}</td>
+                            <td className="p-4 text-xs text-muted-foreground">{item.category}</td>
+                            <td className="p-4 font-bold text-rose-600 dark:text-rose-400">{item.stock} units left</td>
                             <td className="p-4">
                               <Badge variant="destructive" className="rounded-full text-[10px] px-2.5 py-0.5">
                                 {item.status}
@@ -174,31 +174,31 @@ export default function AdminAnalyticsPage({ analytics }: { analytics: AdminAnal
 
             {/* 3️⃣ Seller & Warranty Intelligence */}
             <div className="space-y-6 pt-4">
-              <h2 className="text-xl font-bold text-slate-900 flex items-center">
-                <Users className="h-5 w-5 mr-2 text-amber-600" /> Seller & Warranty Performance
+              <h2 className="text-xl font-bold text-foreground flex items-center">
+                <Users className="h-5 w-5 mr-2 text-amber-500" /> Seller & Warranty Performance
               </h2>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Top Sellers Table */}
-                <Card className="rounded-2xl sm:rounded-[2rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white overflow-hidden">
-                  <div className="p-6 border-b border-slate-100">
-                    <h3 className="text-base font-bold text-slate-800">Top Performing Sellers</h3>
+                <Card className="rounded-2xl sm:rounded-[2rem] border border-border/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-card overflow-hidden">
+                  <div className="p-6 border-b border-border/60">
+                    <h3 className="text-base font-bold text-foreground">Top Performing Sellers</h3>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                      <thead className="bg-slate-50 text-xs font-semibold text-slate-500 uppercase">
+                      <thead className="bg-muted/50 text-xs font-semibold text-muted-foreground uppercase border-b border-border/60">
                         <tr>
                           <th className="p-4">Merchant Name</th>
                           <th className="p-4 text-right">Units Sold</th>
                           <th className="p-4 text-right">Gross Revenue</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y divide-border/40">
                         {analytics.topSellers?.map((seller: any, i: number) => (
-                          <tr key={i} className="hover:bg-slate-50/50">
-                            <td className="p-4 font-semibold text-slate-900">{seller.name}</td>
-                            <td className="p-4 text-right font-bold text-slate-800">{seller.sales}</td>
-                            <td className="p-4 text-right font-extrabold text-emerald-600">৳{seller.revenue.toLocaleString()}</td>
+                          <tr key={i} className="hover:bg-muted/40 transition-colors">
+                            <td className="p-4 font-semibold text-foreground">{seller.name}</td>
+                            <td className="p-4 text-right font-bold text-foreground">{seller.sales}</td>
+                            <td className="p-4 text-right font-extrabold text-emerald-600 dark:text-emerald-400">৳{seller.revenue.toLocaleString()}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -207,30 +207,30 @@ export default function AdminAnalyticsPage({ analytics }: { analytics: AdminAnal
                 </Card>
 
                 {/* Warranties Expiring Soon */}
-                <Card className="rounded-2xl sm:rounded-[2rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white overflow-hidden">
-                  <div className="p-6 border-b border-slate-100">
-                    <h3 className="text-base font-bold text-slate-800">Warranties Expiring Soon (Next 30 Days)</h3>
+                <Card className="rounded-2xl sm:rounded-[2rem] border border-border/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-card overflow-hidden">
+                  <div className="p-6 border-b border-border/60">
+                    <h3 className="text-base font-bold text-foreground">Warranties Expiring Soon (Next 30 Days)</h3>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                      <thead className="bg-slate-50 text-xs font-semibold text-slate-500 uppercase">
+                      <thead className="bg-muted/50 text-xs font-semibold text-muted-foreground uppercase border-b border-border/60">
                         <tr>
                           <th className="p-4">Unique ID</th>
                           <th className="p-4">Product & Customer</th>
                           <th className="p-4 text-right">Expiry Date</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y divide-border/40">
                         {analytics.expiringWarranties?.map((w: any) => (
-                          <tr key={w.id} className="hover:bg-slate-50/50">
-                            <td className="p-4 font-mono font-bold text-blue-600">{w.uniqueId}</td>
+                          <tr key={w.id} className="hover:bg-muted/40 transition-colors">
+                            <td className="p-4 font-mono font-bold text-blue-600 dark:text-blue-400">{w.uniqueId}</td>
                             <td className="p-4">
-                              <div className="font-semibold text-slate-800">{w.product}</div>
-                              <div className="text-xs text-slate-500">{w.customer}</div>
+                              <div className="font-semibold text-foreground">{w.product}</div>
+                              <div className="text-xs text-muted-foreground">{w.customer}</div>
                             </td>
                             <td className="p-4 text-right">
-                              <div className="font-mono text-xs font-bold text-amber-600">{w.expiryDate}</div>
-                              <div className="text-[10px] text-slate-400">({w.daysRemaining} days left)</div>
+                              <div className="font-mono text-xs font-bold text-amber-600 dark:text-amber-400">{w.expiryDate}</div>
+                              <div className="text-[10px] text-muted-foreground">({w.daysRemaining} days left)</div>
                             </td>
                           </tr>
                         ))}

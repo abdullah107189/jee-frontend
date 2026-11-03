@@ -91,29 +91,29 @@ export function QrStickerModal({
 
       {/* Screen Modal Backdrop */}
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto no-print">
-        <div className="relative w-full max-w-4xl rounded-2xl sm:rounded-3xl bg-white shadow-2xl flex flex-col max-h-[92vh] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="relative w-full max-w-4xl rounded-2xl sm:rounded-3xl bg-card text-card-foreground shadow-2xl flex flex-col max-h-[92vh] overflow-hidden border border-border animate-in fade-in zoom-in-95 duration-200">
           
           {/* Modal Header */}
-          <div className="flex items-center justify-between border-b border-slate-100 px-4 sm:px-6 py-3 sm:py-4 bg-slate-50/70">
+          <div className="flex items-center justify-between border-b border-border/60 px-4 sm:px-6 py-3 sm:py-4 bg-muted/40">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-500/20 flex-shrink-0">
                 <QrCode className="h-5 w-5" />
               </div>
               <div className="min-w-0">
-                <h3 className="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2 flex-wrap">
+                <h3 className="text-base sm:text-lg font-extrabold text-foreground flex items-center gap-2 flex-wrap">
                   <span className="truncate">{title}</span>
-                  <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-bold text-blue-700 flex-shrink-0">
+                  <span className="rounded-full bg-blue-100 dark:bg-blue-950/70 px-2 py-0.5 text-xs font-bold text-blue-700 dark:text-blue-300 flex-shrink-0">
                     {items.length} {items.length === 1 ? "Unit" : "Units"}
                   </span>
                 </h3>
-                <p className="text-xs text-slate-500 truncate">{subtitle}</p>
+                <p className="text-xs text-muted-foreground truncate">{subtitle}</p>
               </div>
             </div>
 
             <div className="flex items-center gap-2 flex-shrink-0">
               <button
                 onClick={onClose}
-                className="rounded-xl p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
+                className="rounded-xl p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -121,23 +121,23 @@ export function QrStickerModal({
           </div>
 
           {/* Action Bar */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-b border-slate-100 bg-white px-4 sm:px-6 py-3">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
-              <ShieldCheck className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-b border-border/60 bg-card px-4 sm:px-6 py-3">
+            <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+              <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
               <span className="text-[11px] sm:text-xs">
                 Smart QR: Scan for Warranty Activation & Verification
               </span>
             </div>
 
             <div className="flex items-center gap-2 justify-between sm:justify-end">
-              <div className="flex rounded-lg border border-slate-200 p-0.5 bg-slate-50 text-xs font-medium">
+              <div className="flex rounded-lg border border-border p-0.5 bg-muted/40 text-xs font-medium">
                 <button
                   type="button"
                   onClick={() => setStickerSize("standard")}
                   className={`rounded-md px-2.5 py-1 transition ${
                     stickerSize === "standard"
-                      ? "bg-white font-bold text-slate-800 shadow-sm"
-                      : "text-slate-500 hover:text-slate-700"
+                      ? "bg-card font-bold text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   Standard
@@ -147,8 +147,8 @@ export function QrStickerModal({
                   onClick={() => setStickerSize("compact")}
                   className={`rounded-md px-2.5 py-1 transition ${
                     stickerSize === "compact"
-                      ? "bg-white font-bold text-slate-800 shadow-sm"
-                      : "text-slate-500 hover:text-slate-700"
+                      ? "bg-card font-bold text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   Compact
@@ -166,7 +166,7 @@ export function QrStickerModal({
           </div>
 
           {/* Stickers Grid */}
-          <div className="flex-1 overflow-y-auto p-3 sm:p-6 bg-slate-100/60">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-6 bg-muted/20">
             <div
               id="printable-stickers-container"
               className={`grid gap-4 ${
@@ -267,15 +267,15 @@ export function QrStickerModal({
           </div>
 
           {/* Modal Footer */}
-          <div className="flex items-center justify-between border-t border-slate-100 bg-white px-6 py-3">
-            <span className="text-xs text-slate-400">
+          <div className="flex items-center justify-between border-t border-border/60 bg-card px-6 py-3">
+            <span className="text-xs text-muted-foreground">
               Tip: Standard 50×35mm or A4 multi-label sheets supported.
             </span>
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
                 onClick={onClose}
-                className="h-9 rounded-xl border-slate-200 text-slate-600"
+                className="h-9 rounded-xl border-border text-muted-foreground hover:text-foreground"
               >
                 Close
               </Button>

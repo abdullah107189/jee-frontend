@@ -15,11 +15,12 @@ import {
 import { cn } from "@/lib/utils";
 import { Sidebar } from "./Sidebar";
 import { Button } from "@/components/ui/Button";
-import type { AuthUser } from "@/lib/types/auth.types";  // ← changed
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import type { AuthUser } from "@/lib/types/auth.types";
 
 interface DashboardLayoutClientProps {
   children: React.ReactNode;
-  user: AuthUser;  // ← AuthUser (not CurrentUser)
+  user: AuthUser;
 }
 
 export function DashboardLayoutClient({
@@ -81,20 +82,23 @@ export function DashboardLayoutClient({
             JEE
           </Link>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setSidebarOpen(true)}
-            aria-label="Open sidebar menu"
-          >
-            <Menu className="h-6 w-6" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSidebarOpen(true)}
+              aria-label="Open sidebar menu"
+            >
+              <Menu className="h-6 w-6" />
+            </Button>
+          </div>
         </header>
 
         <main
           className={cn(
             "relative flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8",
-            user.role === "SELLER" && "pb-24 lg:pb-8",  // ← uppercase
+            user.role === "SELLER" && "pb-24 lg:pb-8",
           )}
         >
           <div className="mx-auto w-full p-4 md:p-6 xl:p-8">{children}</div>
@@ -102,7 +106,7 @@ export function DashboardLayoutClient({
       </div>
 
       {/* Mobile Bottom Nav (seller only) */}
-      {user.role === "SELLER" && (  // ← uppercase
+      {user.role === "SELLER" && (
         <nav
           aria-label="Seller quick navigation"
           className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-around border-t border-border bg-background/95 px-2 py-1.5 backdrop-blur-md shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.08)] lg:hidden"

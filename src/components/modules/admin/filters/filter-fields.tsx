@@ -63,7 +63,7 @@ export function FilterFields({
   };
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-4">
+    <div className="rounded-xl border border-border/60 bg-card p-4 space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -163,14 +163,14 @@ export function FilterFields({
 
       {/* Range info */}
       {filter.type === "RANGE" && (
-        <div className="rounded-lg bg-slate-50 p-3 text-xs text-slate-500">
+        <div className="rounded-lg bg-muted/40 p-3 text-xs text-muted-foreground">
           Range filter automatic compute hobe products er min/max value theke.
         </div>
       )}
 
       {/* Boolean info */}
       {filter.type === "BOOLEAN" && (
-        <div className="rounded-lg bg-slate-50 p-3 text-xs text-slate-500">
+        <div className="rounded-lg bg-muted/40 p-3 text-xs text-muted-foreground">
           Boolean filter — Yes / No option auto-generate hobe.
         </div>
       )}

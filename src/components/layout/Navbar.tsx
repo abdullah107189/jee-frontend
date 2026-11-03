@@ -45,6 +45,7 @@ import {
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/Badge";
 import { Input } from "@/components/ui/Input";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import Image from "next/image";
 import { roleDashboard } from "@/lib/auth/role";
 
@@ -202,6 +203,9 @@ export function Navbar({ user }: { user: AuthUser | null }) {
                 <Camera className="h-3.5 w-3.5" />
                 <span className="hidden xs:inline">Scan</span>
               </Button>
+
+              {/* Theme Toggle Button */}
+              <ThemeToggle />
 
               {/* Cart Button */}
               <Link href="/cart" className="relative">
@@ -432,6 +436,15 @@ export function Navbar({ user }: { user: AuthUser | null }) {
                           })}
                         </>
                       )}
+                      {/* Theme Toggle in Mobile Menu */}
+                      <div className="h-px bg-border/60 my-2" />
+                      <div className="flex items-center justify-between p-3 rounded-2xl bg-muted/40 border border-border/80">
+                        <div className="flex flex-col">
+                          <span className="text-xs font-bold text-foreground">Theme Mode</span>
+                          <span className="text-[10px] text-muted-foreground">Switch between light & dark</span>
+                        </div>
+                        <ThemeToggle />
+                      </div>
                     </div>
                   </div>
 

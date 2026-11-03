@@ -5,19 +5,15 @@ import {
   ShoppingBag,
   Package,
   ShieldCheck,
-  TrendingUp,
   Store,
-  Clock,
   ArrowRight,
   ShieldAlert,
   Tag,
   FileText,
   PackageSearch,
-  CheckCircle,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
 import { getAdminOrders } from "@/services/order.service";
 import { adminProductService } from "@/services/admin/product.service";
 import {
@@ -71,8 +67,8 @@ export default async function AdminDashboardPage() {
       subtext: "Online store orders",
       icon: ShoppingBag,
       href: "/admin/orders",
-      color: "text-blue-600",
-      bg: "bg-blue-50",
+      color: "text-blue-600 dark:text-blue-400",
+      bg: "bg-blue-50 dark:bg-blue-950/60",
     },
     {
       label: "Products Catalog",
@@ -80,8 +76,8 @@ export default async function AdminDashboardPage() {
       subtext: "Active listed items",
       icon: Package,
       href: "/admin/products",
-      color: "text-indigo-600",
-      bg: "bg-indigo-50",
+      color: "text-indigo-600 dark:text-indigo-400",
+      bg: "bg-indigo-50 dark:bg-indigo-950/60",
     },
     {
       label: "Registered Users",
@@ -89,8 +85,8 @@ export default async function AdminDashboardPage() {
       subtext: "Customers, sellers & staff",
       icon: Users,
       href: "/admin/users",
-      color: "text-emerald-600",
-      bg: "bg-emerald-50",
+      color: "text-emerald-600 dark:text-emerald-400",
+      bg: "bg-emerald-50 dark:bg-emerald-950/60",
     },
     {
       label: "Active Warranties",
@@ -98,8 +94,8 @@ export default async function AdminDashboardPage() {
       subtext: "Digital warranty coverage",
       icon: ShieldCheck,
       href: "/admin/warranties",
-      color: "text-amber-600",
-      bg: "bg-amber-50",
+      color: "text-amber-600 dark:text-amber-400",
+      bg: "bg-amber-50 dark:bg-amber-950/60",
     },
   ];
 
@@ -107,10 +103,10 @@ export default async function AdminDashboardPage() {
     <div className="space-y-6 sm:space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+        <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
           Admin Dashboard
         </h1>
-        <p className="mt-1 text-sm font-medium text-slate-500 sm:text-base">
+        <p className="mt-1 text-sm font-medium text-muted-foreground sm:text-base">
           Live store metrics, platform inventory, and administrative actions.
         </p>
       </div>
@@ -120,9 +116,9 @@ export default async function AdminDashboardPage() {
         {quickStats.map(
           ({ label, value, subtext, icon: Icon, href, color, bg }) => (
             <Link key={label} href={href} className="group">
-              <Card className="rounded-2xl border-none bg-white p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+              <Card className="p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                     {label}
                   </span>
                   <div
@@ -132,10 +128,10 @@ export default async function AdminDashboardPage() {
                   </div>
                 </div>
                 <div className="mt-3">
-                  <div className="text-2xl font-black text-slate-900">
+                  <div className="text-2xl font-black text-foreground">
                     {value}
                   </div>
-                  <p className="text-xs font-medium text-slate-400 mt-0.5">
+                  <p className="text-xs font-medium text-muted-foreground mt-0.5">
                     {subtext}
                   </p>
                 </div>
@@ -149,17 +145,17 @@ export default async function AdminDashboardPage() {
       {(pendingSellerCount > 0 || pendingClaims > 0) && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {pendingSellerCount > 0 && (
-            <Card className="rounded-2xl border border-amber-200/80 bg-amber-50/60 p-5 shadow-sm">
+            <Card className="rounded-2xl border border-amber-300/80 dark:border-amber-800/60 bg-amber-50/70 dark:bg-amber-950/30 p-5 shadow-sm">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-white shadow-md shadow-amber-500/20">
                     <Store className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-amber-950">
+                    <h3 className="font-bold text-amber-950 dark:text-amber-200">
                       Pending Seller Approvals
                     </h3>
-                    <p className="text-xs text-amber-800 mt-0.5">
+                    <p className="text-xs text-amber-800 dark:text-amber-300/80 mt-0.5">
                       {pendingSellerCount} merchant application(s) awaiting your
                       review.
                     </p>
@@ -178,17 +174,17 @@ export default async function AdminDashboardPage() {
           )}
 
           {pendingClaims > 0 && (
-            <Card className="rounded-2xl border border-blue-200/80 bg-blue-50/60 p-5 shadow-sm">
+            <Card className="rounded-2xl border border-blue-300/80 dark:border-blue-800/60 bg-blue-50/70 dark:bg-blue-950/30 p-5 shadow-sm">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-600/20">
                     <ShieldAlert className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-blue-950">
+                    <h3 className="font-bold text-blue-950 dark:text-blue-200">
                       Warranty Claims Desk
                     </h3>
-                    <p className="text-xs text-blue-800 mt-0.5">
+                    <p className="text-xs text-blue-800 dark:text-blue-300/80 mt-0.5">
                       {pendingClaims} customer warranty claim(s) require
                       investigation.
                     </p>
@@ -210,7 +206,7 @@ export default async function AdminDashboardPage() {
 
       {/* Quick Navigation Hub */}
       <div>
-        <h2 className="text-base font-bold text-slate-800 mb-3">
+        <h2 className="text-base font-bold text-foreground mb-3">
           Quick Management Portals
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -253,14 +249,14 @@ export default async function AdminDashboardPage() {
             },
           ].map((portal) => (
             <Link key={portal.name} href={portal.href} className="group">
-              <Card className="rounded-2xl border-none bg-white p-4 text-center shadow-[0_4px_20px_rgb(0,0,0,0.03)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-                <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-700 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+              <Card className="p-4 text-center transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+                <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                   <portal.icon className="h-5 w-5" />
                 </div>
-                <p className="mt-2 text-xs font-bold text-slate-800 group-hover:text-blue-600 transition-colors">
+                <p className="mt-2 text-xs font-bold text-foreground group-hover:text-primary transition-colors">
                   {portal.name}
                 </p>
-                <p className="text-[11px] text-slate-400 mt-0.5">
+                <p className="text-[11px] text-muted-foreground mt-0.5">
                   {portal.desc}
                 </p>
               </Card>

@@ -156,14 +156,14 @@ export default function AdminAuditLogsPage({ logs = [] }: { logs: AuditLog[] }) 
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
               System Audit Logs
             </h1>
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-emerald-700 border border-emerald-200">
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
               <ShieldCheck className="h-3 w-3" /> Live Tracking
             </span>
           </div>
-          <p className="text-sm sm:text-base text-slate-500 mt-1 font-medium">
+          <p className="text-sm sm:text-base text-muted-foreground mt-1 font-medium">
             Immutable security trails, administrative decisions, and data state modifications.
           </p>
         </div>
@@ -176,21 +176,21 @@ export default function AdminAuditLogsPage({ logs = [] }: { logs: AuditLog[] }) 
       </div>
 
       {/* Table & Filters */}
-      <Card className="rounded-2xl sm:rounded-[2rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
-        <div className="p-4 sm:p-6 border-b border-slate-100 bg-white flex flex-col sm:flex-row gap-4">
+      <Card className="rounded-2xl sm:rounded-[2rem] overflow-hidden">
+        <div className="p-4 sm:p-6 border-b border-border bg-card flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               placeholder="Search audit logs by email, user, entity ID, IP, or details..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 h-10 sm:h-12 rounded-xl bg-slate-50 border-transparent focus:bg-white focus:border-blue-500 focus:ring-blue-500/20 w-full"
+              className="pl-10 h-10 sm:h-12 rounded-xl w-full"
             />
           </div>
           <select
             value={actionCategory}
             onChange={(e) => setActionCategory(e.target.value)}
-            className="h-10 sm:h-12 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/20"
+            className="h-10 sm:h-12 rounded-xl border border-input bg-background dark:bg-muted/40 px-4 text-sm font-semibold text-foreground outline-none focus:ring-2 focus:ring-ring"
           >
             <option value="ALL">All Categories</option>
             <option value="SELLER">Seller Management</option>
@@ -203,60 +203,60 @@ export default function AdminAuditLogsPage({ logs = [] }: { logs: AuditLog[] }) 
 
         <div className="overflow-x-auto">
           {filteredLogs.length === 0 ? (
-            <div className="p-12 text-center text-slate-500 font-medium">
-              <ShieldCheck className="mx-auto h-12 w-12 text-slate-300 mb-3" />
-              <p className="text-base font-bold text-slate-700">No audit logs matching search parameters.</p>
-              <p className="text-xs text-slate-400 mt-1">
+            <div className="p-12 text-center text-muted-foreground font-medium">
+              <ShieldCheck className="mx-auto h-12 w-12 text-muted-foreground/40 mb-3" />
+              <p className="text-base font-bold text-foreground">No audit logs matching search parameters.</p>
+              <p className="text-xs text-muted-foreground mt-1">
                 All administrative updates, approvals, and mutations are automatically logged here in real time.
               </p>
             </div>
           ) : (
             <table className="w-full text-sm text-left">
-              <thead className="bg-slate-50/80 border-b border-slate-100">
+              <thead className="bg-muted/40 border-b border-border">
                 <tr>
-                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-bold text-slate-500 whitespace-nowrap">
+                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-bold text-muted-foreground whitespace-nowrap">
                     Timestamp
                   </th>
-                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-bold text-slate-500 whitespace-nowrap">
+                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-bold text-muted-foreground whitespace-nowrap">
                     User & Email
                   </th>
-                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-bold text-slate-500 whitespace-nowrap">
+                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-bold text-muted-foreground whitespace-nowrap">
                     Action Type
                   </th>
-                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-bold text-slate-500 whitespace-nowrap">
+                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-bold text-muted-foreground whitespace-nowrap">
                     Target Entity
                   </th>
-                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-bold text-slate-500 whitespace-nowrap">
+                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-bold text-muted-foreground whitespace-nowrap">
                     Details
                   </th>
-                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-bold text-slate-500 text-right whitespace-nowrap">
+                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-bold text-muted-foreground text-right whitespace-nowrap">
                     IP Address
                   </th>
-                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-bold text-slate-500 text-center whitespace-nowrap">
+                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-bold text-muted-foreground text-center whitespace-nowrap">
                     Inspect
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <tbody className="divide-y divide-border/40">
                 {filteredLogs.map((log) => (
-                  <tr key={log.id} className="hover:bg-slate-50/50 transition-colors bg-white">
-                    <td className="px-4 sm:px-6 py-4 text-xs font-mono text-slate-500 whitespace-nowrap">
+                  <tr key={log.id} className="hover:bg-muted/30 transition-colors bg-card">
+                    <td className="px-4 sm:px-6 py-4 text-xs font-mono text-muted-foreground whitespace-nowrap">
                       {log.timestamp}
                     </td>
                     <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                      <div className="font-bold text-slate-900">{log.user}</div>
-                      <div className="text-xs text-slate-400 font-mono">{log.userEmail}</div>
+                      <div className="font-bold text-foreground">{log.user}</div>
+                      <div className="text-xs text-muted-foreground font-mono">{log.userEmail}</div>
                     </td>
                     <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                       {getActionBadge(log.action)}
                     </td>
-                    <td className="px-4 sm:px-6 py-4 text-xs font-mono font-bold text-slate-700 whitespace-nowrap">
+                    <td className="px-4 sm:px-6 py-4 text-xs font-mono font-bold text-foreground whitespace-nowrap">
                       {log.entity}
                     </td>
-                    <td className="px-4 sm:px-6 py-4 text-xs text-slate-600 max-w-sm truncate">
+                    <td className="px-4 sm:px-6 py-4 text-xs text-foreground/80 max-w-sm truncate">
                       {log.details}
                     </td>
-                    <td className="px-4 sm:px-6 py-4 text-right font-mono text-xs text-slate-400 whitespace-nowrap">
+                    <td className="px-4 sm:px-6 py-4 text-right font-mono text-xs text-muted-foreground whitespace-nowrap">
                       {log.ipAddress}
                     </td>
                     <td className="px-4 sm:px-6 py-4 text-center whitespace-nowrap">
@@ -264,7 +264,7 @@ export default function AdminAuditLogsPage({ logs = [] }: { logs: AuditLog[] }) 
                         variant="ghost"
                         size="sm"
                         onClick={() => setSelectedLog(log)}
-                        className="h-8 w-8 p-0 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50"
+                        className="h-8 w-8 p-0 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted"
                         title="View Audit Payload"
                       >
                         <Eye className="h-4 w-4" />
@@ -280,51 +280,51 @@ export default function AdminAuditLogsPage({ logs = [] }: { logs: AuditLog[] }) 
 
       {/* Inspect Modal */}
       {selectedLog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="relative w-full max-w-2xl bg-card border border-border text-card-foreground rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-4 border-b border-border">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-2xl bg-blue-50 text-blue-600">
+                <div className="p-2.5 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
                   <ShieldCheck className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-extrabold text-slate-900">Audit Trail Entry</h3>
-                  <p className="text-xs text-slate-400 font-mono">ID: {selectedLog.id}</p>
+                  <h3 className="text-lg font-extrabold text-foreground">Audit Trail Entry</h3>
+                  <p className="text-xs text-muted-foreground font-mono">ID: {selectedLog.id}</p>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedLog(null)}
-                className="p-2 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 transition-colors"
+                className="p-2 text-muted-foreground hover:text-foreground rounded-xl hover:bg-muted transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100">
-                <div className="text-xs font-medium text-slate-400 flex items-center gap-1.5 mb-1">
+              <div className="bg-muted/40 p-3 rounded-2xl border border-border">
+                <div className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 mb-1">
                   <User className="h-3.5 w-3.5" /> Performed By
                 </div>
-                <div className="font-bold text-slate-800">{selectedLog.user}</div>
-                <div className="text-xs font-mono text-slate-500">{selectedLog.userEmail}</div>
+                <div className="font-bold text-foreground">{selectedLog.user}</div>
+                <div className="text-xs font-mono text-muted-foreground">{selectedLog.userEmail}</div>
               </div>
 
-              <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100">
-                <div className="text-xs font-medium text-slate-400 flex items-center gap-1.5 mb-1">
+              <div className="bg-muted/40 p-3 rounded-2xl border border-border">
+                <div className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 mb-1">
                   <Calendar className="h-3.5 w-3.5" /> Timestamp & IP
                 </div>
-                <div className="font-mono text-xs font-bold text-slate-800">{selectedLog.timestamp}</div>
-                <div className="text-xs font-mono text-slate-500 flex items-center gap-1">
+                <div className="font-mono text-xs font-bold text-foreground">{selectedLog.timestamp}</div>
+                <div className="text-xs font-mono text-muted-foreground flex items-center gap-1">
                   <Globe className="h-3 w-3" /> {selectedLog.ipAddress}
                 </div>
               </div>
             </div>
 
             <div className="space-y-2">
-              <div className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                 <Code2 className="h-3.5 w-3.5" /> State Modifications & Payload
               </div>
-              <pre className="p-4 rounded-2xl bg-slate-900 text-emerald-400 font-mono text-xs overflow-x-auto max-h-64 leading-relaxed">
+              <pre className="p-4 rounded-2xl bg-slate-950 text-emerald-400 font-mono text-xs overflow-x-auto max-h-64 leading-relaxed border border-border">
                 {selectedLog.rawChanges
                   ? JSON.stringify(selectedLog.rawChanges, null, 2)
                   : JSON.stringify({ details: selectedLog.details }, null, 2)}

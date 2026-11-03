@@ -156,7 +156,7 @@ export function FilterGroupForm({
                                 <Input
                                     value={group?.category.name ?? ""}
                                     disabled
-                                    className="h-11 rounded-xl bg-slate-50"
+                                    className="h-11 rounded-xl bg-muted/40"
                                 />
                             ) : (
                                 <Select

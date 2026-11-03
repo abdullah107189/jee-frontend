@@ -330,7 +330,7 @@ export default function VariantDetailsContent({
             {variant.images.map((img, i) => (
               <div
                 key={i}
-                className="relative aspect-square overflow-hidden rounded-xl border border-slate-200 bg-slate-50"
+                className="relative aspect-square overflow-hidden rounded-xl border border-border bg-muted/40"
               >
                 <Image
                   src={img}
@@ -349,21 +349,21 @@ export default function VariantDetailsContent({
       <Card className="rounded-2xl border-none p-4 sm:p-6 lg:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-[2rem]">
         <h2 className="mb-4 text-base sm:text-lg font-bold text-slate-800">Pricing & Stock</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-          <div className="p-3 sm:p-4 rounded-xl bg-slate-50/70 border border-slate-100">
-            <p className="text-xs text-slate-500 font-medium">Price</p>
-            <p className="text-lg sm:text-2xl font-black text-slate-900 mt-0.5">
+          <div className="p-3 sm:p-4 rounded-xl bg-muted/40 border border-border">
+            <p className="text-xs text-muted-foreground font-medium">Price</p>
+            <p className="text-lg sm:text-2xl font-black text-foreground mt-0.5">
               ৳{price.toLocaleString()}
             </p>
           </div>
-          <div className="p-3 sm:p-4 rounded-xl bg-slate-50/70 border border-slate-100">
-            <p className="text-xs text-slate-500 font-medium">Compare Price</p>
-            <p className="text-lg sm:text-2xl font-bold text-slate-400 line-through mt-0.5">
+          <div className="p-3 sm:p-4 rounded-xl bg-muted/40 border border-border">
+            <p className="text-xs text-muted-foreground font-medium">Compare Price</p>
+            <p className="text-lg sm:text-2xl font-bold text-muted-foreground line-through mt-0.5">
               {compare ? `৳${compare.toLocaleString()}` : "—"}
             </p>
           </div>
-          <div className="col-span-2 sm:col-span-1 p-3 sm:p-4 rounded-xl bg-blue-50/50 border border-blue-100">
-            <p className="text-xs text-blue-700 font-medium">Stock Quantity</p>
-            <p className="text-lg sm:text-2xl font-black text-blue-900 mt-0.5">
+          <div className="col-span-2 sm:col-span-1 p-3 sm:p-4 rounded-xl bg-blue-50/60 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/60">
+            <p className="text-xs text-blue-700 dark:text-blue-300 font-medium">Stock Quantity</p>
+            <p className="text-lg sm:text-2xl font-black text-blue-900 dark:text-blue-200 mt-0.5">
               {variant.stockQuantity}
             </p>
           </div>
@@ -377,7 +377,7 @@ export default function VariantDetailsContent({
           {Object.entries(variant.attributes).map(([k, v]) => (
             <div
               key={k}
-              className="flex justify-between items-center rounded-xl border border-slate-100 bg-slate-50/50 px-4 py-3"
+              className="flex justify-between items-center rounded-xl border border-border bg-muted/40 px-4 py-3"
             >
               <span className="text-xs sm:text-sm font-medium capitalize text-slate-500">
                 {k}
@@ -427,7 +427,7 @@ export default function VariantDetailsContent({
                   );
                   setQrModalOpen(true);
                 }}
-                className="flex-1 sm:flex-initial h-10 sm:h-11 rounded-xl gap-1.5 border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-xs sm:text-sm"
+                className="flex-1 sm:flex-initial h-10 sm:h-11 rounded-xl gap-1.5 border-border text-foreground hover:bg-muted/50 font-bold text-xs sm:text-sm"
               >
                 <Printer className="h-4 w-4 text-blue-600" />
                 Print All ({variant.productItems.length})
@@ -446,7 +446,7 @@ export default function VariantDetailsContent({
 
         {/* Batch Overview Cards with Horizontal Smooth Scroll (Latest batch first) */}
         {batches.length > 0 && (
-          <div className="p-4 sm:p-6 bg-slate-50/60 border-b border-slate-100 space-y-3">
+          <div className="p-4 sm:p-6 bg-muted/30 border-b border-border space-y-3">
             <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <Layers className="h-3.5 w-3.5 text-blue-600" />
@@ -480,8 +480,8 @@ export default function VariantDetailsContent({
                     }
                     className={`min-w-[270px] sm:min-w-[310px] max-w-[340px] flex-shrink-0 snap-start cursor-pointer rounded-2xl p-4 transition-all border ${
                       isSelected
-                        ? "bg-white border-blue-500 shadow-md ring-2 ring-blue-500/20"
-                        : "bg-white border-slate-200/80 hover:border-slate-300 hover:shadow-sm"
+                        ? "bg-card border-blue-500 shadow-md ring-2 ring-blue-500/20"
+                        : "bg-card border-border hover:border-primary/50 hover:shadow-sm"
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
@@ -528,16 +528,16 @@ export default function VariantDetailsContent({
         )}
 
         {/* Filter Pills with Horizontal Overflow Scroll */}
-        <div className="px-4 sm:px-6 py-3 bg-white border-b border-slate-100 flex items-center gap-2 overflow-x-auto scrollbar-thin text-xs touch-pan-x">
-          <span className="font-bold text-slate-400 whitespace-nowrap flex-shrink-0">
+        <div className="px-4 sm:px-6 py-3 bg-card border-b border-border flex items-center gap-2 overflow-x-auto scrollbar-thin text-xs touch-pan-x">
+          <span className="font-bold text-muted-foreground whitespace-nowrap flex-shrink-0">
             Filter Units:
           </span>
           <button
             onClick={() => setSelectedBatchFilter("ALL")}
             className={`px-3 py-1.5 rounded-xl font-bold transition-all flex-shrink-0 whitespace-nowrap ${
               selectedBatchFilter === "ALL"
-                ? "bg-slate-900 text-white shadow-sm"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
             }`}
           >
             All Units ({variant.productItems.length})
@@ -549,7 +549,7 @@ export default function VariantDetailsContent({
               className={`px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 flex-shrink-0 whitespace-nowrap ${
                 selectedBatchFilter === String(batch.batchNumber)
                   ? "bg-blue-600 text-white shadow-sm"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
               }`}
             >
               <Tag className="h-3 w-3" />
@@ -582,7 +582,7 @@ export default function VariantDetailsContent({
               const displayDate = item.manufacturedAt || item.createdAt;
 
               return (
-                <div key={item.id} className="p-4 bg-white space-y-2.5">
+                <div key={item.id} className="p-4 bg-card space-y-2.5">
                   <div className="flex items-center justify-between">
                     <span className="font-mono font-extrabold text-sm text-slate-900 tracking-tight">
                       {item.serialNumber}
@@ -660,16 +660,16 @@ export default function VariantDetailsContent({
         {/* Desktop Table View (hidden sm:block) */}
         <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-100 bg-slate-50/80">
+            <thead className="border-b border-border bg-muted/40">
               <tr>
-                <th className="px-6 py-4 font-bold text-slate-500">Serial Number</th>
-                <th className="px-6 py-4 font-bold text-slate-500">Production Batch</th>
-                <th className="px-6 py-4 font-bold text-slate-500">Status</th>
-                <th className="px-6 py-4 font-bold text-slate-500">Manufacture Date</th>
-                <th className="px-6 py-4 font-bold text-slate-500 text-right">Actions</th>
+                <th className="px-6 py-4 font-bold text-muted-foreground">Serial Number</th>
+                <th className="px-6 py-4 font-bold text-muted-foreground">Production Batch</th>
+                <th className="px-6 py-4 font-bold text-muted-foreground">Status</th>
+                <th className="px-6 py-4 font-bold text-muted-foreground">Manufacture Date</th>
+                <th className="px-6 py-4 font-bold text-muted-foreground text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-border/40">
               {displayedItems.length === 0 && (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
@@ -690,7 +690,7 @@ export default function VariantDetailsContent({
                 const displayDate = item.manufacturedAt || item.createdAt;
 
                 return (
-                  <tr key={item.id} className="hover:bg-slate-50/50 transition-colors bg-white">
+                  <tr key={item.id} className="hover:bg-muted/30 transition-colors bg-card">
                     <td className="px-6 py-4 font-mono font-bold text-slate-900 text-sm">
                       {item.serialNumber}
                     </td>
@@ -766,9 +766,9 @@ export default function VariantDetailsContent({
       {/* Add Batch Units (Stock In) Modal */}
       {addBatchModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="relative w-full max-w-xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-8 space-y-5 sm:space-y-6 max-h-[92vh] overflow-y-auto">
+          <div className="relative w-full max-w-xl bg-card border border-border text-card-foreground rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-8 space-y-5 sm:space-y-6 max-h-[92vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-slate-100">
+            <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-border">
               <div className="flex items-center gap-3">
                 <div className="p-2 sm:p-2.5 rounded-2xl bg-blue-50 text-blue-600">
                   <Layers className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -792,14 +792,14 @@ export default function VariantDetailsContent({
             </div>
 
             {/* Mode Selector */}
-            <div className="flex flex-col sm:flex-row rounded-xl bg-slate-100 p-1 gap-1 sm:gap-0">
+            <div className="flex flex-col sm:flex-row rounded-xl bg-muted/60 border border-border/50 p-1 gap-1 sm:gap-0">
               <button
                 type="button"
                 onClick={() => setBatchMode("auto")}
                 className={`flex-1 rounded-lg py-2 sm:py-2.5 text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                   batchMode === "auto"
-                    ? "bg-white text-blue-600 shadow-sm"
-                    : "text-slate-600 hover:text-slate-900"
+                    ? "bg-card text-blue-600 dark:text-blue-400 shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <Sparkles className="h-3.5 w-3.5" />
@@ -810,8 +810,8 @@ export default function VariantDetailsContent({
                 onClick={() => setBatchMode("scan")}
                 className={`flex-1 rounded-lg py-2 sm:py-2.5 text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                   batchMode === "scan"
-                    ? "bg-white text-blue-600 shadow-sm"
-                    : "text-slate-600 hover:text-slate-900"
+                    ? "bg-card text-blue-600 dark:text-blue-400 shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <Barcode className="h-3.5 w-3.5" />
@@ -851,7 +851,7 @@ export default function VariantDetailsContent({
                           className={`py-2 px-3 rounded-xl text-xs font-bold border transition-colors text-center ${
                             autoQuantity === num
                               ? "bg-blue-50 border-blue-400 text-blue-700"
-                              : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                              : "border-border text-muted-foreground hover:bg-muted/50"
                           }`}
                         >
                           +{num}

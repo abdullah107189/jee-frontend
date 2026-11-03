@@ -4,8 +4,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
-import { Search, ShoppingBag, CheckCircle, Clock, Truck, Package, Eye, FileSpreadsheet, ShieldCheck, AlertCircle, Printer, RefreshCw } from 'lucide-react';
-
+import { Search, ShoppingBag, CheckCircle, Clock, Truck, Printer } from 'lucide-react';
 import type { AdminOrder } from '@/services/admin.service';
 import { toast } from 'sonner';
 
@@ -32,9 +31,8 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
 
   const handleStatusChange = async (id: string, newStatus: string) => {
     try {
-      // await updateOrderStatusAction({ id, status: newStatus });
       toast.success(`Order #${id} status changed to ${newStatus}`);
-    } catch (err) {
+    } catch {
       toast.error('Failed to update order status');
     }
   };
@@ -44,11 +42,11 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
       case 'DELIVERED':
         return <Badge variant="success" className="rounded-full px-3 py-1 text-xs">Delivered</Badge>;
       case 'SHIPPED':
-        return <Badge className="bg-purple-500 text-white rounded-full px-3 py-1 text-xs">Shipped</Badge>;
+        return <Badge className="bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-800 rounded-full px-3 py-1 text-xs font-bold">Shipped</Badge>;
       case 'PROCESSING':
-        return <Badge className="bg-blue-500 text-white rounded-full px-3 py-1 text-xs">Processing</Badge>;
+        return <Badge className="bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-800 rounded-full px-3 py-1 text-xs font-bold">Processing</Badge>;
       case 'CONFIRMED':
-        return <Badge className="bg-teal-500 text-white rounded-full px-3 py-1 text-xs">Confirmed</Badge>;
+        return <Badge className="bg-teal-500/20 text-teal-700 dark:text-teal-300 border border-teal-300 dark:border-teal-800 rounded-full px-3 py-1 text-xs font-bold">Confirmed</Badge>;
       case 'PENDING':
         return <Badge variant="warning" className="rounded-full px-3 py-1 text-xs">Pending</Badge>;
       case 'CANCELLED':
@@ -77,75 +75,75 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
     <div className="space-y-6 sm:space-y-8">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">Order Management</h1>
-          <p className="text-sm sm:text-base text-slate-500 mt-1 font-medium">Track customer orders and manage fulfillment.</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">Order Management</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-1 font-medium">Track customer orders and manage fulfillment.</p>
         </div>
       </div>
 
       {/* Stats Section */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white">
+        <Card>
           <CardContent className="p-4 sm:p-6">
             <div className="flex items-center space-x-3 mb-2">
-              <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
+              <div className="p-2.5 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 rounded-xl">
                 <ShoppingBag className="h-5 w-5" />
               </div>
-              <span className="text-xs font-semibold text-slate-500 uppercase">Total Orders</span>
+              <span className="text-xs font-semibold text-muted-foreground uppercase">Total Orders</span>
             </div>
-            <p className="text-2xl font-extrabold text-slate-900">{orders.length}</p>
+            <p className="text-2xl font-extrabold text-foreground">{orders.length}</p>
           </CardContent>
         </Card>
-        <Card className="rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white">
+        <Card>
           <CardContent className="p-4 sm:p-6">
             <div className="flex items-center space-x-3 mb-2">
-              <div className="p-2.5 bg-amber-50 text-amber-600 rounded-xl">
+              <div className="p-2.5 bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 rounded-xl">
                 <Clock className="h-5 w-5" />
               </div>
-              <span className="text-xs font-semibold text-slate-500 uppercase">Pending</span>
+              <span className="text-xs font-semibold text-muted-foreground uppercase">Pending</span>
             </div>
-            <p className="text-2xl font-extrabold text-slate-900">{orders.filter((o: any) => o.status === 'Pending').length}</p>
+            <p className="text-2xl font-extrabold text-foreground">{orders.filter((o: any) => o.status === 'Pending').length}</p>
           </CardContent>
         </Card>
-        <Card className="rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white">
+        <Card>
           <CardContent className="p-4 sm:p-6">
             <div className="flex items-center space-x-3 mb-2">
-              <div className="p-2.5 bg-purple-50 text-purple-600 rounded-xl">
+              <div className="p-2.5 bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 rounded-xl">
                 <Truck className="h-5 w-5" />
               </div>
-              <span className="text-xs font-semibold text-slate-500 uppercase">Shipped</span>
+              <span className="text-xs font-semibold text-muted-foreground uppercase">Shipped</span>
             </div>
-            <p className="text-2xl font-extrabold text-slate-900">{orders.filter((o: any) => o.status === 'Shipped' || o.status === 'Processing').length}</p>
+            <p className="text-2xl font-extrabold text-foreground">{orders.filter((o: any) => o.status === 'Shipped' || o.status === 'Processing').length}</p>
           </CardContent>
         </Card>
-        <Card className="rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white">
+        <Card>
           <CardContent className="p-4 sm:p-6">
             <div className="flex items-center space-x-3 mb-2">
-              <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl">
+              <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-xl">
                 <CheckCircle className="h-5 w-5" />
               </div>
-              <span className="text-xs font-semibold text-slate-500 uppercase">Delivered</span>
+              <span className="text-xs font-semibold text-muted-foreground uppercase">Delivered</span>
             </div>
-            <p className="text-2xl font-extrabold text-slate-900">{orders.filter((o: any) => o.status === 'Delivered').length}</p>
+            <p className="text-2xl font-extrabold text-foreground">{orders.filter((o: any) => o.status === 'Delivered').length}</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Orders Table Card */}
-      <Card className="rounded-2xl sm:rounded-[2rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
-        <div className="p-4 sm:p-6 border-b border-slate-100 bg-white flex flex-col md:flex-row gap-4">
+      <Card className="rounded-2xl sm:rounded-[2rem] overflow-hidden">
+        <div className="p-4 sm:p-6 border-b border-border bg-card flex flex-col md:flex-row gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               placeholder="Search by Order #, Customer Name, or Phone..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 h-10 sm:h-12 rounded-xl bg-slate-50 border-transparent focus:bg-white focus:border-blue-500 focus:ring-blue-500/20 w-full"
+              className="pl-10 h-10 sm:h-12 rounded-xl w-full"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="h-10 sm:h-12 rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/20"
+            className="h-10 sm:h-12 rounded-xl border border-input bg-background dark:bg-muted/40 px-4 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-ring"
           >
             <option value="ALL">All Order Statuses</option>
             <option value="PENDING">Pending</option>
@@ -159,7 +157,7 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
           <select
             value={paymentFilter}
             onChange={(e) => setPaymentFilter(e.target.value)}
-            className="h-10 sm:h-12 rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/20"
+            className="h-10 sm:h-12 rounded-xl border border-input bg-background dark:bg-muted/40 px-4 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-ring"
           >
             <option value="ALL">All Payment Statuses</option>
             <option value="PAID">Paid</option>
@@ -170,55 +168,50 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
 
         <div className="overflow-x-auto">
           {filteredOrders.length === 0 ? (
-            <div className="p-8 text-center text-slate-500 font-medium">Loading orders...</div>
-          ) : filteredOrders.length === 0 ? (
-            <div className="p-12 text-center text-slate-500 font-medium">No orders found matching criteria.</div>
+            <div className="p-12 text-center text-muted-foreground font-medium">No orders found matching criteria.</div>
           ) : (
             <table className="w-full text-sm text-left">
-              <thead className="bg-slate-50/80 border-b border-slate-100">
+              <thead className="bg-muted/40 border-b border-border">
                 <tr>
-                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-slate-500 whitespace-nowrap">Order #</th>
-                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-slate-500 whitespace-nowrap">Customer</th>
-                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-slate-500 whitespace-nowrap">Total Amount</th>
-                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-slate-500 whitespace-nowrap">Order Status</th>
-                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-slate-500 whitespace-nowrap">Payment</th>
-                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-slate-500 whitespace-nowrap">Date</th>
-                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-slate-500 text-right whitespace-nowrap">Actions</th>
+                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-muted-foreground whitespace-nowrap">Order #</th>
+                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-muted-foreground whitespace-nowrap">Customer</th>
+                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-muted-foreground whitespace-nowrap">Total Amount</th>
+                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-muted-foreground whitespace-nowrap">Order Status</th>
+                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-muted-foreground whitespace-nowrap">Payment</th>
+                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-muted-foreground whitespace-nowrap">Date</th>
+                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-muted-foreground text-right whitespace-nowrap">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <tbody className="divide-y divide-border/40">
                 {filteredOrders.map((order: any) => (
-                  <tr key={order.id} className="hover:bg-slate-50/50 transition-colors bg-white">
-                    <td className="px-4 sm:px-6 py-4 font-mono font-bold text-slate-900">
+                  <tr key={order.id} className="hover:bg-muted/30 transition-colors bg-card">
+                    <td className="px-4 sm:px-6 py-4 font-mono font-bold text-foreground">
                       #{order.id}
                     </td>
                     <td className="px-4 sm:px-6 py-4">
-                      <div className="font-semibold text-slate-800">{order.customerName}</div>
-                      <div className="text-xs text-slate-400 font-mono">{order.customerPhone}</div>
+                      <div className="font-semibold text-foreground">{order.customerName}</div>
+                      <div className="text-xs text-muted-foreground font-mono">{order.customerPhone}</div>
                     </td>
-                    <td className="px-4 sm:px-6 py-4 font-extrabold text-slate-900">
+                    <td className="px-4 sm:px-6 py-4 font-extrabold text-foreground">
                       ৳{order.totalAmount.toLocaleString()}
                     </td>
                     <td className="px-4 sm:px-6 py-4">
                       {getOrderStatusBadge(order.status)}
                     </td>
                     <td className="px-4 sm:px-6 py-4">
-                      <div className="space-y-1">
-                        {getPaymentStatusBadge(order.paymentStatus)}
-                        <div className="text-xs text-slate-400 font-mono">{order.paymentMethod}</div>
-                      </div>
+                      {getPaymentStatusBadge(order.paymentStatus)}
                     </td>
-                    <td className="px-4 sm:px-6 py-4 text-xs font-mono text-slate-500">
+                    <td className="px-4 sm:px-6 py-4 text-xs font-mono text-muted-foreground whitespace-nowrap">
                       {order.date}
                     </td>
-                    <td className="px-4 sm:px-6 py-4 text-right space-x-2 whitespace-nowrap">
+                    <td className="px-4 sm:px-6 py-4 text-right">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => setSelectedOrderId(order.id)}
-                        className="h-9 px-3 rounded-xl text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-semibold"
+                        className="rounded-xl text-primary font-bold hover:bg-primary/10"
                       >
-                        <Eye className="h-4 w-4 mr-1.5" /> Details
+                        Details
                       </Button>
                     </td>
                   </tr>
@@ -232,7 +225,7 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
       {/* Order Details Modal */}
       {selectedOrderId && orderDetails && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden border border-slate-100 animate-in fade-in zoom-in-95 duration-200 my-8">
+          <div className="bg-card text-card-foreground rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden border border-border animate-in fade-in zoom-in-95 duration-200 my-8">
             <div className="p-6 bg-slate-900 text-white flex justify-between items-center">
               <div>
                 <h3 className="text-xl font-bold">Order Details #{orderDetails.id}</h3>
@@ -248,17 +241,17 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
 
             <div className="p-6 max-h-[70vh] overflow-y-auto space-y-6">
               {/* Status Controls */}
-              <div className="p-4 rounded-2xl bg-blue-50/60 border border-blue-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div className="p-4 rounded-2xl bg-muted/40 border border-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                  <span className="text-xs font-bold text-blue-800 uppercase tracking-wider">Current Status</span>
+                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Current Status</span>
                   <div className="mt-1">{getOrderStatusBadge(orderDetails.status)}</div>
                 </div>
                 <div className="flex items-center space-x-3 w-full sm:w-auto">
-                  <span className="text-xs font-semibold text-slate-600">Update Status:</span>
+                  <span className="text-xs font-semibold text-muted-foreground">Update Status:</span>
                   <select
                     value={orderDetails.status}
                     onChange={(e) => handleStatusChange(orderDetails.id, e.target.value)}
-                    className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-blue-500"
+                    className="h-10 rounded-xl border border-input bg-background px-3 text-sm font-semibold text-foreground outline-none focus:ring-2 focus:ring-ring"
                   >
                     <option value="Pending">Pending</option>
                     <option value="Confirmed">Confirmed</option>
@@ -272,17 +265,17 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
 
               {/* Customer & Shipping */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
-                  <h4 className="text-xs font-bold uppercase text-slate-400">Customer Info</h4>
-                  <p className="font-bold text-slate-800">{orderDetails.customerName}</p>
-                  <p className="text-xs text-slate-600">{orderDetails.customerEmail}</p>
-                  <p className="text-xs font-mono text-slate-600">{orderDetails.customerPhone}</p>
+                <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-2">
+                  <h4 className="text-xs font-bold uppercase text-muted-foreground">Customer Info</h4>
+                  <p className="font-bold text-foreground">{orderDetails.customerName}</p>
+                  <p className="text-xs text-muted-foreground">{orderDetails.customerEmail}</p>
+                  <p className="text-xs font-mono text-muted-foreground">{orderDetails.customerPhone}</p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
-                  <h4 className="text-xs font-bold uppercase text-slate-400">Shipping Address & Notes</h4>
-                  <p className="text-xs text-slate-700 font-medium">{orderDetails.shippingAddress}</p>
-                  <p className="text-xs text-slate-500 italic mt-1">"{orderDetails.notes}"</p>
+                <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-2">
+                  <h4 className="text-xs font-bold uppercase text-muted-foreground">Shipping Address & Notes</h4>
+                  <p className="text-xs text-foreground/80 font-medium">{orderDetails.shippingAddress}</p>
+                  <p className="text-xs text-muted-foreground italic mt-1">"{orderDetails.notes}"</p>
                 </div>
               </div>
 
@@ -299,10 +292,10 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
 
               {/* Products Breakdown Table */}
               <div>
-                <h4 className="text-sm font-bold text-slate-900 mb-3">Order Items</h4>
-                <div className="border border-slate-100 rounded-2xl overflow-hidden">
+                <h4 className="text-sm font-bold text-foreground mb-3">Order Items</h4>
+                <div className="border border-border rounded-2xl overflow-hidden">
                   <table className="w-full text-sm text-left">
-                    <thead className="bg-slate-50 text-xs font-semibold text-slate-500 uppercase">
+                    <thead className="bg-muted/40 text-xs font-semibold text-muted-foreground uppercase border-b border-border">
                       <tr>
                         <th className="p-3">Product Name</th>
                         <th className="p-3">SKU / Serial</th>
@@ -311,14 +304,14 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
                         <th className="p-3 text-right">Total</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-border/40">
                       {orderDetails.items?.map((item: any) => (
-                        <tr key={item.id} className="hover:bg-slate-50/50">
-                          <td className="p-3 font-semibold text-slate-800">{item.name}</td>
-                          <td className="p-3 font-mono text-xs text-slate-500">{item.sku} ({item.serialNumber})</td>
-                          <td className="p-3 font-bold">{item.quantity}</td>
-                          <td className="p-3 text-right text-slate-600 font-medium">৳{item.price.toLocaleString()}</td>
-                          <td className="p-3 text-right font-bold text-slate-900">৳{(item.price * item.quantity).toLocaleString()}</td>
+                        <tr key={item.id} className="hover:bg-muted/30">
+                          <td className="p-3 font-semibold text-foreground">{item.name}</td>
+                          <td className="p-3 font-mono text-xs text-muted-foreground">{item.sku} ({item.serialNumber})</td>
+                          <td className="p-3 font-bold text-foreground">{item.quantity}</td>
+                          <td className="p-3 text-right text-muted-foreground font-medium">৳{item.price.toLocaleString()}</td>
+                          <td className="p-3 text-right font-bold text-foreground">৳{(item.price * item.quantity).toLocaleString()}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -328,29 +321,29 @@ export default function AdminOrdersPage({ orders, orderDetailsById }: { orders: 
 
               {/* Price Calculation Summary */}
               <div className="flex justify-end">
-                <div className="w-full sm:w-64 space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                  <div className="flex justify-between text-xs text-slate-600">
+                <div className="w-full sm:w-64 space-y-2 bg-muted/30 p-4 rounded-2xl border border-border">
+                  <div className="flex justify-between text-xs text-muted-foreground">
                     <span>Subtotal:</span>
-                    <span className="font-semibold">৳{orderDetails.subtotal?.toLocaleString()}</span>
+                    <span className="font-semibold text-foreground">৳{orderDetails.subtotal?.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-xs text-slate-600">
+                  <div className="flex justify-between text-xs text-muted-foreground">
                     <span>Tax (VAT):</span>
-                    <span className="font-semibold">৳{orderDetails.tax?.toLocaleString()}</span>
+                    <span className="font-semibold text-foreground">৳{orderDetails.tax?.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-xs text-slate-600">
+                  <div className="flex justify-between text-xs text-muted-foreground">
                     <span>Shipping Fee:</span>
-                    <span className="font-semibold">৳{orderDetails.shipping?.toLocaleString()}</span>
+                    <span className="font-semibold text-foreground">৳{orderDetails.shipping?.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-base font-extrabold text-slate-900 pt-2 border-t border-slate-200">
+                  <div className="flex justify-between text-base font-extrabold text-foreground pt-2 border-t border-border">
                     <span>Grand Total:</span>
-                    <span className="text-blue-600">৳{orderDetails.totalAmount?.toLocaleString()}</span>
+                    <span className="text-primary font-black">৳{orderDetails.totalAmount?.toLocaleString()}</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-end">
-              <Button variant="outline" onClick={() => setSelectedOrderId(null)} className="rounded-xl">Close</Button>
+            <div className="p-4 bg-muted/30 border-t border-border flex justify-end">
+              <Button variant="outline" onClick={() => setSelectedOrderId(null)} className="rounded-xl font-bold">Close</Button>
             </div>
           </div>
         </div>

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import { Toaster } from "sonner";
 import { StoreProvider } from "@/store/provider";
+import { ThemeProvider, ThemeScript } from "@/components/theme-provider";
 import "./globals.css";
 
 const inter = Inter({
@@ -42,16 +43,20 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
-
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <ThemeScript storageKey="jee-theme" />
+      </head>
       <body
         className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased bg-background text-foreground`}
       >
-        <StoreProvider>
-          {children}
-          <Toaster position="bottom-right" richColors closeButton />
-        </StoreProvider>
+        <ThemeProvider defaultTheme="system" storageKey="jee-theme">
+          <StoreProvider>
+            {children}
+            <Toaster position="bottom-right" richColors closeButton />
+          </StoreProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

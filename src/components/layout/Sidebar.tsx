@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import {
@@ -8,7 +10,6 @@ import {
   Users,
   ShoppingCart,
   LogOut,
-  ScanBarcode,
   Tags,
   BarChart,
   FileText,
@@ -16,7 +17,6 @@ import {
   Settings,
   ChevronDown,
   User,
-  Plus,
   PackageSearch,
 } from "lucide-react";
 import { logoutAction } from "@/actions/auth.actions";
@@ -24,7 +24,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { UserRole } from "@/lib/types/common.types";
-
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 const MenuItem: React.FC<{
   item: any;
@@ -45,8 +45,8 @@ const MenuItem: React.FC<{
           className={cn(
             "group flex w-full items-center justify-between rounded-2xl px-4 py-3.5 text-sm font-semibold transition-all duration-200",
             isActive || isOpen
-              ? "bg-slate-50 text-slate-900"
-              : "text-slate-500 hover:bg-slate-50 hover:text-slate-900",
+              ? "bg-slate-100 dark:bg-muted text-slate-900 dark:text-foreground"
+              : "text-slate-500 dark:text-muted-foreground hover:bg-slate-50 dark:hover:bg-muted/60 hover:text-slate-900 dark:hover:text-foreground",
           )}
         >
           <div className="flex items-center">
@@ -54,8 +54,8 @@ const MenuItem: React.FC<{
               className={cn(
                 "mr-4 h-5 w-5 shrink-0 transition-colors",
                 isActive || isOpen
-                  ? "text-slate-600"
-                  : "text-slate-400 group-hover:text-slate-600",
+                  ? "text-slate-700 dark:text-primary"
+                  : "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300",
               )}
             />
             {item.name}
@@ -76,8 +76,8 @@ const MenuItem: React.FC<{
                 className={cn(
                   "block rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200",
                   pathname === sub.href
-                    ? "bg-blue-50 text-blue-700 font-bold"
-                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-900",
+                    ? "bg-blue-50 dark:bg-primary/20 text-blue-700 dark:text-primary font-bold"
+                    : "text-slate-500 dark:text-muted-foreground hover:bg-slate-50 dark:hover:bg-muted/60 hover:text-slate-900 dark:hover:text-foreground",
                 )}
               >
                 {sub.name}
@@ -116,16 +116,16 @@ const MenuItem: React.FC<{
       className={cn(
         "group flex items-center rounded-2xl px-4 py-3.5 text-sm font-semibold transition-all duration-200",
         isActive
-          ? "bg-blue-50 text-blue-700 shadow-sm"
-          : "text-slate-500 hover:bg-slate-50 hover:text-slate-900",
+          ? "bg-blue-50 dark:bg-primary/15 text-blue-700 dark:text-primary shadow-sm font-bold"
+          : "text-slate-500 dark:text-muted-foreground hover:bg-slate-50 dark:hover:bg-muted/60 hover:text-slate-900 dark:hover:text-foreground",
       )}
     >
       <item.icon
         className={cn(
           "mr-4 h-5 w-5 shrink-0 transition-colors",
           isActive
-            ? "text-blue-600"
-            : "text-slate-400 group-hover:text-slate-600",
+            ? "text-blue-600 dark:text-primary"
+            : "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300",
         )}
       />
       {item.name}
@@ -188,7 +188,7 @@ export function Sidebar({
 
     SELLER: [
       { name: "Dashboard", href: "/seller", icon: LayoutDashboard },
-      { name: "New Sale", href: "/seller/sales/new", icon: PlusCircle },
+      { name: "New Sale", href: "/seller/sales/new", icon: PlusCircle, isPrimary: true },
       { name: "Sales History", href: "/seller/sales", icon: Package },
       { name: "Warranties", href: "/seller/warranties", icon: ShieldCheck },
       { name: "Profile", href: "/seller/profile", icon: User },
@@ -204,7 +204,7 @@ export function Sidebar({
   const links = menu[role];
 
   return (
-    <div className="flex h-full w-70 sm:w-72 flex-col bg-white border-r border-slate-100 shadow-[4px_0_24px_rgb(0,0,0,0.02)] z-10 px-4 py-6">
+    <div className="flex h-full w-70 sm:w-72 flex-col bg-white dark:bg-card border-r border-slate-100 dark:border-border shadow-[4px_0_24px_rgb(0,0,0,0.02)] z-10 px-4 py-6">
       <div className="mb-8 lg:mb-10 px-2 lg:px-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5 group shrink-0 ">
           <Image
@@ -212,18 +212,19 @@ export function Sidebar({
             alt="JEE Logo"
             width={100}
             height={200}
-            className="w-25 h-auto"
+            className="w-25 h-auto dark:brightness-110"
           />
         </Link>
         {onClose && (
           <button
             onClick={onClose}
-            className="lg:hidden p-2 text-slate-400 hover:text-slate-600"
+            className="lg:hidden p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
           >
             <LogOut className="h-5 w-5 rotate-180" />
           </button>
         )}
       </div>
+
       <div className="flex-1 overflow-y-auto pr-2 -mr-2">
         <nav className="space-y-1">
           {links.map((item) => (
@@ -236,13 +237,18 @@ export function Sidebar({
           ))}
         </nav>
       </div>
-      <div className="mt-6 px-2">
+
+      <div className="mt-6 px-2 space-y-2 pt-2 border-t border-slate-100 dark:border-border/60">
+        <div className="flex items-center justify-between px-3 py-2 rounded-2xl bg-slate-50 dark:bg-muted/50 border border-slate-100 dark:border-border">
+          <span className="text-xs font-semibold text-slate-600 dark:text-muted-foreground">Appearance</span>
+          <ThemeToggle />
+        </div>
         <button
           onClick={async () => {
             await logoutAction();
             window.location.href = "/login";
           }}
-          className="group flex w-full items-center justify-center rounded-2xl bg-slate-50 border border-slate-100 px-4 py-3.5 text-sm font-semibold text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all duration-200"
+          className="group flex w-full items-center justify-center rounded-2xl bg-slate-50 dark:bg-muted/50 border border-slate-100 dark:border-border px-4 py-3 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-600 hover:border-red-100 dark:hover:border-red-900/40 transition-all duration-200"
         >
           <LogOut className="mr-3 h-5 w-5 shrink-0 text-slate-400 group-hover:text-red-500 transition-colors" />
           Logout
