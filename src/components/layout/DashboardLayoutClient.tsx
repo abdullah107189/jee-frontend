@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Menu,
   X,
@@ -75,11 +76,16 @@ export function DashboardLayoutClient({
         <header className="flex items-center justify-between border-b border-border bg-background px-4 py-3 shadow-sm lg:hidden">
           <Link
             href="/"
-            className="flex items-center text-lg font-black tracking-tight text-foreground"
+            className="flex items-center"
             aria-label="JEE Home"
           >
-            <span className="mr-2 h-3 w-3 rounded-full bg-primary" />
-            JEE
+            <Image
+              src="/JEE.png"
+              alt="JEE Logo"
+              width={80}
+              height={160}
+              className="w-16 h-auto object-contain"
+            />
           </Link>
 
           <div className="flex items-center gap-2">

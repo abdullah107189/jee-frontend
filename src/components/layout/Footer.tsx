@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   ShieldCheck,
   Package,
@@ -83,13 +84,14 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5">
           {/* Col 1: Brand & Social (Spans 2 cols on lg) */}
           <div className="space-y-5 lg:col-span-2">
-            <Link href="/" className="inline-flex items-center gap-2.5">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground font-black shadow-2xs">
-                <ShieldCheck className="h-6 w-6" />
-              </div>
-              <span className="text-2xl font-black tracking-tight text-foreground">
-                JEE<span className="text-primary">.</span>
-              </span>
+            <Link href="/" className="inline-flex items-center">
+              <Image
+                src="/JEE.png"
+                alt="JEE Logo"
+                width={100}
+                height={200}
+                className="w-24 h-auto object-contain"
+              />
             </Link>
 
             <p className="text-sm font-medium leading-relaxed text-muted-foreground max-w-sm">

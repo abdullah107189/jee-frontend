@@ -30,27 +30,56 @@ export function MegaMenu({
 
         {/* Children list */}
         <ul className="relative py-2">
-          {category.children.map((child) => (
-            <li key={child.id}>
-              <Link
-                href={`/categories/${child.fullSlug}`}
-                className="group flex items-center justify-between gap-4 px-4 py-2.5 text-sm transition-colors hover:bg-muted/80"
-              >
-                <span className="font-medium text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                  {child.name}
-                </span>
+          {category.children.map((child) => {
+            const hasGrandchildren = Boolean(child.children && child.children.length > 0);
 
-                <div className="flex items-center gap-2">
-                  {child.productCount > 0 && (
-                    <span className="text-xs font-medium text-muted-foreground group-hover:text-blue-500">
-                      {child.productCount}
-                    </span>
-                  )}
-                  <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5 group-hover:text-blue-500" />
-                </div>
-              </Link>
-            </li>
-          ))}
+            return (
+              <li key={child.id} className="relative group/item">
+                <Link
+                  href={`/categories/${child.fullSlug}`}
+                  className="group flex items-center justify-between gap-4 px-4 py-2.5 text-sm transition-colors hover:bg-muted/80"
+                >
+                  <span className="font-medium text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                    {child.name}
+                  </span>
+
+                  <div className="flex items-center gap-2">
+                    {child.productCount > 0 && (
+                      <span className="text-xs font-medium text-muted-foreground group-hover:text-blue-500">
+                        {child.productCount}
+                      </span>
+                    )}
+                    {hasGrandchildren && (
+                      <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5 group-hover:text-blue-500" />
+                    )}
+                  </div>
+                </Link>
+
+                {/* Optional nested flyout for grandchildren */}
+                {hasGrandchildren && (
+                  <div className="absolute left-full top-0 hidden group-hover/item:block min-w-56 max-w-64 overflow-hidden rounded-r-xl border border-border bg-popover text-popover-foreground shadow-2xl py-2 z-50">
+                    <ul className="py-1">
+                      {child.children.map((grand) => (
+                        <li key={grand.id}>
+                          <Link
+                            href={`/categories/${grand.fullSlug}`}
+                            className="flex items-center justify-between gap-3 px-4 py-2 text-xs font-medium text-foreground hover:bg-muted/80 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                          >
+                            <span>{grand.name}</span>
+                            {grand.productCount > 0 && (
+                              <span className="text-[10px] text-muted-foreground">
+                                {grand.productCount}
+                              </span>
+                            )}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </li>
+            );
+          })}
         </ul>
 
         {/* Footer — view all */}

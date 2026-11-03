@@ -17,7 +17,7 @@ const jsonLd = {
   name: "JEE",
   url: "https://jeestore.com",
   description: "Authentic appliances with digital warranty verification.",
-  logo: "https://jeestore.com/logo.png",
+  logo: "https://jeestore.com/JEE.png",
   contactPoint: {
     "@type": "ContactPoint",
     telephone: "+8809612345678",

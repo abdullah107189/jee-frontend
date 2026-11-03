@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -82,11 +83,14 @@ export function RegisterForm() {
   return (
     <Card className="w-full max-w-md border-border/50 bg-card/80 shadow-2xl backdrop-blur-xl">
       <CardHeader className="space-y-2 text-center">
-        <Link href="/" className="mx-auto mb-2 flex items-center gap-2 lg:hidden">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-primary to-primary/60 text-primary-foreground shadow-lg shadow-primary/30">
-            <span className="text-lg font-black">J</span>
-          </div>
-          <span className="text-2xl font-black tracking-tight">Jee</span>
+        <Link href="/" className="mx-auto mb-2 flex items-center justify-center lg:hidden">
+          <Image
+            src="/JEE.png"
+            alt="JEE Logo"
+            width={90}
+            height={180}
+            className="w-20 h-auto object-contain"
+          />
         </Link>
         <CardTitle className="typo-h2 font-bold text-center">
           Create an account

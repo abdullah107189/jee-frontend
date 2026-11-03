@@ -139,21 +139,44 @@ export function CategoryNavClient({
 
                     <Link
                         href="/products"
-                        className="shrink-0 flex items-center gap-1 rounded-full bg-amber-400 text-slate-900 px-3 py-1.5 text-xs font-bold shadow-sm hover:bg-amber-300 transition-all"
+                        className={cn(
+                            "shrink-0 flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-bold transition-all",
+                            pathname === "/products" || pathname.startsWith("/products")
+                                ? "bg-amber-400 text-slate-950 shadow-sm"
+                                : "bg-white/10 text-white/90 hover:bg-white/20 hover:text-white"
+                        )}
                     >
-                        <Sparkles className="h-3 w-3" />
+                        <Sparkles
+                            className={cn(
+                                "h-3 w-3",
+                                pathname === "/products" || pathname.startsWith("/products")
+                                    ? "text-slate-950"
+                                    : "text-amber-300"
+                            )}
+                        />
                         <span>All Products</span>
                     </Link>
 
-                    {categories.map((cat) => (
-                        <Link
-                            key={cat.id}
-                            href={`/categories/${cat.fullSlug}`}
-                            className="shrink-0 rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/20 hover:text-white transition-all whitespace-nowrap"
-                        >
-                            {cat.name}
-                        </Link>
-                    ))}
+                    {categories.map((cat) => {
+                        const isCatActive =
+                            pathname === `/categories/${cat.fullSlug}` ||
+                            pathname.startsWith(`/categories/${cat.fullSlug}/`);
+
+                        return (
+                            <Link
+                                key={cat.id}
+                                href={`/categories/${cat.fullSlug}`}
+                                className={cn(
+                                    "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-all whitespace-nowrap",
+                                    isCatActive
+                                        ? "bg-amber-400 text-slate-950 font-bold shadow-sm"
+                                        : "bg-white/10 text-white/90 hover:bg-white/20 hover:text-white"
+                                )}
+                            >
+                                {cat.name}
+                            </Link>
+                        );
+                    })}
                 </div>
 
                 {/* ========================================================== */}
@@ -168,7 +191,12 @@ export function CategoryNavClient({
                     <li>
                         <Link
                             href="/products"
-                            className="block rounded-md px-3 py-2 text-sm font-bold text-amber-300 transition-colors hover:bg-white/10"
+                            className={cn(
+                                "block rounded-md px-3 py-2 text-sm font-semibold transition-colors hover:bg-white/10",
+                                pathname === "/products" || pathname.startsWith("/products")
+                                    ? "bg-white/15 text-amber-300 font-bold"
+                                    : "text-white/90 hover:text-white"
+                            )}
                         >
                             All Products
                         </Link>
@@ -179,6 +207,9 @@ export function CategoryNavClient({
                     {/* ------------------------------------------------------ */}
 
                     {categories.map((cat) => {
+                        const isCatActive =
+                            pathname === `/categories/${cat.fullSlug}` ||
+                            pathname.startsWith(`/categories/${cat.fullSlug}/`);
                         const isActive = activeId === cat.id;
                         const hasKids =
                             (cat.children?.length ?? 0) > 0;
@@ -209,8 +240,8 @@ export function CategoryNavClient({
                                     href={`/categories/${cat.fullSlug}`}
                                     className={cn(
                                         "flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                                        isActive
-                                            ? "bg-white/15 text-white"
+                                        isActive || isCatActive
+                                            ? "bg-white/15 text-white font-bold"
                                             : "text-white/90 hover:bg-white/10 hover:text-white",
                                     )}
                                 >

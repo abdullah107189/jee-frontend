@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { ChevronRight, ChevronDown, Sparkles, FolderTree, Search } from "lucide-react";
 import type { CategoryNavItem } from "@/lib/types/category.types";
+import { cn } from "@/lib/utils";
 import {
   Sheet,
   SheetContent,
@@ -24,8 +27,11 @@ export function MobileCategoryDrawer({
   onClose,
   categories,
 }: MobileCategoryDrawerProps) {
+  const pathname = usePathname();
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [filterQuery, setFilterQuery] = useState("");
+
+  const isAllProductsActive = pathname === "/products" || pathname.startsWith("/products");
 
   const toggle = (id: string) => {
     setExpanded((prev) => {
@@ -51,9 +57,20 @@ export function MobileCategoryDrawer({
       <SheetContent side="left" className="w-[85vw] sm:max-w-sm p-0 flex flex-col h-full bg-background border-r border-border">
         {/* Header */}
         <SheetHeader className="p-4 border-b border-border bg-muted/30">
-          <SheetTitle className="flex items-center gap-2 text-base font-bold text-foreground">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <FolderTree className="h-4 w-4" />
+          <div className="flex items-center justify-between pb-2">
+            <Link href="/" onClick={onClose} className="flex items-center">
+              <Image
+                src="/JEE.png"
+                alt="JEE Logo"
+                width={80}
+                height={160}
+                className="w-16 h-auto object-contain"
+              />
+            </Link>
+          </div>
+          <SheetTitle className="flex items-center gap-2 text-sm font-bold text-foreground">
+            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <FolderTree className="h-3.5 w-3.5" />
             </div>
             Browse Categories
           </SheetTitle>
@@ -77,10 +94,15 @@ export function MobileCategoryDrawer({
           <Link
             href="/products"
             onClick={onClose}
-            className="flex items-center justify-between rounded-xl bg-primary/10 px-3.5 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/20 mb-2"
+            className={cn(
+              "flex items-center justify-between rounded-xl px-3.5 py-3 text-sm font-bold transition-colors mb-2",
+              isAllProductsActive
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "bg-muted/70 text-foreground hover:bg-muted"
+            )}
           >
             <span className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-primary" />
+              <Sparkles className={cn("h-4 w-4", isAllProductsActive ? "text-primary-foreground" : "text-primary")} />
               All Products & Deals
             </span>
             <ChevronRight className="h-4 w-4" />
@@ -94,14 +116,27 @@ export function MobileCategoryDrawer({
             filteredCategories.map((cat) => {
               const hasChildren = (cat.children?.length ?? 0) > 0;
               const isExpanded = expanded.has(cat.id);
+              const isCatActive =
+                pathname === `/categories/${cat.fullSlug}` ||
+                pathname.startsWith(`/categories/${cat.fullSlug}/`);
 
               return (
                 <div key={cat.id} className="rounded-xl border border-transparent transition-colors">
-                  <div className="flex items-center justify-between rounded-xl hover:bg-accent/60">
+                  <div
+                    className={cn(
+                      "flex items-center justify-between rounded-xl transition-colors",
+                      isCatActive
+                        ? "bg-primary/10 text-primary font-bold"
+                        : "hover:bg-accent/60"
+                    )}
+                  >
                     <Link
                       href={`/categories/${cat.fullSlug}`}
                       onClick={onClose}
-                      className="flex-1 px-3 py-2.5 text-sm font-semibold text-foreground transition-colors"
+                      className={cn(
+                        "flex-1 px-3 py-2.5 text-sm transition-colors",
+                        isCatActive ? "font-bold text-primary" : "font-semibold text-foreground"
+                      )}
                     >
                       {cat.name}
                     </Link>
@@ -128,21 +163,32 @@ export function MobileCategoryDrawer({
                   {/* Children / Subcategories */}
                   {hasChildren && isExpanded && (
                     <div className="ml-3 my-1 border-l-2 border-primary/20 pl-2 space-y-0.5">
-                      {cat.children.map((child) => (
-                        <Link
-                          key={child.id}
-                          href={`/categories/${child.fullSlug}`}
-                          onClick={onClose}
-                          className="flex items-center justify-between rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-                        >
-                          <span>{child.name}</span>
-                          {child.productCount > 0 && (
-                            <Badge variant="outline" className="text-[10px] h-4 px-1.5 py-0 font-mono">
-                              {child.productCount}
-                            </Badge>
-                          )}
-                        </Link>
-                      ))}
+                      {cat.children.map((child) => {
+                        const isChildActive =
+                          pathname === `/categories/${child.fullSlug}` ||
+                          pathname.startsWith(`/categories/${child.fullSlug}/`);
+
+                        return (
+                          <Link
+                            key={child.id}
+                            href={`/categories/${child.fullSlug}`}
+                            onClick={onClose}
+                            className={cn(
+                              "flex items-center justify-between rounded-lg px-3 py-2 text-xs transition-colors",
+                              isChildActive
+                                ? "bg-primary/15 text-primary font-bold"
+                                : "font-medium text-muted-foreground hover:bg-accent hover:text-foreground"
+                            )}
+                          >
+                            <span>{child.name}</span>
+                            {child.productCount > 0 && (
+                              <Badge variant="outline" className="text-[10px] h-4 px-1.5 py-0 font-mono">
+                                {child.productCount}
+                              </Badge>
+                            )}
+                          </Link>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
