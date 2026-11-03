@@ -241,25 +241,25 @@ export default function ProductsListContent({
               <table className="w-full min-w-[1100px] text-left text-sm">
                 <thead className="border-b border-border bg-muted/40">
                   <tr>
-                    <th className="whitespace-nowrap px-4 py-4 font-semibold text-slate-500 sm:px-6">
+                    <th className="whitespace-nowrap px-4 py-4 font-semibold text-muted-foreground sm:px-6">
                       Product
                     </th>
-                    <th className="whitespace-nowrap px-4 py-4 font-semibold text-slate-500 sm:px-6">
+                    <th className="whitespace-nowrap px-4 py-4 font-semibold text-muted-foreground sm:px-6">
                       Category
                     </th>
-                    <th className="whitespace-nowrap px-4 py-4 font-semibold text-slate-500 sm:px-6">
+                    <th className="whitespace-nowrap px-4 py-4 font-semibold text-muted-foreground sm:px-6">
                       Price
                     </th>
-                    <th className="whitespace-nowrap px-4 py-4 font-semibold text-slate-500 sm:px-6">
+                    <th className="whitespace-nowrap px-4 py-4 font-semibold text-muted-foreground sm:px-6">
                       Stock
                     </th>
-                    <th className="whitespace-nowrap px-4 py-4 font-semibold text-slate-500 sm:px-6">
+                    <th className="whitespace-nowrap px-4 py-4 font-semibold text-muted-foreground sm:px-6">
                       Status
                     </th>
-                    <th className="whitespace-nowrap px-4 py-4 font-semibold text-slate-500 sm:px-6">
+                    <th className="whitespace-nowrap px-4 py-4 font-semibold text-muted-foreground sm:px-6">
                       Date
                     </th>
-                    <th className="whitespace-nowrap px-4 py-4 text-right font-semibold text-slate-500 sm:px-6">
+                    <th className="whitespace-nowrap px-4 py-4 text-right font-semibold text-muted-foreground sm:px-6">
                       Actions
                     </th>
                   </tr>
@@ -393,7 +393,7 @@ export default function ProductsListContent({
 
                         {/* Date */}
                         <td className="px-4 py-4 sm:px-6">
-                          <span className="text-xs text-slate-500">
+                          <span className="text-xs text-muted-foreground">
                             {new Date(product.createdAt).toLocaleDateString(
                               "en-GB",
                               {

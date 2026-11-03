@@ -17,6 +17,12 @@ import {
   Camera,
   ShieldCheck,
   ArrowRight,
+  Store,
+  Users,
+  Settings,
+  BarChart3,
+  PlusCircle,
+  Receipt,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -95,19 +101,43 @@ export function Navbar({ user }: { user: AuthUser | null }) {
     router.push(`/warranty?serial=${encodeURIComponent(serial.trim().toUpperCase())}`);
   };
 
-  const userLinks = user
-    ? [
-        {
-          name: "Dashboard",
-          path: roleDashboard(user.role),
-          icon: LayoutDashboard,
-        },
-        { name: "My Orders", path: "/customer/orders", icon: Truck },
-        { name: "My Warranties", path: "/customer/warranties", icon: Shield },
-        { name: "Wishlist", path: "/customer/wishlist", icon: Heart },
-        { name: "Profile", path: "/customer/profile", icon: User },
-      ]
-    : [];
+  const getUserLinks = () => {
+    if (!user) return [];
+    const role = (user.role || "").toUpperCase();
+
+    if (role === "ADMIN") {
+      return [
+        { name: "Admin Dashboard", path: "/admin", icon: LayoutDashboard },
+        { name: "Products & Stock", path: "/admin/products", icon: Package },
+        { name: "Orders Management", path: "/admin/orders", icon: Truck },
+        { name: "Warranty Registry", path: "/admin/warranties", icon: ShieldCheck },
+        { name: "Merchant / Sellers", path: "/admin/sellers", icon: Store },
+        { name: "Users & Customers", path: "/admin/users", icon: Users },
+        { name: "Analytics & Reports", path: "/admin/analytics", icon: BarChart3 },
+        { name: "System Settings", path: "/admin/settings", icon: Settings },
+      ];
+    }
+
+    if (role === "SELLER") {
+      return [
+        { name: "Seller Dashboard", path: "/seller", icon: LayoutDashboard },
+        { name: "POS / New Sale", path: "/seller/sales/new", icon: PlusCircle },
+        { name: "Sales History", path: "/seller/sales", icon: Receipt },
+        { name: "Digital Warranties", path: "/seller/warranties", icon: ShieldCheck },
+        { name: "Merchant Profile", path: "/seller/profile", icon: User },
+      ];
+    }
+
+    // Default: CUSTOMER
+    return [
+      { name: "Dashboard", path: roleDashboard(user.role), icon: LayoutDashboard },
+      { name: "My Orders", path: "/customer/orders", icon: Truck },
+      { name: "My Warranties", path: "/customer/warranties", icon: Shield },
+      { name: "Profile", path: "/customer/profile", icon: User },
+    ];
+  };
+
+  const userLinks = getUserLinks();
 
   const getUserInitials = () => {
     if (!user?.name) return "U";
@@ -241,11 +271,14 @@ export function Navbar({ user }: { user: AuthUser | null }) {
                   <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuGroup>
                       <DropdownMenuLabel>
-                        <div className="flex flex-col space-y-0.5">
-                          <p className="text-sm font-semibold">{user.name}</p>
-                          <p className="text-xs text-muted-foreground capitalize font-medium">
-                            Role: {user.role.toLowerCase()}
-                          </p>
+                        <div className="flex flex-col space-y-1">
+                          <p className="text-sm font-bold text-foreground truncate">{user.name}</p>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                              {user.role}
+                            </span>
+                            <span className="text-[11px] text-muted-foreground truncate">{user.email}</span>
+                          </div>
                         </div>
                       </DropdownMenuLabel>
                     </DropdownMenuGroup>

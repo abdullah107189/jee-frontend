@@ -24,17 +24,17 @@ export default function SellerWarrantyDetailsPage({ warranty }: { warranty: Sell
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
               🛡️ Warranty Details
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 font-medium">
+            <p className="text-xs sm:text-sm text-muted-foreground font-medium">
               Digital Guarantee Record #{warranty?.id}
             </p>
           </div>
         </div>
 
         {!warranty ? (
-          <div className="p-12 text-center text-slate-500 font-medium">
+          <div className="p-12 text-center text-muted-foreground font-medium">
             Loading warranty records...
           </div>
         ) : (
@@ -44,7 +44,7 @@ export default function SellerWarrantyDetailsPage({ warranty }: { warranty: Sell
               <CardContent className="p-6 sm:p-8 space-y-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-blue-100 pb-4">
                   <div>
-                    <h2 className="text-xl font-extrabold text-slate-900">
+                    <h2 className="text-xl font-extrabold text-foreground">
                       {warranty.productName}
                     </h2>
                     <p className="font-mono text-sm font-bold text-blue-600 mt-1">
@@ -64,7 +64,7 @@ export default function SellerWarrantyDetailsPage({ warranty }: { warranty: Sell
                     <span className="text-[10px] font-bold uppercase text-slate-400">
                       Customer Name
                     </span>
-                    <p className="font-bold text-slate-900 text-sm mt-1">
+                    <p className="font-bold text-foreground text-sm mt-1">
                       {warranty.customerName}
                     </p>
                   </div>
@@ -100,7 +100,7 @@ export default function SellerWarrantyDetailsPage({ warranty }: { warranty: Sell
             <Card className="rounded-2xl sm:rounded-[2rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white overflow-hidden">
               <div className="p-5 sm:p-6 border-b border-slate-100 flex items-center space-x-3 bg-slate-50/50">
                 <Package className="h-5 w-5 text-blue-600" />
-                <h3 className="text-base font-bold text-slate-900">
+                <h3 className="text-base font-bold text-foreground">
                   Sale Information
                 </h3>
               </div>
@@ -118,7 +118,7 @@ export default function SellerWarrantyDetailsPage({ warranty }: { warranty: Sell
                     <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
                       Sale Amount
                     </span>
-                    <span className="font-extrabold text-slate-900 text-base mt-1 block">
+                    <span className="font-extrabold text-foreground text-base mt-1 block">
                       ৳ {warranty.saleInformation?.amount?.toLocaleString()}
                     </span>
                   </div>
@@ -138,14 +138,14 @@ export default function SellerWarrantyDetailsPage({ warranty }: { warranty: Sell
             <Card className="rounded-2xl sm:rounded-[2rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white overflow-hidden">
               <div className="p-5 sm:p-6 border-b border-slate-100 flex items-center space-x-3 bg-slate-50/50">
                 <Wrench className="h-5 w-5 text-amber-600" />
-                <h3 className="text-base font-bold text-slate-900">
+                <h3 className="text-base font-bold text-foreground">
                   Claim History
                 </h3>
               </div>
               <CardContent className="p-6">
                 {!warranty.claimHistory ||
                 warranty.claimHistory.length === 0 ? (
-                  <p className="text-sm text-slate-500 font-medium py-4 text-center">
+                  <p className="text-sm text-muted-foreground font-medium py-4 text-center">
                     No warranty claims filed for this product item yet.
                   </p>
                 ) : (
@@ -157,7 +157,7 @@ export default function SellerWarrantyDetailsPage({ warranty }: { warranty: Sell
                       >
                         <div>
                           <div className="flex items-center space-x-2">
-                            <span className="font-bold text-slate-900 text-sm">
+                            <span className="font-bold text-foreground text-sm">
                               Claim #{claim.claimId || i + 1}
                             </span>
                             <Badge
@@ -167,7 +167,7 @@ export default function SellerWarrantyDetailsPage({ warranty }: { warranty: Sell
                               {claim.status}
                             </Badge>
                           </div>
-                          <p className="text-xs text-slate-500 mt-1 font-medium">
+                          <p className="text-xs text-muted-foreground mt-1 font-medium">
                             Type: {claim.type} • {claim.notes}
                           </p>
                         </div>

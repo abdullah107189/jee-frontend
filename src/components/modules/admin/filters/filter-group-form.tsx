@@ -226,7 +226,7 @@ export function FilterGroupForm({
                     <div className="flex items-center justify-between">
                         <div>
                             <h2 className="text-lg font-bold">Filters</h2>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-muted-foreground">
                                 Add filters (Brand, Color, Size, etc.)
                             </p>
                         </div>

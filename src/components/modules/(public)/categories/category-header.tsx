@@ -15,7 +15,7 @@ export function CategoryHeader({
       {description && (
         <p className="mt-1 text-sm text-muted-foreground">{description}</p>
       )}
-      <p className="mt-2 text-xs text-slate-500">
+      <p className="mt-2 text-xs text-muted-foreground">
         {productCount} {productCount === 1 ? "product" : "products"}
       </p>
     </div>

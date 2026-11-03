@@ -86,8 +86,8 @@ export default function SellerProfilePage({ profile }: { profile: SellerProfile 
       <div className="space-y-6 sm:space-y-8 max-w-5xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">My Profile</h1>
-            <p className="text-sm sm:text-base text-slate-500 mt-1 font-medium">Manage merchant outlet profile details and account security.</p>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">My Profile</h1>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1 font-medium">Manage merchant outlet profile details and account security.</p>
           </div>
           <div className="flex gap-3">
             <Button onClick={handleOpenEdit} variant="outline" className="rounded-xl bg-white font-bold">
@@ -100,7 +100,7 @@ export default function SellerProfilePage({ profile }: { profile: SellerProfile 
         </div>
 
         {!profile ? (
-          <div className="p-12 text-center text-slate-500 font-medium">Loading profile details...</div>
+          <div className="p-12 text-center text-muted-foreground font-medium">Loading profile details...</div>
         ) : (
           <div className="space-y-6">
             {/* Top Merchant Profile Card */}
@@ -165,7 +165,7 @@ export default function SellerProfilePage({ profile }: { profile: SellerProfile 
                   </div>
                   <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Sales Count</span>
                 </div>
-                <p className="text-3xl font-black text-slate-900">{profile.stats?.totalSales}</p>
+                <p className="text-3xl font-black text-foreground">{profile.stats?.totalSales}</p>
               </Card>
 
               <Card className="rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white p-6">
@@ -175,7 +175,7 @@ export default function SellerProfilePage({ profile }: { profile: SellerProfile 
                   </div>
                   <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Revenue</span>
                 </div>
-                <p className="text-3xl font-black text-slate-900">৳ {profile.stats?.totalRevenue?.toLocaleString()}</p>
+                <p className="text-3xl font-black text-foreground">৳ {profile.stats?.totalRevenue?.toLocaleString()}</p>
               </Card>
 
               <Card className="rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white p-6">
@@ -185,7 +185,7 @@ export default function SellerProfilePage({ profile }: { profile: SellerProfile 
                   </div>
                   <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Active Warranties</span>
                 </div>
-                <p className="text-3xl font-black text-slate-900">{profile.stats?.activeWarranties}</p>
+                <p className="text-3xl font-black text-foreground">{profile.stats?.activeWarranties}</p>
               </Card>
             </div>
           </div>

@@ -106,7 +106,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-slate-800 mt-12 pt-8 text-center text-xs font-semibold text-slate-500">
+        <div className="border-t border-border/40 mt-12 pt-8 text-center text-xs font-semibold text-muted-foreground">
           &copy; {new Date().getFullYear()} JEE. All rights reserved. E-commerce
           + Offline Seller + Warranty System.
         </div>

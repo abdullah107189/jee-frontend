@@ -28,11 +28,11 @@ export function TransactionList({ transactions, isLoading, basePath }: Transacti
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('grid'); // Default to grid to show off images
 
   if (isLoading) {
-    return <div className="p-8 text-center text-slate-500">Loading records...</div>;
+    return <div className="p-8 text-center text-muted-foreground">Loading records...</div>;
   }
 
   if (!transactions.length) {
-    return <div className="p-8 text-center text-slate-500 border border-dashed rounded-3xl bg-white">No records found.</div>;
+    return <div className="p-8 text-center text-muted-foreground border border-dashed rounded-3xl bg-white">No records found.</div>;
   }
 
   return (
@@ -62,12 +62,12 @@ export function TransactionList({ transactions, isLoading, basePath }: Transacti
             <table className="w-full text-sm text-left">
               <thead className="bg-slate-50/80 border-b border-slate-100">
                 <tr>
-                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-slate-500 whitespace-nowrap">Product</th>
-                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-slate-500 whitespace-nowrap hidden sm:table-cell">Date</th>
-                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-slate-500 whitespace-nowrap hidden md:table-cell">Customer Info</th>
-                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-slate-500 whitespace-nowrap">Price</th>
-                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-slate-500 whitespace-nowrap hidden sm:table-cell">Status</th>
-                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-slate-500 text-right whitespace-nowrap">Action</th>
+                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-muted-foreground whitespace-nowrap">Product</th>
+                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-muted-foreground whitespace-nowrap hidden sm:table-cell">Date</th>
+                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-muted-foreground whitespace-nowrap hidden md:table-cell">Customer Info</th>
+                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-muted-foreground whitespace-nowrap">Price</th>
+                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-muted-foreground whitespace-nowrap hidden sm:table-cell">Status</th>
+                  <th className="px-4 sm:px-6 py-4 sm:py-5 font-medium text-muted-foreground text-right whitespace-nowrap">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
@@ -81,8 +81,8 @@ export function TransactionList({ transactions, isLoading, basePath }: Transacti
                           </div>
                         )}
                         <div>
-                          <div className="font-semibold text-slate-900 line-clamp-1">{t.product}</div>
-                          <div className="font-mono text-[10px] sm:text-xs text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded mt-1 inline-block">{t.uniqueId}</div>
+                          <div className="font-semibold text-foreground line-clamp-1">{t.product}</div>
+                          <div className="font-mono text-[10px] sm:text-xs text-muted-foreground bg-slate-100 px-1.5 py-0.5 rounded mt-1 inline-block">{t.uniqueId}</div>
                         </div>
                       </div>
                     </td>
@@ -90,8 +90,8 @@ export function TransactionList({ transactions, isLoading, basePath }: Transacti
                     <td className="px-4 sm:px-6 py-4 hidden md:table-cell">
                       {t.customerName !== 'N/A' ? (
                         <div>
-                          <div className="font-medium text-slate-900">{t.customerName}</div>
-                          <div className="text-xs text-slate-500">{t.customerPhone}</div>
+                          <div className="font-medium text-foreground">{t.customerName}</div>
+                          <div className="text-xs text-muted-foreground">{t.customerPhone}</div>
                         </div>
                       ) : (
                         <span className="text-slate-400 italic">Not Provided</span>
@@ -135,15 +135,15 @@ export function TransactionList({ transactions, isLoading, basePath }: Transacti
                   <span className="text-xs sm:text-sm font-medium text-blue-500/80">{t.date}</span>
                 </div>
                 <h3 className="font-bold text-lg sm:text-xl text-slate-800 mb-1 leading-tight line-clamp-1">{t.product}</h3>
-                <p className="font-mono text-[10px] sm:text-xs font-medium text-slate-500 bg-slate-100/80 px-2 py-1 rounded-md inline-block w-fit mb-4 sm:mb-5">{t.uniqueId}</p>
+                <p className="font-mono text-[10px] sm:text-xs font-medium text-muted-foreground bg-slate-100/80 px-2 py-1 rounded-md inline-block w-fit mb-4 sm:mb-5">{t.uniqueId}</p>
                 
                 <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-slate-600 mb-5 sm:mb-6 flex-1">
                   <div className="flex justify-between items-center bg-slate-50/50 p-2 rounded-xl">
-                    <span className="text-slate-500">Price</span>
-                    <span className="font-semibold text-slate-900 text-sm sm:text-base">৳{t.price}</span>
+                    <span className="text-muted-foreground">Price</span>
+                    <span className="font-semibold text-foreground text-sm sm:text-base">৳{t.price}</span>
                   </div>
                   <div className="flex justify-between items-center bg-slate-50/50 p-2 rounded-xl">
-                    <span className="text-slate-500">Customer</span>
+                    <span className="text-muted-foreground">Customer</span>
                     <span className="font-medium text-slate-800 truncate max-w-[120px] sm:max-w-[140px] text-right">{t.customerName}</span>
                   </div>
                 </div>

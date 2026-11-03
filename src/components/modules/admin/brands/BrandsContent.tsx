@@ -213,11 +213,11 @@ export default function AdminBrandsPage({ brands }: AdminBrandsPageProps) {
             </div>
 
             <div>
-              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+              <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
                 Brands
               </h1>
 
-              <p className="mt-1 text-sm font-medium text-slate-500 sm:text-base">
+              <p className="mt-1 text-sm font-medium text-muted-foreground sm:text-base">
                 Manage product brands, logos, and manufacturer details.
               </p>
             </div>
@@ -257,7 +257,7 @@ export default function AdminBrandsPage({ brands }: AdminBrandsPageProps) {
             />
           </div>
 
-          <div className="text-sm font-medium text-slate-500">
+          <div className="text-sm font-medium text-muted-foreground">
             {filteredBrands.length}{" "}
             {filteredBrands.length === 1 ? "brand" : "brands"}
           </div>
@@ -275,7 +275,7 @@ export default function AdminBrandsPage({ brands }: AdminBrandsPageProps) {
                 Unable to load brands
               </p>
 
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 {brands.message || "Please try again later."}
               </p>
             </div>
@@ -287,11 +287,11 @@ export default function AdminBrandsPage({ brands }: AdminBrandsPageProps) {
                 <Tag className="h-6 w-6" />
               </div>
 
-              <h3 className="font-semibold text-slate-900">
+              <h3 className="font-semibold text-foreground">
                 {search ? "No brands found" : "No brands yet"}
               </h3>
 
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 {search
                   ? "Try searching with a different keyword."
                   : "Create your first brand to get started."}
@@ -367,7 +367,7 @@ export default function AdminBrandsPage({ brands }: AdminBrandsPageProps) {
                           )}
 
                           <div className="min-w-0">
-                            <p className="truncate font-semibold text-slate-900">
+                            <p className="truncate font-semibold text-foreground">
                               {brand.name}
                             </p>
                             <p className="text-xs text-slate-400">Brand</p>
@@ -383,7 +383,7 @@ export default function AdminBrandsPage({ brands }: AdminBrandsPageProps) {
                       </td>
 
                       {/* Description */}
-                      <td className="px-4 py-4 sm:px-6 max-w-xs truncate text-xs text-slate-500">
+                      <td className="px-4 py-4 sm:px-6 max-w-xs truncate text-xs text-muted-foreground">
                         {brand.description || "—"}
                       </td>
 
@@ -541,7 +541,7 @@ export default function AdminBrandsPage({ brands }: AdminBrandsPageProps) {
                   <span className="text-sm font-semibold text-slate-800">
                     Active Status
                   </span>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-muted-foreground">
                     Show this brand in storefront filters and product forms
                   </p>
                 </div>

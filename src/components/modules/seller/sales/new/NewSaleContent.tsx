@@ -299,11 +299,11 @@ export default function SellerNewSalePage() {
             <span className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-xl bg-blue-600 text-white font-black text-sm">
               ⚡
             </span>
-            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900">
+            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">
               Showroom POS Terminal
             </h1>
           </div>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1 font-medium">
             Fast multi-unit scanner with auto-pricing and instant warranty.
           </p>
         </div>
@@ -337,7 +337,7 @@ export default function SellerNewSalePage() {
               <Barcode className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
               Scan QR / Barcode
             </span>
-            <span className="text-[11px] sm:text-xs font-semibold text-slate-500">
+            <span className="text-[11px] sm:text-xs font-semibold text-muted-foreground">
               Physical gun or phone camera
             </span>
           </CardTitle>
@@ -392,7 +392,7 @@ export default function SellerNewSalePage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-slate-500">
+          <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-muted-foreground">
             <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
             <span>
               <strong>Hardware Gun:</strong> Trigger at carton boxes to auto-add units continuously without clicking.
@@ -404,11 +404,11 @@ export default function SellerNewSalePage() {
       {/* 2️⃣ Step 2: Scanned Items Cart (Mobile Cards + Desktop Table) */}
       <Card className="rounded-2xl sm:rounded-3xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white overflow-hidden">
         <div className="p-3.5 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-          <div className="flex items-center gap-2 font-bold text-slate-900 text-sm sm:text-base">
+          <div className="flex items-center gap-2 font-bold text-foreground text-sm sm:text-base">
             <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
             <span>Scanned Items ({scannedItems.length})</span>
           </div>
-          <span className="text-sm sm:text-base font-black text-slate-900 tabular-nums">
+          <span className="text-sm sm:text-base font-black text-foreground tabular-nums">
             Total: ৳ {grandTotal.toLocaleString()}
           </span>
         </div>
@@ -422,7 +422,7 @@ export default function SellerNewSalePage() {
               <h3 className="text-sm sm:text-base font-bold text-slate-800">
                 Cart is currently empty
               </h3>
-              <p className="text-xs text-slate-500 max-w-xs mx-auto">
+              <p className="text-xs text-muted-foreground max-w-xs mx-auto">
                 Scan unit QR stickers on product cartons to start building this sale order.
               </p>
             </div>
@@ -438,7 +438,7 @@ export default function SellerNewSalePage() {
                           <span className="text-[10px] font-bold text-slate-400">
                             #{idx + 1}
                           </span>
-                          <span className="font-extrabold text-sm text-slate-900 truncate block">
+                          <span className="font-extrabold text-sm text-foreground truncate block">
                             {item.productName}
                           </span>
                         </div>
@@ -473,7 +473,7 @@ export default function SellerNewSalePage() {
                         </Badge>
                       </div>
 
-                      <div className="font-black text-sm text-slate-900 tabular-nums">
+                      <div className="font-black text-sm text-foreground tabular-nums">
                         ৳ {item.price.toLocaleString()}
                       </div>
                     </div>
@@ -504,7 +504,7 @@ export default function SellerNewSalePage() {
                           {idx + 1}
                         </td>
                         <td className="py-3.5 px-4">
-                          <div className="font-extrabold text-slate-900">
+                          <div className="font-extrabold text-foreground">
                             {item.productName}
                           </div>
                           {item.sku && (
@@ -527,7 +527,7 @@ export default function SellerNewSalePage() {
                             {item.warrantyMonths} Mos
                           </Badge>
                         </td>
-                        <td className="py-3.5 px-4 text-right font-black text-slate-900 tabular-nums">
+                        <td className="py-3.5 px-4 text-right font-black text-foreground tabular-nums">
                           ৳ {item.price.toLocaleString()}
                         </td>
                         <td className="py-3.5 px-4 text-center">
@@ -555,7 +555,7 @@ export default function SellerNewSalePage() {
       <form onSubmit={handleCompleteSale} className="space-y-4 sm:space-y-6">
         <Card className="rounded-2xl sm:rounded-3xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white overflow-hidden">
           <div className="p-3.5 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-            <div className="flex items-center gap-2 font-bold text-slate-900 text-sm sm:text-base">
+            <div className="flex items-center gap-2 font-bold text-foreground text-sm sm:text-base">
               <Receipt className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
               <span>Checkout & Billing</span>
             </div>
@@ -588,7 +588,7 @@ export default function SellerNewSalePage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-[11px] font-bold uppercase text-slate-500 mb-1">
+                    <label className="block text-[11px] font-bold uppercase text-muted-foreground mb-1">
                       Customer Name
                     </label>
                     <Input
@@ -600,7 +600,7 @@ export default function SellerNewSalePage() {
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold uppercase text-slate-500 mb-1">
+                    <label className="block text-[11px] font-bold uppercase text-muted-foreground mb-1">
                       Mobile Number
                     </label>
                     <Input
@@ -612,7 +612,7 @@ export default function SellerNewSalePage() {
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold uppercase text-slate-500 mb-1">
+                    <label className="block text-[11px] font-bold uppercase text-muted-foreground mb-1">
                       Email Address
                     </label>
                     <Input
@@ -679,10 +679,10 @@ export default function SellerNewSalePage() {
             {/* Grand Total Summary Box */}
             <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="space-y-1 text-center sm:text-left w-full sm:w-auto">
-                <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                <span className="text-[11px] sm:text-xs font-bold text-muted-foreground uppercase tracking-wider block">
                   Grand Total ({scannedItems.length} items)
                 </span>
-                <div className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums">
+                <div className="text-2xl sm:text-3xl font-black text-foreground tabular-nums">
                   ৳ {grandTotal.toLocaleString()}
                   {discountNum > 0 && (
                     <span className="text-xs font-normal text-emerald-600 ml-2 block sm:inline">
@@ -731,10 +731,10 @@ export default function SellerNewSalePage() {
               <div className="h-12 w-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
                 <CheckCircle2 className="h-7 w-7" />
               </div>
-              <h2 className="text-lg sm:text-xl font-black text-slate-900">
+              <h2 className="text-lg sm:text-xl font-black text-foreground">
                 Transaction Successful!
               </h2>
-              <p className="text-xs text-slate-500 font-medium">
+              <p className="text-xs text-muted-foreground font-medium">
                 Digital warranties have been activated for all sold units.
               </p>
             </div>
@@ -742,19 +742,19 @@ export default function SellerNewSalePage() {
             {/* Receipt Summary Card */}
             <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5 text-xs sm:text-sm">
               <div className="flex justify-between border-b border-slate-200 pb-2">
-                <span className="text-slate-500 font-medium">Customer:</span>
-                <span className="font-bold text-slate-900">
+                <span className="text-muted-foreground font-medium">Customer:</span>
+                <span className="font-bold text-foreground">
                   {successModalData.customerName}
                 </span>
               </div>
               <div className="flex justify-between border-b border-slate-200 pb-2">
-                <span className="text-slate-500 font-medium">Date & Time:</span>
+                <span className="text-muted-foreground font-medium">Date & Time:</span>
                 <span className="font-mono font-medium text-slate-800 text-[11px] sm:text-xs">
                   {successModalData.date}
                 </span>
               </div>
               <div className="flex justify-between border-b border-slate-200 pb-2">
-                <span className="text-slate-500 font-medium">Payment:</span>
+                <span className="text-muted-foreground font-medium">Payment:</span>
                 <span className="font-bold text-slate-800">
                   {successModalData.paymentMethod}
                 </span>
@@ -772,14 +772,14 @@ export default function SellerNewSalePage() {
                       className="p-2 sm:p-2.5 rounded-xl bg-white border border-slate-200 flex justify-between items-center text-xs"
                     >
                       <div className="min-w-0 flex-1 pr-2">
-                        <div className="font-bold text-slate-900 truncate">
+                        <div className="font-bold text-foreground truncate">
                           {item.productName}
                         </div>
                         <div className="font-mono text-[10px] text-blue-600 font-bold">
                           SN: {item.uniqueId} • {item.warrantyMonths}M
                         </div>
                       </div>
-                      <span className="font-black text-slate-900 tabular-nums shrink-0">
+                      <span className="font-black text-foreground tabular-nums shrink-0">
                         ৳ {item.price.toLocaleString()}
                       </span>
                     </div>
@@ -787,7 +787,7 @@ export default function SellerNewSalePage() {
                 </div>
               </div>
 
-              <div className="flex justify-between border-t border-slate-200 pt-2 font-black text-sm sm:text-base text-slate-900">
+              <div className="flex justify-between border-t border-slate-200 pt-2 font-black text-sm sm:text-base text-foreground">
                 <span>Total Amount:</span>
                 <span className="tabular-nums">
                   ৳ {successModalData.total.toLocaleString()}

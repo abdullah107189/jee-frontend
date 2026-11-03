@@ -46,8 +46,8 @@ export function AdminDashboard() {
       <div className="space-y-6 sm:space-y-8">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Admin Dashboard</h1>
-            <p className="text-sm sm:text-base text-slate-500 mt-1 font-medium">Overview of your store's performance and operations.</p>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">Admin Dashboard</h1>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1 font-medium">Overview of your store's performance and operations.</p>
           </div>
           <div className="flex gap-3 w-full sm:w-auto">
             <Button variant="outline" className="flex-1 sm:flex-none h-10 sm:h-12 bg-white rounded-xl">
@@ -68,7 +68,7 @@ export function AdminDashboard() {
                   <Package className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
               </div>
-              <p className="text-xs sm:text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">Total Products</p>
+              <p className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-1">Total Products</p>
               <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-800">124</h3>
             </CardContent>
           </Card>
@@ -79,7 +79,7 @@ export function AdminDashboard() {
                   <Box className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
               </div>
-              <p className="text-xs sm:text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">Physical Units</p>
+              <p className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-1">Physical Units</p>
               <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-800">8,432</h3>
             </CardContent>
           </Card>
@@ -90,7 +90,7 @@ export function AdminDashboard() {
                   <Activity className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
               </div>
-              <p className="text-xs sm:text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">Available Units</p>
+              <p className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-1">Available Units</p>
               <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-800">1,205</h3>
             </CardContent>
           </Card>
@@ -101,7 +101,7 @@ export function AdminDashboard() {
                   <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
               </div>
-              <p className="text-xs sm:text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">Today's Orders</p>
+              <p className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-1">Today's Orders</p>
               <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-800">45</h3>
             </CardContent>
           </Card>
@@ -176,17 +176,17 @@ export function AdminDashboard() {
             <div className="grid grid-cols-2 sm:grid-cols-3 divide-x divide-slate-100 flex-1">
               <div className="p-4 sm:p-6 lg:p-8 flex flex-col justify-center">
                 <Users className="h-6 w-6 text-slate-400 mb-3" />
-                <p className="text-xs font-semibold text-slate-500 uppercase mb-1">Total Sellers</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">Total Sellers</p>
                 <p className="text-2xl font-extrabold text-slate-800">142</p>
               </div>
               <div className="p-4 sm:p-6 lg:p-8 flex flex-col justify-center">
                 <UserCheck className="h-6 w-6 text-emerald-500 mb-3" />
-                <p className="text-xs font-semibold text-slate-500 uppercase mb-1">Active</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">Active</p>
                 <p className="text-2xl font-extrabold text-slate-800">128</p>
               </div>
               <div className="p-4 sm:p-6 lg:p-8 col-span-2 sm:col-span-1 border-t sm:border-t-0 border-slate-100 bg-orange-50/30 flex flex-col justify-center">
                 <UserPlus className="h-6 w-6 text-orange-500 mb-3" />
-                <p className="text-xs font-semibold text-slate-500 uppercase mb-1">Pending</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">Pending</p>
                 <p className="text-2xl font-extrabold text-slate-800">14</p>
               </div>
             </div>
@@ -252,7 +252,7 @@ export function SellerDashboard({ stats, recentSales }: { stats: SellerDashboard
                 </div>
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Today's Sales</span>
               </div>
-              <p className="text-xl sm:text-2xl font-extrabold text-slate-900">৳{(stats?.todaysSales || 12500).toLocaleString()}</p>
+              <p className="text-xl sm:text-2xl font-extrabold text-foreground">৳{(stats?.todaysSales || 12500).toLocaleString()}</p>
             </CardContent>
           </Card>
 
@@ -264,7 +264,7 @@ export function SellerDashboard({ stats, recentSales }: { stats: SellerDashboard
                 </div>
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Sales</span>
               </div>
-              <p className="text-xl sm:text-2xl font-extrabold text-slate-900">৳{(stats?.totalSalesAmount || 245000).toLocaleString()}</p>
+              <p className="text-xl sm:text-2xl font-extrabold text-foreground">৳{(stats?.totalSalesAmount || 245000).toLocaleString()}</p>
             </CardContent>
           </Card>
 
@@ -276,7 +276,7 @@ export function SellerDashboard({ stats, recentSales }: { stats: SellerDashboard
                 </div>
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Orders</span>
               </div>
-              <p className="text-xl sm:text-2xl font-extrabold text-slate-900">{stats?.totalOrders || 156}</p>
+              <p className="text-xl sm:text-2xl font-extrabold text-foreground">{stats?.totalOrders || 156}</p>
             </CardContent>
           </Card>
 
@@ -288,7 +288,7 @@ export function SellerDashboard({ stats, recentSales }: { stats: SellerDashboard
                 </div>
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Active Warranties</span>
               </div>
-              <p className="text-xl sm:text-2xl font-extrabold text-slate-900">{stats?.activeWarranties || 89}</p>
+              <p className="text-xl sm:text-2xl font-extrabold text-foreground">{stats?.activeWarranties || 89}</p>
             </CardContent>
           </Card>
 
@@ -300,7 +300,7 @@ export function SellerDashboard({ stats, recentSales }: { stats: SellerDashboard
                 </div>
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Pending Claims</span>
               </div>
-              <p className="text-xl sm:text-2xl font-extrabold text-slate-900">{stats?.pendingClaims || 3}</p>
+              <p className="text-xl sm:text-2xl font-extrabold text-foreground">{stats?.pendingClaims || 3}</p>
             </CardContent>
           </Card>
         </div>
@@ -314,8 +314,8 @@ export function SellerDashboard({ stats, recentSales }: { stats: SellerDashboard
                   <PlusCircle className="h-6 w-6" />
                 </div>
                 <div>
-                  <h4 className="font-extrabold text-slate-900 text-base">New Offline Sale</h4>
-                  <p className="text-xs text-slate-500 font-medium">Validate Unique ID & issue warranty</p>
+                  <h4 className="font-extrabold text-foreground text-base">New Offline Sale</h4>
+                  <p className="text-xs text-muted-foreground font-medium">Validate Unique ID & issue warranty</p>
                 </div>
               </div>
               <ArrowRight className="h-5 w-5 text-blue-600 group-hover:translate-x-1 transition-transform" />
@@ -329,8 +329,8 @@ export function SellerDashboard({ stats, recentSales }: { stats: SellerDashboard
                   <Package className="h-6 w-6" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 text-base">View All Sales</h4>
-                  <p className="text-xs text-slate-500 font-medium">History, customer receipts & logs</p>
+                  <h4 className="font-bold text-foreground text-base">View All Sales</h4>
+                  <p className="text-xs text-muted-foreground font-medium">History, customer receipts & logs</p>
                 </div>
               </div>
               <ArrowRight className="h-5 w-5 text-slate-400 group-hover:translate-x-1 transition-transform" />
@@ -344,8 +344,8 @@ export function SellerDashboard({ stats, recentSales }: { stats: SellerDashboard
                   <ShieldCheck className="h-6 w-6" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 text-base">View Warranties</h4>
-                  <p className="text-xs text-slate-500 font-medium">Track customer active guarantees</p>
+                  <h4 className="font-bold text-foreground text-base">View Warranties</h4>
+                  <p className="text-xs text-muted-foreground font-medium">Track customer active guarantees</p>
                 </div>
               </div>
               <ArrowRight className="h-5 w-5 text-slate-400 group-hover:translate-x-1 transition-transform" />
@@ -357,8 +357,8 @@ export function SellerDashboard({ stats, recentSales }: { stats: SellerDashboard
         <Card className="rounded-2xl sm:rounded-[2rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden bg-white">
           <div className="p-5 sm:p-6 border-b border-slate-100 flex justify-between items-center">
             <div>
-              <h3 className="text-lg font-bold text-slate-900">Recent Offline Sales</h3>
-              <p className="text-xs text-slate-500 mt-0.5">Showing last 10 offline transactions issued by your outlet.</p>
+              <h3 className="text-lg font-bold text-foreground">Recent Offline Sales</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Showing last 10 offline transactions issued by your outlet.</p>
             </div>
             <Link href="/seller/sales">
               <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700 font-bold">
@@ -369,10 +369,10 @@ export function SellerDashboard({ stats, recentSales }: { stats: SellerDashboard
 
           <div className="overflow-x-auto">
             {recentSales.length === 0 ? (
-              <div className="p-8 text-center text-slate-500 font-medium">No sales recorded yet.</div>
+              <div className="p-8 text-center text-muted-foreground font-medium">No sales recorded yet.</div>
             ) : (
               <table className="w-full text-sm text-left">
-                <thead className="bg-slate-50/80 border-b border-slate-100 text-xs font-semibold text-slate-500 uppercase">
+                <thead className="bg-slate-50/80 border-b border-slate-100 text-xs font-semibold text-muted-foreground uppercase">
                   <tr>
                     <th className="px-5 py-4">Product Name</th>
                     <th className="px-5 py-4">Unique ID</th>
@@ -385,11 +385,11 @@ export function SellerDashboard({ stats, recentSales }: { stats: SellerDashboard
                 <tbody className="divide-y divide-slate-50">
                   {recentSales.map((sale: any) => (
                     <tr key={sale.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="px-5 py-4 font-semibold text-slate-900">{sale.productName}</td>
+                      <td className="px-5 py-4 font-semibold text-foreground">{sale.productName}</td>
                       <td className="px-5 py-4 font-mono text-xs font-bold text-blue-600">{sale.uniqueId}</td>
                       <td className="px-5 py-4 text-slate-700 font-medium">{sale.customerName}</td>
-                      <td className="px-5 py-4 font-extrabold text-slate-900">৳{sale.amount.toLocaleString()}</td>
-                      <td className="px-5 py-4 text-xs font-mono text-slate-500">{sale.date}</td>
+                      <td className="px-5 py-4 font-extrabold text-foreground">৳{sale.amount.toLocaleString()}</td>
+                      <td className="px-5 py-4 text-xs font-mono text-muted-foreground">{sale.date}</td>
                       <td className="px-5 py-4 text-right">
                         <Link href={`/seller/sales/${sale.id}`}>
                           <Button variant="ghost" size="sm" className="h-8 px-3 rounded-lg text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-bold">

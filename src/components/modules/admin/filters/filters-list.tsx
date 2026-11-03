@@ -44,7 +44,7 @@ export function FiltersList({ groups }: FiltersListProps) {
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
             Filters
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Manage category-specific filters (Brand, Color, Size, etc.)
           </p>
         </div>
@@ -59,11 +59,11 @@ export function FiltersList({ groups }: FiltersListProps) {
       {/* Empty state */}
       {groups.length === 0 && (
         <Card className="rounded-2xl p-12 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
-            <FilterIcon className="h-8 w-8 text-slate-400" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+            <FilterIcon className="h-8 w-8 text-muted-foreground" />
           </div>
           <h3 className="text-lg font-bold">No filter groups yet</h3>
-          <p className="mt-1 text-sm text-slate-500 max-w-md mx-auto">
+          <p className="mt-1 text-sm text-muted-foreground max-w-md mx-auto">
             Create filter groups per category. E.g., Phone category with
             Brand, Color, RAM filters.
           </p>
@@ -87,7 +87,7 @@ export function FiltersList({ groups }: FiltersListProps) {
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold truncate">{group.name}</h3>
-                  <p className="text-xs text-slate-500 font-mono truncate mt-0.5">
+                  <p className="text-xs text-muted-foreground font-mono truncate mt-0.5">
                     {group.slug}
                   </p>
                 </div>

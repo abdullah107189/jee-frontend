@@ -13,21 +13,21 @@ interface CategoryBreadcrumbProps {
 
 export function CategoryBreadcrumb({ breadcrumb }: CategoryBreadcrumbProps) {
   return (
-    <nav className=" flex flex-wrap items-center gap-1.5 text-sm text-slate-500">
-      <Link href="/" className="flex items-center gap-1 hover:text-blue-600">
+    <nav className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
+      <Link href="/" className="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400">
         <Home className="h-3.5 w-3.5" />
         Home
       </Link>
 
       {breadcrumb.map((item, i) => (
         <span key={item.id} className="flex items-center gap-1.5">
-          <ChevronRight className="h-3.5 w-3.5 text-slate-300" />
+          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/40" />
           {i === breadcrumb.length - 1 ? (
-            <span className="font-medium text-slate-900">{item.name}</span>
+            <span className="font-medium text-foreground">{item.name}</span>
           ) : (
             <Link
               href={`/categories/${item.fullSlug}`}
-              className="hover:text-blue-600"
+              className="hover:text-blue-600 dark:hover:text-blue-400"
             >
               {item.name}
             </Link>

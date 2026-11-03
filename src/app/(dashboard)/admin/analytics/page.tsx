@@ -7,9 +7,13 @@ export const metadata: Metadata = {
   description: "Charts and insights about store performance.",
 };
 
-export default async function AdminAnalyticsPage() {
-  const analytics = await getAnalytics();
+export default async function AdminAnalyticsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ period?: string }>;
+}) {
+  const { period = "MONTH" } = await searchParams;
+  const analytics = await getAnalytics(period);
 
-  // ✅ No DashboardLayout — parent admin/layout.tsx already wraps
-  return <AnalyticsContent analytics={analytics} />;
+  return <AnalyticsContent analytics={analytics} initialPeriod={period} />;
 }

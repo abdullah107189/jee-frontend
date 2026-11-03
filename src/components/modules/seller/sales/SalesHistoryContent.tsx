@@ -111,11 +111,11 @@ export default function SalesHistoryContent({
             <span className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-xl bg-blue-600 text-white font-black text-sm">
               📋
             </span>
-            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900">
+            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">
               Sales History
             </h1>
           </div>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1 font-medium">
             View all recorded offline sales, printed invoices, and active warranties.
           </p>
         </div>
@@ -162,13 +162,13 @@ export default function SalesHistoryContent({
         <CardContent className="p-0">
           {filteredSales.length === 0 ? (
             <div className="p-8 sm:p-12 text-center space-y-2">
-              <div className="h-11 w-11 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center mx-auto">
+              <div className="h-11 w-11 rounded-2xl bg-slate-100 text-muted-foreground flex items-center justify-center mx-auto">
                 <Receipt className="h-5 w-5" />
               </div>
               <h3 className="text-sm sm:text-base font-bold text-slate-800">
                 No transactions found
               </h3>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 No recorded sales match your search or date filter.
               </p>
             </div>
@@ -190,13 +190,13 @@ export default function SalesHistoryContent({
                               {sale.date}
                             </span>
                           </div>
-                          <h4 className="font-extrabold text-sm text-slate-900 mt-1 truncate">
+                          <h4 className="font-extrabold text-sm text-foreground mt-1 truncate">
                             {sale.product || sale.productName}
                           </h4>
                         </div>
 
                         <div className="text-right shrink-0">
-                          <span className="font-black text-sm text-slate-900 tabular-nums block">
+                          <span className="font-black text-sm text-foreground tabular-nums block">
                             ৳ {price.toLocaleString()}
                           </span>
                           {getWarrantyBadge(sale.warrantyStatus || sale.status)}
@@ -256,7 +256,7 @@ export default function SalesHistoryContent({
                               {sale.date}
                             </span>
                           </td>
-                          <td className="px-5 py-3.5 font-bold text-slate-900">
+                          <td className="px-5 py-3.5 font-bold text-foreground">
                             {sale.product || sale.productName}
                           </td>
                           <td className="px-5 py-3.5 font-mono text-xs font-bold text-slate-700">
@@ -274,7 +274,7 @@ export default function SalesHistoryContent({
                               </div>
                             )}
                           </td>
-                          <td className="px-5 py-3.5 text-right font-black text-slate-900 tabular-nums">
+                          <td className="px-5 py-3.5 text-right font-black text-foreground tabular-nums">
                             ৳ {price.toLocaleString()}
                           </td>
                           <td className="px-5 py-3.5 text-center">
@@ -303,7 +303,7 @@ export default function SalesHistoryContent({
 
         {/* Pagination Controls */}
         {totalPages > 1 && (
-          <div className="p-3.5 sm:p-4 border-t border-slate-100 bg-slate-50/50 flex justify-between items-center text-xs text-slate-500 font-semibold">
+          <div className="p-3.5 sm:p-4 border-t border-slate-100 bg-slate-50/50 flex justify-between items-center text-xs text-muted-foreground font-semibold">
             <span>
               Page {currentPage} of {totalPages} ({filteredSales.length} total)
             </span>

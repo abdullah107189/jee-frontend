@@ -30,7 +30,7 @@ export default function SellerWarrantiesPage({ warranties }: { warranties: Selle
       case 'CLAIMED':
         return <Badge className="bg-amber-500 text-white rounded-full px-3 py-1 text-xs">Claimed</Badge>;
       case 'EXPIRED':
-        return <Badge variant="outline" className="rounded-full px-3 py-1 text-xs text-slate-500">Expired</Badge>;
+        return <Badge variant="outline" className="rounded-full px-3 py-1 text-xs text-muted-foreground">Expired</Badge>;
       default:
         return <Badge variant="outline" className="rounded-full px-3 py-1 text-xs">{status}</Badge>;
     }
@@ -40,8 +40,8 @@ export default function SellerWarrantiesPage({ warranties }: { warranties: Selle
       <div className="space-y-6 sm:space-y-8">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">Warranty Registry</h1>
-            <p className="text-sm sm:text-base text-slate-500 mt-1 font-medium">Track customer digital warranties, activation dates, and claim status.</p>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">Warranty Registry</h1>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1 font-medium">Track customer digital warranties, activation dates, and claim status.</p>
           </div>
         </div>
 
@@ -71,10 +71,10 @@ export default function SellerWarrantiesPage({ warranties }: { warranties: Selle
 
           <div className="overflow-x-auto">
             {filteredWarranties.length === 0 ? (
-              <div className="p-12 text-center text-slate-500 font-medium">No warranty records found.</div>
+              <div className="p-12 text-center text-muted-foreground font-medium">No warranty records found.</div>
             ) : (
               <table className="w-full text-sm text-left">
-                <thead className="bg-slate-50/80 border-b border-slate-100 text-xs font-semibold text-slate-500 uppercase">
+                <thead className="bg-slate-50/80 border-b border-slate-100 text-xs font-semibold text-muted-foreground uppercase">
                   <tr>
                     <th className="px-5 py-4">Unique ID</th>
                     <th className="px-5 py-4">Product Name</th>
@@ -90,14 +90,14 @@ export default function SellerWarrantiesPage({ warranties }: { warranties: Selle
                   {filteredWarranties.map((w: any) => (
                     <tr key={w.id} className="hover:bg-slate-50/60 transition-colors bg-white">
                       <td className="px-5 py-4 font-mono font-bold text-blue-600">{w.uniqueId}</td>
-                      <td className="px-5 py-4 font-semibold text-slate-900">{w.productName}</td>
+                      <td className="px-5 py-4 font-semibold text-foreground">{w.productName}</td>
                       <td className="px-5 py-4 text-slate-800 font-medium">
                         <div>{w.customerName}</div>
                         <div className="text-xs text-slate-400 font-mono">{w.customerPhone}</div>
                       </td>
                       <td className="px-5 py-4">{getStatusBadge(w.status)}</td>
-                      <td className="px-5 py-4 text-xs font-mono text-slate-500">{w.startDate}</td>
-                      <td className="px-5 py-4 text-xs font-mono text-slate-500">{w.endDate}</td>
+                      <td className="px-5 py-4 text-xs font-mono text-muted-foreground">{w.startDate}</td>
+                      <td className="px-5 py-4 text-xs font-mono text-muted-foreground">{w.endDate}</td>
                       <td className="px-5 py-4 font-extrabold text-blue-700">{w.daysRemaining} days</td>
                       <td className="px-5 py-4 text-right">
                         <Link href={`/seller/warranties/${w.id}`}>

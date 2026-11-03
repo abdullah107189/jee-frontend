@@ -12,7 +12,7 @@ interface TransactionDetailsProps {
 
 export function TransactionDetails({ transaction, isLoading, backPath }: TransactionDetailsProps) {
   if (isLoading) {
-    return <div className="p-8 text-center text-slate-500">Loading details...</div>;
+    return <div className="p-8 text-center text-muted-foreground">Loading details...</div>;
   }
 
   if (!transaction) {
@@ -23,12 +23,12 @@ export function TransactionDetails({ transaction, isLoading, backPath }: Transac
     <div className="space-y-6 sm:space-y-8 max-w-5xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0 mb-6 sm:mb-8">
         <div className="flex items-center space-x-3 sm:space-x-4">
-          <Link href={backPath} className="h-8 w-8 sm:h-10 sm:w-10 bg-white rounded-full flex items-center justify-center shadow-sm text-slate-500 hover:text-blue-600 hover:shadow-md transition-all shrink-0">
+          <Link href={backPath} className="h-8 w-8 sm:h-10 sm:w-10 bg-white rounded-full flex items-center justify-center shadow-sm text-muted-foreground hover:text-blue-600 hover:shadow-md transition-all shrink-0">
             <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
           </Link>
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-800 line-clamp-1">Transaction Details</h1>
-            <p className="text-slate-500 font-mono text-xs sm:text-sm tracking-wider mt-0.5 sm:mt-1">{transaction.id}</p>
+            <p className="text-muted-foreground font-mono text-xs sm:text-sm tracking-wider mt-0.5 sm:mt-1">{transaction.id}</p>
           </div>
         </div>
         <Badge variant={transaction.status.includes('Active') ? 'success' : 'default'} className="px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm rounded-full shadow-sm w-fit">
@@ -53,7 +53,7 @@ export function TransactionDetails({ transaction, isLoading, backPath }: Transac
             <CardContent className="p-5 sm:p-6">
               <h2 className="text-xl sm:text-2xl font-bold text-slate-800 leading-tight mb-3 sm:mb-2">{transaction.product}</h2>
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-2 sm:gap-0">
-                <p className="font-mono text-xs sm:text-sm text-slate-500 bg-slate-100 px-2 sm:px-2.5 py-1 rounded-md w-fit">{transaction.uniqueId}</p>
+                <p className="font-mono text-xs sm:text-sm text-muted-foreground bg-slate-100 px-2 sm:px-2.5 py-1 rounded-md w-fit">{transaction.uniqueId}</p>
                 <p className="text-xl sm:text-2xl font-extrabold text-blue-600">৳{transaction.price}</p>
               </div>
             </CardContent>
@@ -77,17 +77,17 @@ export function TransactionDetails({ transaction, isLoading, backPath }: Transac
                   </div>
                   <div className="grid grid-cols-2 gap-3 sm:gap-4">
                     <div className="bg-white/60 backdrop-blur-sm p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-sm">
-                      <p className="text-[10px] sm:text-xs text-slate-500 font-medium uppercase tracking-wider mb-1">Start Date</p>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">Start Date</p>
                       <p className="text-sm sm:text-base font-semibold text-slate-800">{transaction.warrantyDetails.startDate}</p>
                     </div>
                     <div className="bg-white/60 backdrop-blur-sm p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-sm">
-                      <p className="text-[10px] sm:text-xs text-slate-500 font-medium uppercase tracking-wider mb-1">End Date</p>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">End Date</p>
                       <p className="text-sm sm:text-base font-semibold text-slate-800">{transaction.warrantyDetails.endDate}</p>
                     </div>
                   </div>
                 </div>
               ) : (
-                <p className="text-sm sm:text-base text-slate-500 text-center py-4 bg-white/50 rounded-xl">No warranty information available.</p>
+                <p className="text-sm sm:text-base text-muted-foreground text-center py-4 bg-white/50 rounded-xl">No warranty information available.</p>
               )}
             </CardContent>
           </Card>
@@ -107,11 +107,11 @@ export function TransactionDetails({ transaction, isLoading, backPath }: Transac
             <CardContent className="space-y-4">
               <div className="bg-slate-50 p-4 sm:p-5 rounded-xl sm:rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
                 <div>
-                  <p className="text-xs sm:text-sm text-slate-500 font-medium mb-0.5">Full Name</p>
-                  <p className="font-bold text-slate-900 text-base sm:text-lg line-clamp-1">{transaction.customerName}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground font-medium mb-0.5">Full Name</p>
+                  <p className="font-bold text-foreground text-base sm:text-lg line-clamp-1">{transaction.customerName}</p>
                 </div>
                 <div className="sm:text-right">
-                  <p className="text-xs sm:text-sm text-slate-500 font-medium mb-0.5">Phone Number</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground font-medium mb-0.5">Phone Number</p>
                   <p className="font-semibold text-slate-800 text-sm sm:text-base">{transaction.customerPhone}</p>
                 </div>
               </div>
@@ -130,14 +130,14 @@ export function TransactionDetails({ transaction, isLoading, backPath }: Transac
             <CardContent className="space-y-3 sm:space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="bg-slate-50 p-4 sm:p-5 rounded-xl sm:rounded-2xl">
-                  <p className="text-xs sm:text-sm text-slate-500 font-medium mb-1">Transaction Date</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground font-medium mb-1">Transaction Date</p>
                   <div className="flex items-center">
                     <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-slate-400" />
                     <span className="font-semibold text-slate-800 text-sm sm:text-base">{transaction.date}</span>
                   </div>
                 </div>
                 <div className="bg-slate-50 p-4 sm:p-5 rounded-xl sm:rounded-2xl">
-                  <p className="text-xs sm:text-sm text-slate-500 font-medium mb-1">Payment Method</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground font-medium mb-1">Payment Method</p>
                   <div className="flex items-center">
                     <CreditCard className="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-slate-400" />
                     <span className="font-semibold text-slate-800 text-sm sm:text-base">{transaction.paymentMethod}</span>
@@ -146,7 +146,7 @@ export function TransactionDetails({ transaction, isLoading, backPath }: Transac
               </div>
               <div className="bg-slate-50 p-4 sm:p-5 rounded-xl sm:rounded-2xl flex items-center justify-between">
                 <div>
-                  <p className="text-xs sm:text-sm text-slate-500 font-medium mb-0.5">Fulfilled By</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground font-medium mb-0.5">Fulfilled By</p>
                   <p className="font-semibold text-slate-800 text-sm sm:text-base">{transaction.sellerInfo}</p>
                 </div>
                 <Package className="h-5 w-5 sm:h-6 sm:w-6 text-slate-300 hidden sm:block" />

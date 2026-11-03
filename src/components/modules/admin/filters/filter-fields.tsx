@@ -68,7 +68,7 @@ export function FilterFields({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <GripVertical className="h-4 w-4 text-slate-300" />
-          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
             Filter {index + 1}
           </span>
         </div>

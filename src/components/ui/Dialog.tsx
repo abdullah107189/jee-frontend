@@ -1,25 +1,43 @@
+'use client';
+
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/Button';
 
-type DialogContextValue = {
+interface DialogContextValue {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-};
+}
 
 const DialogContext = React.createContext<DialogContextValue | null>(null);
 
-function useDialogContext() {
+function useDialog() {
   const context = React.useContext(DialogContext);
   if (!context) {
-    throw new Error('Dialog components must be used within <Dialog>.');
+    throw new Error('Dialog components must be used within a Dialog');
   }
   return context;
 }
 
-function Dialog({ open, onOpenChange, children }: { open: boolean; onOpenChange: (open: boolean) => void; children: React.ReactNode }) {
+interface DialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  children: React.ReactNode;
+}
+
+function Dialog({ open, onOpenChange, children }: DialogProps) {
+  React.useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onOpenChange(false);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [open, onOpenChange]);
+
   return (
     <DialogContext.Provider value={{ open, onOpenChange }}>
       {children}
@@ -27,45 +45,32 @@ function Dialog({ open, onOpenChange, children }: { open: boolean; onOpenChange:
   );
 }
 
-function DialogContent({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  const { open, onOpenChange } = useDialogContext();
+interface DialogContentProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-  React.useEffect(() => {
-    if (!open) return;
+function DialogContent({ className, children, ...props }: DialogContentProps) {
+  const { open, onOpenChange } = useDialog();
 
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onOpenChange(false);
-      }
-    };
-
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [open, onOpenChange]);
-
-  if (!open || typeof document === 'undefined') {
-    return null;
-  }
+  if (!open || typeof document === 'undefined') return null;
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
       <button
         type="button"
         aria-label="Close dialog backdrop"
-        className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={() => onOpenChange(false)}
       />
       <div
         role="dialog"
         aria-modal="true"
-        className={cn('relative z-10 w-full rounded-3xl bg-white shadow-2xl', className)}
+        className={cn('relative z-10 w-full rounded-3xl bg-card text-card-foreground border border-border shadow-2xl', className)}
         {...props}
       >
         <button
           type="button"
           aria-label="Close dialog"
           onClick={() => onOpenChange(false)}
-          className="absolute right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+          className="absolute right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
         >
           <X className="h-4 w-4" />
         </button>
@@ -81,7 +86,7 @@ function DialogHeader({ className, ...props }: React.HTMLAttributes<HTMLDivEleme
 }
 
 function DialogTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h2 className={cn('text-xl font-bold text-slate-900', className)} {...props} />;
+  return <h2 className={cn('text-xl font-bold text-foreground', className)} {...props} />;
 }
 
 function DialogFooter({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {

@@ -52,6 +52,14 @@
 - **NEVER** use US format (`MM/DD/YYYY` or `Month Day, Year` like `Nov 2, 2026`).
 - Use the shared date utility functions in `@/lib/utils` (`formatAppDate`, `formatAppDateTime`, `formatAppDateNumeric`).
 
+### UI & Color Standard (Hard Rule: 60-30-10 & ShadCN UI)
+- **Always ShadCN UI Style**: Use semantic CSS tokens (`bg-background`, `bg-card`, `bg-muted`, `text-foreground`, `text-muted-foreground`, `border-border`, `primary`).
+- **NO Hardcoded Slate/White**: Never use hardcoded `bg-white`, `bg-slate-50`, `text-slate-900`, `text-slate-500` for content surfaces and text; always use semantic theme variables so dark mode and light mode are seamless.
+- **60-30-10 Color Rule**:
+  - **60% Dominant Base**: Main background and surface cards (`bg-background`, `bg-card`, `text-foreground`).
+  - **30% Secondary/Structural**: Muted surfaces, borders, dividers, secondary text (`bg-muted/40`, `border-border`, `text-muted-foreground`).
+  - **10% Accent/Focal Highlight**: Key action buttons, active tabs, status indicators, badges (`bg-primary`, `text-primary-foreground`, `text-primary`, `hover:bg-primary/90`).
+
 ### Structure
 ```
 src/

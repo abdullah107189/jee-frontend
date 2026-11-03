@@ -286,7 +286,7 @@ export default function VariantDetailsContent({
       {/* Back */}
       <Link
         href={`/admin/products/${productId}`}
-        className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-700"
+        className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-slate-700"
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Product
@@ -295,10 +295,10 @@ export default function VariantDetailsContent({
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-1">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-900 break-words">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-foreground break-words">
             {variant.product?.name || "Unnamed Variant"}
           </h1>
-          <p className="text-xs sm:text-sm font-mono text-slate-500 font-semibold">{variant.sku}</p>
+          <p className="text-xs sm:text-sm font-mono text-muted-foreground font-semibold">{variant.sku}</p>
           <div className="pt-2 flex flex-wrap gap-2">
             {variant.isDefault && <Badge variant="outline">Default</Badge>}
             <Badge variant={variant.isActive ? "success" : "outline"}>
@@ -324,7 +324,7 @@ export default function VariantDetailsContent({
           <ImageIcon className="h-5 w-5 text-blue-600" /> Images ({variant.images.length})
         </h2>
         {variant.images.length === 0 ? (
-          <p className="text-sm text-slate-500">No images.</p>
+          <p className="text-sm text-muted-foreground">No images.</p>
         ) : (
           <div className="grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-4 lg:grid-cols-6">
             {variant.images.map((img, i) => (
@@ -379,7 +379,7 @@ export default function VariantDetailsContent({
               key={k}
               className="flex justify-between items-center rounded-xl border border-border bg-muted/40 px-4 py-3"
             >
-              <span className="text-xs sm:text-sm font-medium capitalize text-slate-500">
+              <span className="text-xs sm:text-sm font-medium capitalize text-muted-foreground">
                 {k}
               </span>
               <span className="text-xs sm:text-sm font-semibold text-slate-800 text-right">
@@ -447,7 +447,7 @@ export default function VariantDetailsContent({
         {/* Batch Overview Cards with Horizontal Smooth Scroll (Latest batch first) */}
         {batches.length > 0 && (
           <div className="p-4 sm:p-6 bg-muted/30 border-b border-border space-y-3">
-            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500">
+            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-muted-foreground">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <Layers className="h-3.5 w-3.5 text-blue-600" />
                 <span>Production Runs ({batches.length})</span>
@@ -486,7 +486,7 @@ export default function VariantDetailsContent({
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <span className="font-extrabold text-sm text-slate-900">
+                        <span className="font-extrabold text-sm text-foreground">
                           {batch.label}
                         </span>
                         {isLatest && (
@@ -498,12 +498,12 @@ export default function VariantDetailsContent({
                           {batch.items.length} units
                         </span>
                       </div>
-                      <span className="text-[11px] text-slate-500 font-mono flex items-center gap-1 font-semibold whitespace-nowrap">
+                      <span className="text-[11px] text-muted-foreground font-mono flex items-center gap-1 font-semibold whitespace-nowrap">
                         <Calendar className="h-3 w-3 text-blue-600 flex-shrink-0" /> {batch.date}
                       </span>
                     </div>
 
-                    <p className="text-xs font-mono text-slate-500 truncate mb-3">
+                    <p className="text-xs font-mono text-muted-foreground truncate mb-3">
                       Range: <span className="text-slate-800 font-bold">{firstSerial}</span> →{" "}
                       <span className="text-slate-800 font-bold">{lastSerial}</span>
                     </p>
@@ -567,7 +567,7 @@ export default function VariantDetailsContent({
         {/* Mobile-Optimized Units Cards View (sm:hidden) */}
         <div className="divide-y divide-slate-100 sm:hidden">
           {displayedItems.length === 0 ? (
-            <div className="p-8 text-center text-slate-500">
+            <div className="p-8 text-center text-muted-foreground">
               <Package className="mx-auto h-8 w-8 text-slate-300 mb-2" />
               <p className="font-semibold text-sm text-slate-700">No units in this selection.</p>
               <p className="text-xs text-slate-400 mt-1">
@@ -584,7 +584,7 @@ export default function VariantDetailsContent({
               return (
                 <div key={item.id} className="p-4 bg-card space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <span className="font-mono font-extrabold text-sm text-slate-900 tracking-tight">
+                    <span className="font-mono font-extrabold text-sm text-foreground tracking-tight">
                       {item.serialNumber}
                     </span>
                     <Badge
@@ -601,7 +601,7 @@ export default function VariantDetailsContent({
                     </Badge>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs text-slate-500">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <div className="flex items-center gap-1.5">
                       {matchedBatch ? (
                         <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-[11px] font-bold text-blue-700 border border-blue-200">
@@ -672,7 +672,7 @@ export default function VariantDetailsContent({
             <tbody className="divide-y divide-border/40">
               {displayedItems.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
+                  <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
                     <Package className="mx-auto h-10 w-10 text-slate-300 mb-2" />
                     <p className="font-semibold text-slate-700">No units in this selection.</p>
                     <p className="text-xs text-slate-400 mt-1">
@@ -691,7 +691,7 @@ export default function VariantDetailsContent({
 
                 return (
                   <tr key={item.id} className="hover:bg-muted/30 transition-colors bg-card">
-                    <td className="px-6 py-4 font-mono font-bold text-slate-900 text-sm">
+                    <td className="px-6 py-4 font-mono font-bold text-foreground text-sm">
                       {item.serialNumber}
                     </td>
                     <td className="px-6 py-4">
@@ -774,7 +774,7 @@ export default function VariantDetailsContent({
                   <Layers className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
                 <div>
-                  <h3 className="text-base sm:text-lg font-extrabold text-slate-900">
+                  <h3 className="text-base sm:text-lg font-extrabold text-foreground">
                     Add Production Batch Units
                   </h3>
                   <p className="text-[11px] sm:text-xs text-slate-400 font-mono">
@@ -869,13 +869,13 @@ export default function VariantDetailsContent({
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs font-mono gap-1">
                     <div>
-                      <span className="text-slate-500">First Serial:</span>{" "}
+                      <span className="text-muted-foreground">First Serial:</span>{" "}
                       <span className="font-bold text-slate-800">
                         {autoPreviewSerials[0]}
                       </span>
                     </div>
                     <div>
-                      <span className="text-slate-500">Last Serial:</span>{" "}
+                      <span className="text-muted-foreground">Last Serial:</span>{" "}
                       <span className="font-bold text-slate-800">
                         {autoPreviewSerials[autoPreviewSerials.length - 1]}
                       </span>

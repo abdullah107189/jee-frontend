@@ -15,14 +15,14 @@ export default async function FeaturedProducts() {
     <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div className="mb-8 flex items-end justify-between">
         <div className="flex items-center gap-3">
-          <div className="rounded-xl bg-red-50 p-2 text-red-600">
+          <div className="rounded-xl bg-red-50 p-2 text-red-600 ring-1 ring-red-100 dark:bg-red-500/10 dark:text-red-400 dark:ring-red-500/20">
             <Flame className="h-6 w-6" />
           </div>
           <div>
-            <h2 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
+            <h2 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
               Featured Products
             </h2>
-            <p className="mt-1 text-sm font-medium text-slate-500">
+            <p className="mt-1 text-sm font-medium text-muted-foreground">
               Best-selling electronics with long-term warranties
             </p>
           </div>

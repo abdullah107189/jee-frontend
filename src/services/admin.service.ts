@@ -77,7 +77,69 @@ export interface AuditLog {
   ipAddress: string;
   severity: string;
 }
-export type AdminAnalytics = Record<string, any>;
+export interface SalesTrendItem {
+  month: string;
+  online: number;
+  offline: number;
+}
+
+export interface CategorySalesItem {
+  category: string;
+  sales: number;
+}
+
+export interface TopSellerItem {
+  name: string;
+  sales: number;
+  revenue: number;
+}
+
+export interface BestSellingProductItem {
+  id: string;
+  name: string;
+  category: string;
+  sold: number;
+  revenue: number;
+}
+
+export interface LowStockProductItem {
+  id: string;
+  name: string;
+  category: string;
+  stock: number;
+  status: string;
+}
+
+export interface ExpiringWarrantyItem {
+  id: string;
+  uniqueId: string;
+  product: string;
+  customer: string;
+  expiryDate: string;
+  daysRemaining: number;
+}
+
+export interface AnalyticsOverview {
+  totalRevenue: number;
+  onlineRevenue: number;
+  offlineRevenue: number;
+  totalOrders: number;
+  totalProducts: number;
+  lowStockCount: number;
+  activeWarranties: number;
+  pendingClaims: number;
+  activeSellers: number;
+}
+
+export interface AdminAnalytics {
+  overview?: AnalyticsOverview;
+  salesTrend: SalesTrendItem[];
+  categorySales: CategorySalesItem[];
+  topSellers: TopSellerItem[];
+  bestSellingProducts: BestSellingProductItem[];
+  lowStockProducts: LowStockProductItem[];
+  expiringWarranties: ExpiringWarrantyItem[];
+}
 
 export type AdminOrder = Record<string, any>;
 export type AdminWarranty = Record<string, any>;
@@ -295,28 +357,56 @@ export async function getAuditLogs(query?: {
   }
 }
 
-export async function getAnalytics(_period = 'MONTH'): Promise<AdminAnalytics> {
-  return {
-    salesTrend: [
-      { month: 'Jan', online: 4200, offline: 3100 }, { month: 'Feb', online: 5100, offline: 3800 }, { month: 'Mar', online: 6800, offline: 4900 }, { month: 'Apr', online: 7200, offline: 5400 },
-      { month: 'May', online: 8900, offline: 6200 }, { month: 'Jun', online: 9500, offline: 7100 }, { month: 'Jul', online: 11200, offline: 8400 }, { month: 'Aug', online: 12800, offline: 9600 },
-    ],
-    categorySales: [
-      { category: 'Ceiling Fans', sales: 480 }, { category: 'Air Conditioners', sales: 320 }, { category: 'LED Bulbs', sales: 1250 }, { category: 'Home Appliances', sales: 640 }, { category: 'Smart TV & Audio', sales: 290 },
-    ],
-    topSellers: [
-      { name: 'Vision Official Store', sales: 342, revenue: 1197000 }, { name: 'Electro Tech Dhaka', sales: 189, revenue: 661500 }, { name: 'Sylhet Digital Appliances', sales: 95, revenue: 332500 }, { name: 'Bogra Smart Gadgets', sales: 42, revenue: 147000 },
-    ],
-    bestSellingProducts: [
-      { id: 'P1', name: 'Vision 56" Ceiling Fan', category: 'Ceiling Fans', sold: 480, revenue: 1680000 }, { id: 'P2', name: 'LED Bulb 15W Pack', category: 'LED Bulbs', sold: 1250, revenue: 312500 }, { id: 'P3', name: 'Vision AC 1.5 Ton Inverter', category: 'Air Conditioners', sold: 320, revenue: 14400000 }, { id: 'P4', name: 'Dry Iron 1000W Heavy', category: 'Home Appliances', sold: 290, revenue: 435000 },
-    ],
-    lowStockProducts: [
-      { id: 'P10', name: 'Smart Inverter Microwave 25L', category: 'Appliances', stock: 2, status: 'CRITICAL' }, { id: 'P12', name: 'Rechargeable Portable Fan', category: 'Fans', stock: 4, status: 'LOW' }, { id: 'P15', name: 'High Speed Table Fan 16"', category: 'Fans', stock: 3, status: 'LOW' },
-    ],
-    expiringWarranties: [
-      { id: 'WAR-104', uniqueId: 'IRON-20211', product: 'Dry Iron 1000W', customer: 'Farid Hossain', expiryDate: '2026-08-15', daysRemaining: 5 }, { id: 'WAR-108', uniqueId: 'FAN-002100', product: 'Vision Fan 48"', customer: 'Rashid Khan', expiryDate: '2026-08-22', daysRemaining: 12 }, { id: 'WAR-112', uniqueId: 'BULB-99001', product: 'LED Bulb 20W', customer: 'Khadija Bibi', expiryDate: '2026-08-30', daysRemaining: 20 },
-    ],
+export async function getAnalytics(period = "MONTH"): Promise<AdminAnalytics> {
+  const emptyAnalytics: AdminAnalytics = {
+    overview: {
+      totalRevenue: 0,
+      onlineRevenue: 0,
+      offlineRevenue: 0,
+      totalOrders: 0,
+      totalProducts: 0,
+      lowStockCount: 0,
+      activeWarranties: 0,
+      pendingClaims: 0,
+      activeSellers: 0,
+    },
+    salesTrend: [],
+    categorySales: [],
+    topSellers: [],
+    bestSellingProducts: [],
+    lowStockProducts: [],
+    expiringWarranties: [],
   };
+
+  try {
+    const authHeaders = await getAuthHeaders();
+    const res = await fetch(`${API_URL}/analytics?period=${encodeURIComponent(period)}`, {
+      method: "GET",
+      headers: authHeaders,
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      console.error("Failed to fetch analytics:", res.status, res.statusText);
+      return emptyAnalytics;
+    }
+
+    const json = await res.json();
+    if (!json?.data) return emptyAnalytics;
+
+    return {
+      overview: json.data.overview || emptyAnalytics.overview,
+      salesTrend: Array.isArray(json.data.salesTrend) ? json.data.salesTrend : [],
+      categorySales: Array.isArray(json.data.categorySales) ? json.data.categorySales : [],
+      topSellers: Array.isArray(json.data.topSellers) ? json.data.topSellers : [],
+      bestSellingProducts: Array.isArray(json.data.bestSellingProducts) ? json.data.bestSellingProducts : [],
+      lowStockProducts: Array.isArray(json.data.lowStockProducts) ? json.data.lowStockProducts : [],
+      expiringWarranties: Array.isArray(json.data.expiringWarranties) ? json.data.expiringWarranties : [],
+    };
+  } catch (error) {
+    console.error("[getAnalytics] error:", error);
+    return emptyAnalytics;
+  }
 }
 
 export async function getAdminProductItems(query?: {

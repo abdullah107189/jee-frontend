@@ -91,7 +91,7 @@ export function ThemeToggle({
             className="flex items-center justify-between cursor-pointer font-medium text-xs"
           >
             <span className="flex items-center gap-2">
-              <Monitor className="h-3.5 w-3.5 text-slate-500" />
+              <Monitor className="h-3.5 w-3.5 text-muted-foreground" />
               System
             </span>
             {theme === "system" && <Check className="h-3.5 w-3.5 text-primary" />}
