@@ -27,7 +27,11 @@ export async function proxy(request: NextRequest) {
 
   // Fresh (not expired) access token → proceed untouched
   if (accessToken && !isAccessExpired(accessToken)) {
-    return NextResponse.next();
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set("x-pathname", pathname);
+    return NextResponse.next({
+      request: { headers: requestHeaders },
+    });
   }
 
   // Access missing / expired → must refresh
@@ -54,6 +58,7 @@ export async function proxy(request: NextRequest) {
 
     // Fresh token for THIS request's Server Components (RSC reads only)
     const requestHeaders = new Headers(request.headers);
+    requestHeaders.set("x-pathname", pathname);
     if (newAccessToken) {
       requestHeaders.set("x-access-token", newAccessToken);
     }
@@ -75,7 +80,8 @@ export async function proxy(request: NextRequest) {
 
 function redirectToLogin(request: NextRequest, pathname: string) {
   const loginUrl = new URL("/login", request.url);
-  loginUrl.searchParams.set("redirect", pathname);
+  const target = request.nextUrl.search ? `${pathname}${request.nextUrl.search}` : pathname;
+  loginUrl.searchParams.set("redirect", target);
   return NextResponse.redirect(loginUrl);
 }
 

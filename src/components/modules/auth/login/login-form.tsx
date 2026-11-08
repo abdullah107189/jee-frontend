@@ -27,6 +27,44 @@ const ROLE_PATH: Record<string, string> = {
   seller: "/seller",
   customer: "/customer",
 };
+function getValidRedirectPath(redirectTo: string, userRole: string): string {
+  const defaultPath = roleDashboard(userRole as any);
+  if (!redirectTo || typeof redirectTo !== "string") {
+    return defaultPath;
+  }
+
+  // Must be a relative path and not a protocol-relative path (prevent open-redirect)
+  if (!redirectTo.startsWith("/") || redirectTo.startsWith("//")) {
+    return defaultPath;
+  }
+
+  // Do not redirect back to auth pages
+  const cleanPath = redirectTo.split("?")[0];
+  if (cleanPath === "/login" || cleanPath === "/register" || cleanPath === "/verify-email") {
+    return defaultPath;
+  }
+
+  // Role-specific authorization checks
+  const roleUpper = (userRole || "").toUpperCase();
+
+  // Admin routes can only be accessed by ADMIN
+  if (cleanPath.startsWith("/admin") && roleUpper !== "ADMIN") {
+    return defaultPath;
+  }
+
+  // Seller routes can only be accessed by SELLER
+  if (cleanPath.startsWith("/seller") && roleUpper !== "SELLER") {
+    return defaultPath;
+  }
+
+  // Customer routes can only be accessed by CUSTOMER
+  if (cleanPath.startsWith("/customer") && roleUpper !== "CUSTOMER") {
+    return defaultPath;
+  }
+
+  return redirectTo;
+}
+
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -61,11 +99,7 @@ export function LoginForm() {
         return;
       }
 
-      const defaultPath = roleDashboard(res.user.role);
-
-      // ✅ Only honor redirect if it belongs to the user's role
-      const isRedirectValid = redirectTo.startsWith(defaultPath);
-      const targetPath = isRedirectValid ? redirectTo : defaultPath;
+      const targetPath = getValidRedirectPath(redirectTo, res.user.role);
 
       toast.success(`Welcome back, ${res.user.name}!`);
 

@@ -5,6 +5,7 @@ import { ShieldCheck, Truck, BadgeCheck, Sparkles } from "lucide-react";
 import { LoginForm } from "@/components/modules/auth/login/login-form";
 import Image from "next/image";
 import { auth } from "@/lib/auth/session";
+import { roleDashboard } from "@/lib/auth/role";
 
 /* ----------------------------- SEO Metadata ----------------------------- */
 export const metadata: Metadata = {
@@ -31,11 +32,36 @@ export const metadata: Metadata = {
 };
 
 /* -------------------- Redirect if already logged in -------------------- */
-export default async function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ redirect?: string }>;
+}) {
   // Server-side check — prevents flash of login page for logged-in users
   const user = await auth();
   if (user) {
-    redirect(`/${user.role}`);
+    const params = await searchParams;
+    const redirectTo = params?.redirect;
+    if (redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")) {
+      const cleanPath = redirectTo.split("?")[0];
+      const roleUpper = (user.role || "").toUpperCase();
+      const isAdminRoute = cleanPath.startsWith("/admin");
+      const isSellerRoute = cleanPath.startsWith("/seller");
+      const isCustomerRoute = cleanPath.startsWith("/customer");
+
+      const isAllowed =
+        cleanPath !== "/login" &&
+        cleanPath !== "/register" &&
+        cleanPath !== "/verify-email" &&
+        (!isAdminRoute || roleUpper === "ADMIN") &&
+        (!isSellerRoute || roleUpper === "SELLER") &&
+        (!isCustomerRoute || roleUpper === "CUSTOMER");
+
+      if (isAllowed) {
+        redirect(redirectTo);
+      }
+    }
+    redirect(roleDashboard(user.role));
   }
 
   return (

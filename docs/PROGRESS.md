@@ -72,3 +72,9 @@ DONE = build পাস + প্রমাণ | PARTIAL = কী বাকি ল�
      - `src/app/globals.css`: গ্লোবাল CSS ভেরিয়েবল এবং ম্যাথমেটিকাল `clamp()` দিয়ে fluid typography scale এবং ইউনিফাইড রিয়ুজেবল টাইপোগ্রাফি ইউটিলিটি ক্লাস ডিফাইন।
      - ৬৩টি ফাইল অডিট ও আপডেট (সব পেজ এবং কম্পোনেন্টের হেডিং, সাব-টাইটেল, কার্ড টাইটেল, প্রাইসিং ও ব্যাজ সুষম)।
      - TypeScript `tsc --noEmit` পাস (Exit code 0)।
+- 2026-11-08:
+  1. `Protected Route & Post-Login Redirection Fix`:
+     - `src/middleware.ts` তৈরি ও `proxy.ts` এর সাথে কানেক্ট করে প্রটেক্টেড রাউটগুলোতে (`/customer/*`, `/admin/*`, `/seller/*`) আনঅথেনটিকেটেড অ্যাক্সেসে ফুল URL ও কুয়েরি প্যারামিটার সহ `/login?redirect=...` এ রিডাইরেক্ট নিশ্চিতকরণ।
+     - `src/components/modules/auth/login/login-form.tsx`: `getValidRedirectPath` ইমপ্লিমেন্ট করা হয়েছে যাতে লগইন সফল হওয়ার পর ইউজারকে ঠিক আগের গন্তব্যে (যেমন `/checkout`, `/customer/orders` ইত্যাদি) ফেরত নিয়ে যায়।
+     - ওপেন-রিডাইরেক্ট এটাক রোধ এবং রোল-ভিত্তিক অ্যাক্সেস কন্ট্রোল (কাস্টমার যেন অ্যাডমিন/সেলার ড্যাশবোর্ডে রিডাইরেক্ট না হয়) নিশ্চিতকরণ।
+     - `src/app/(auth)/login/page.tsx` ও `DashboardLayout.tsx`: অলরেডি লগইন থাকা অবস্থায় বা সার্ভার লেআউটে রিডাইরেক্ট হ্যান্ডলিং ফিক্স।

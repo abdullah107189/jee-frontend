@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 
 export default async function SellerDashboardPage() {
   const user = await auth();
-  if (!user) redirect("/login");
+  if (!user) redirect("/login?redirect=/seller");
 
   const [stats, profile] = await Promise.all([
     getSellerDashboardStats(),
