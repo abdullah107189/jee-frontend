@@ -78,3 +78,5 @@ DONE = build পাস + প্রমাণ | PARTIAL = কী বাকি ল�
      - `src/components/modules/auth/login/login-form.tsx`: `getValidRedirectPath` ইমপ্লিমেন্ট করা হয়েছে যাতে লগইন সফল হওয়ার পর ইউজারকে ঠিক আগের গন্তব্যে (যেমন `/checkout`, `/customer/orders` ইত্যাদি) ফেরত নিয়ে যায়।
      - ওপেন-রিডাইরেক্ট এটাক রোধ এবং রোল-ভিত্তিক অ্যাক্সেস কন্ট্রোল (কাস্টমার যেন অ্যাডমিন/সেলার ড্যাশবোর্ডে রিডাইরেক্ট না হয়) নিশ্চিতকরণ।
      - `src/app/(auth)/login/page.tsx` ও `DashboardLayout.tsx`: অলরেডি লগইন থাকা অবস্থায় বা সার্ভার লেআউটে রিডাইরেক্ট হ্যান্ডলিং ফিক্স।
+  2. `Product Card Direct Buy Now Checkout Action`:
+     - `src/components/shared/productCard/MainProductCard.tsx`: প্রোডাক্ট কার্ডের "Buy Now" বাটন সরাসরি আইটেম কার্টে অ্যাড করে চেকআউট পেজে (`/checkout`) রিডাইরেক্ট করার লজিক যুক্ত (যেমনটি প্রোডাক্ট ডিটেইলস পেজে রয়েছে)। অলরেডি কার্টে থাকলে ইউজারকে নোটিফাই করে সরাসরি চেকআউটে নিয়ে যাবে।

@@ -8,6 +8,9 @@ import { ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { ProductCardData } from "@/lib/types/product.types";
 import { useAddToCart } from "@/hooks/useAddToCart";
+import { useCart } from "@/hooks/useCart";
+import { toCartItem } from "@/lib/helpers/productListing.helpers";
+import { toast } from "sonner";
 
 interface ProductCardProps {
   product: ProductCardData;
@@ -23,6 +26,7 @@ export default function MainProductCard({
 }: ProductCardProps) {
   const router = useRouter();
   const addToCart = useAddToCart();
+  const { add, has } = useCart();
 
   const image = product?.image;
 
@@ -56,7 +60,25 @@ export default function MainProductCard({
 
   const handleBuyNow = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    router.push(`/products/${product?.slug}`);
+
+    if (!isInStock) {
+      toast.error("Out of stock");
+      return;
+    }
+
+    // If variant already in cart, proceed straight to checkout
+    if (product?.variantId && has(product.variantId)) {
+      toast.warning(`"${product.name}" already in your cart`, {
+        description: "Proceeding to checkout with current quantity.",
+      });
+      router.push("/checkout");
+      return;
+    }
+
+    // Add to cart and redirect directly to checkout
+    add(toCartItem(product));
+    toast.success("Redirecting to checkout...");
+    router.push("/checkout");
   };
 
   return (
